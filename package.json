@@ -1,5 +1,6 @@
 {
   "name": "save-the-whale-token",
+  "type": "module",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
@@ -35,9 +36,13 @@
     "lint": "eslint .",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "hardhat": "hardhat"
   },
   "dependencies": {
+    "@web3-react/core": "^6.1.9",
     "next": "^10.0.7",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
