@@ -40,7 +40,7 @@
     "start": "next start",
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "hardhat": "hardhat",
+    "hardhat": "hardhat --network localhost",
     "deploy": "hardhat run --network localhost scripts/deploy.js"
   },
   "dependencies": {
