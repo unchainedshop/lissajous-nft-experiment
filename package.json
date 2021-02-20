@@ -3,7 +3,6 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "@symfoni/hardhat-react": "^0.1.14",
     "@typechain/ethers-v5": "^5.0.0",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.1",
