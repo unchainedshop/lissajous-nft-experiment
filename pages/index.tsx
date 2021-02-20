@@ -17,21 +17,12 @@ const Index = () => {
       const provider = new ethers.providers.Web3Provider(
         (window as any).ethereum,
       );
-      const { chainId, name } = await provider.getNetwork();
+      const { chainId } = await provider.getNetwork();
       const signer = await provider.getSigner();
 
       setAddress(await signer.getAddress());
 
-      console.log({ signer, address });
-      const blockNumber = await provider.getBlockNumber();
-
-      console.log({ blockNumber, addresses, name, chainId });
-
-      // const whaleToken: WhaleToken = new ethers.Contract(
-      //   addresses[chainId].WhaleToken,
-      //   WhalteTokenABI as any,
-      //   provider,
-      // );
+      // const blockNumber = await provider.getBlockNumber();
 
       const whaleToken = WhaleToken__factory.connect(
         addresses[chainId].WhaleToken,
@@ -40,9 +31,8 @@ const Index = () => {
 
       setWhaleToken(whaleToken);
 
-      const baseUri = await whaleToken.baseURI();
-      setTotalSupply(await (await whaleToken.totalSupply()).toNumber());
-      console.log({ baseUri });
+      // const baseUri = await whaleToken.baseURI();
+      setTotalSupply((await whaleToken.totalSupply()).toNumber());
 
       whaleToken.on('Transfer', async (from, to, tokenId) => {
         console.log('Transfer', { from, to, tokenId });
