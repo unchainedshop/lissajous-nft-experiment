@@ -7,7 +7,7 @@ import 'hardhat-typechain';
 import '@typechain/ethers-v5';
 
 import addresses from './addresses.json';
-import { WhaleToken } from './generated/typechain';
+import { WhaleToken } from './artifacts/typechain';
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -61,7 +61,7 @@ export default {
     },
   },
   typechain: {
-    outDir: './generated/typechain',
+    outDir: './artifacts/typechain',
     target: 'ethers-v5',
   },
 };

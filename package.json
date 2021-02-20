@@ -40,6 +40,7 @@
     "start": "next start",
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "node": "hardhat node",
     "hardhat": "hardhat --network localhost",
     "deploy": "hardhat run --network localhost scripts/deploy.js"
   },
