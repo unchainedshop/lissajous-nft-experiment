@@ -51,6 +51,13 @@ export default {
   react: {
     providerPriority: ['web3modal', 'hardhat'],
   },
+  networks: {
+    hardhat: {},
+    localhost: {
+      url: 'http://127.0.0.1:7545',
+      // accounts: [privateKey1, privateKey2, ...]
+    },
+  },
   paths: {
     react: './generated/hardhat',
     deployments: './generated/deployments/',

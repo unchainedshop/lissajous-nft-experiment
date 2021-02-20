@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
+import 'mvp.css';
+
 import addresses from '../addresses.json';
 // import WhalteTokenABI from '../artifacts/contracts/WhaleToken.sol/WhaleToken.json';
-import { WhaleToken__factory } from '../artifacts/typechain';
+import { WhaleToken, WhaleToken__factory } from '../artifacts/typechain';
 
 const Index = () => {
-  const [account, setAccount] = useState('');
+  const [address, setAddress] = useState('');
+  const [whaleToken, setWhaleToken] = useState<WhaleToken>();
 
   useEffect(() => {
     (async () => {
@@ -14,7 +17,11 @@ const Index = () => {
         (window as any).ethereum,
       );
       const { chainId, name } = await provider.getNetwork();
+      const signer = await provider.getSigner();
 
+      setAddress(await signer.getAddress());
+
+      console.log({ signer, address });
       const blockNumber = await provider.getBlockNumber();
 
       console.log({ blockNumber, addresses, name, chainId });
@@ -27,17 +34,30 @@ const Index = () => {
 
       const whaleToken = WhaleToken__factory.connect(
         addresses[chainId].WhaleToken,
-        provider,
+        signer,
       );
+
+      setWhaleToken(whaleToken);
 
       const baseUri = await whaleToken.baseURI();
       console.log({ baseUri });
-
-      setAccount(baseUri);
     })();
   }, []);
 
-  return <h1>Hello {account}</h1>;
+  const mint = async () => {
+    await whaleToken.mint(address);
+  };
+
+  return (
+    <header>
+      <h1>Lets Save The Whales International Coin</h1>
+      <p>
+        <button onClick={mint}>
+          <i>Mint!</i>
+        </button>
+      </p>
+    </header>
+  );
 };
 
 export default Index;
