@@ -10,6 +10,7 @@ import { WhaleToken, WhaleToken__factory } from '../artifacts/typechain';
 const Index = () => {
   const [address, setAddress] = useState('');
   const [whaleToken, setWhaleToken] = useState<WhaleToken>();
+  const [totalSupply, setTotalSupply] = useState<number>();
 
   useEffect(() => {
     (async () => {
@@ -40,7 +41,13 @@ const Index = () => {
       setWhaleToken(whaleToken);
 
       const baseUri = await whaleToken.baseURI();
+      setTotalSupply(await (await whaleToken.totalSupply()).toNumber());
       console.log({ baseUri });
+
+      whaleToken.on('Transfer', async (from, to, tokenId) => {
+        console.log('Transfer', { from, to, tokenId });
+        setTotalSupply((await whaleToken.totalSupply()).toNumber());
+      });
     })();
   }, []);
 
@@ -51,6 +58,7 @@ const Index = () => {
   return (
     <header>
       <h1>Lets Save The Whales International Coin</h1>
+      <h2>{totalSupply} already minted</h2>
       <p>
         <button onClick={mint}>
           <i>Mint!</i>
