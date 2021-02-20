@@ -1,9 +1,8 @@
 async function main() {
-  // We get the contract to deploy
-  const Greeter = await global.ethers.getContractFactory('Greeter');
-  const greeter = await Greeter.deploy('Hello, Hardhat!');
+  const WhaleToken = await global.ethers.getContractFactory('WhaleToken');
+  const whaleToken = await WhaleToken.deploy();
 
-  console.log('Greeter deployed to:', greeter.address);
+  console.log('Whale Token deployed to:', whaleToken.address);
 }
 
 main()
