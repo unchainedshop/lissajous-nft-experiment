@@ -7,7 +7,6 @@ import 'hardhat-typechain';
 import '@typechain/ethers-v5';
 
 import addresses from './addresses.json';
-import { WhaleToken } from './artifacts/typechain';
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -34,11 +33,11 @@ task('mint', 'Mint a token for someone')
   .setAction(async ({ to }, { ethers }) => {
     const [signer] = await ethers.getSigners();
     const { chainId } = await ethers.provider.getNetwork();
-    const whaleToken = (await ethers.getContractAt(
+    const whaleToken = await ethers.getContractAt(
       'WhaleToken',
       addresses[chainId].WhaleToken,
       signer,
-    )) as WhaleToken;
+    );
 
     await whaleToken.mint(to);
   });

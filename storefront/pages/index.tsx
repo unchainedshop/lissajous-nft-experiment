@@ -3,9 +3,11 @@ import { ethers } from 'ethers';
 
 import 'mvp.css';
 
-import addresses from '../addresses.json';
-// import WhalteTokenABI from '../artifacts/contracts/WhaleToken.sol/WhaleToken.json';
-import { WhaleToken, WhaleToken__factory } from '../artifacts/typechain';
+import {
+  addresses,
+  WhaleToken,
+  WhaleToken__factory,
+} from '@private/tinac-nft-contracts';
 
 const Index = () => {
   const [address, setAddress] = useState('');
