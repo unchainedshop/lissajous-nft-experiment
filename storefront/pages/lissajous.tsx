@@ -4,7 +4,6 @@ const Lissajous = () => {
   const canvasRef = useRef(null);
 
   useLayoutEffect(() => {
-    console.log(canvasRef);
     if (canvasRef?.current) {
       const canvas: HTMLCanvasElement = canvasRef.current;
 
@@ -17,40 +16,29 @@ const Lissajous = () => {
         alpha: false,
       });
 
-      console.log(ctx);
+      const radius = canvas.height / 2 - 10;
+      const speed = 0.001;
+      const steps = 100000;
 
-      const radius = canvas.height / 2;
-      const speed = 0.02;
-      // const steps = 1000;
-
-      let step = 0;
-      let x = 0;
-      let y = 0;
-
+      const before = new Date();
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        Array(steps)
+          .fill(0)
+          .map((_, i) => {
+            const x = 5 + radius * (1 + Math.cos(i * speed * 16));
+            const y = 5 + radius * (1 + Math.sin(i * speed * 15));
+
+            ctx.strokeStyle = '#ff9999';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(x, y, 1, 0, 1 * Math.PI);
+            ctx.stroke();
+          });
       }
+      const after = new Date();
 
-      const draw = () => {
-        if (ctx) {
-          x = radius * (1 + Math.cos(step * speed * 0.2));
-          y = radius * (1 + Math.sin(step * speed));
-
-          // console.log({ x, y, step, speed });
-
-          ctx.strokeStyle = '#FFFFFF';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(x, y, 1, 0, 2 * Math.PI);
-          ctx.stroke();
-
-          step++;
-
-          window.requestAnimationFrame(draw);
-        }
-      };
-
-      window.requestAnimationFrame(draw);
+      console.log(after.getDate() - before.getDate());
     }
   });
 
