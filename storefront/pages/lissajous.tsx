@@ -1,7 +1,11 @@
 import { useLayoutEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
 
 const Lissajous = () => {
+  const { register, watch } = useForm({ defaultValues: { x: 1, y: 1 } });
   const canvasRef = useRef(null);
+
+  const { x, y } = watch();
 
   useLayoutEffect(() => {
     if (canvasRef?.current) {
@@ -18,7 +22,7 @@ const Lissajous = () => {
 
       const radius = canvas.height / 2 - 10;
       const speed = 0.001;
-      const steps = 100000;
+      const steps = 10000;
 
       const before = new Date();
       if (ctx) {
@@ -26,13 +30,13 @@ const Lissajous = () => {
         Array(steps)
           .fill(0)
           .map((_, i) => {
-            const x = 5 + radius * (1 + Math.cos(i * speed * 16));
-            const y = 5 + radius * (1 + Math.sin(i * speed * 15));
+            const currentX = 5 + radius * (1 + Math.cos(i * speed * x));
+            const currentY = 5 + radius * (1 + Math.sin(i * speed * y));
 
             ctx.strokeStyle = '#ff9999';
             ctx.lineWidth = 5;
             ctx.beginPath();
-            ctx.arc(x, y, 1, 0, 1 * Math.PI);
+            ctx.arc(currentX, currentY, 1, 0, 1 * Math.PI);
             ctx.stroke();
           });
       }
@@ -40,12 +44,38 @@ const Lissajous = () => {
 
       console.log(after.getDate() - before.getDate());
     }
-  });
+  }, [x, y]);
 
   return (
     <div className="container">
       <div className="square">
         <canvas ref={canvasRef}></canvas>
+        <form>
+          <p>
+            X:{' '}
+            <input
+              type="range"
+              name="x"
+              step={1}
+              min={1}
+              max={32}
+              ref={register}
+            />{' '}
+            {x}
+          </p>
+          <p>
+            Y:{' '}
+            <input
+              type="range"
+              name="y"
+              step={1}
+              min={1}
+              max={32}
+              ref={register}
+            />{' '}
+            {y}
+          </p>
+        </form>
       </div>
 
       <style jsx>{`
@@ -56,6 +86,7 @@ const Lissajous = () => {
           height: 100%;
           margin: 0;
           padding: 0;
+          color: white;
         }
 
         .container {
@@ -86,6 +117,12 @@ const Lissajous = () => {
           left: 0;
           height: 100%;
           width: 100%;
+        }
+
+        form {
+          position: absolute;
+          top: 10px;
+          left: 50%;
         }
       `}</style>
     </div>
