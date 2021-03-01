@@ -4,11 +4,27 @@ import { hsl } from 'd3-color';
 
 const Lissajous = () => {
   const { register, watch } = useForm({
-    defaultValues: { x: 1, y: 1, phi: 0.5, h: 57, s: 1, l: 0.5 },
+    defaultValues: {
+      xFrequence: 1,
+      yFrequence: 1,
+      phaseShift: 0.5,
+      hue: 57,
+      saturation: 1,
+      lightness: 0.5,
+      lineWidth: 10,
+    },
   });
   const canvasRef = useRef(null);
 
-  const { x, y, h, s, l, phi } = watch();
+  const {
+    xFrequence,
+    yFrequence,
+    hue,
+    saturation,
+    lightness,
+    phaseShift,
+    lineWidth,
+  } = watch();
 
   useLayoutEffect(() => {
     if (canvasRef?.current) {
@@ -33,15 +49,15 @@ const Lissajous = () => {
           .fill(0)
           .map((_, i) => {
             const currentX =
-              5 + (canvas.width / 2 - 10) * (1 + Math.sin(i * speed * x));
+              5 +
+              (canvas.width / 2 - 10) * (1 + Math.sin(i * speed * xFrequence));
             const currentY =
               5 +
               (canvas.height / 2 - 10) *
-                (1 + Math.sin(i * speed * y + Math.PI * phi));
+                (1 + Math.sin(i * speed * yFrequence + Math.PI * phaseShift));
 
-            ctx.strokeStyle = hsl(h, s, l).formatHex(); // `hsl(${h},${s},${l})`; // 'black'; // rgbArrayToString(hslToRgb(h, s, l));
-
-            ctx.lineWidth = 10;
+            ctx.strokeStyle = hsl(hue, saturation, lightness).formatHex();
+            ctx.lineWidth = lineWidth;
             ctx.beginPath();
             ctx.arc(currentX, currentY, 1, 0, 1 * Math.PI);
             ctx.stroke();
@@ -51,7 +67,15 @@ const Lissajous = () => {
 
       console.log(after.getDate() - before.getDate());
     }
-  }, [x, y, phi, h, s, l]);
+  }, [
+    xFrequence,
+    yFrequence,
+    phaseShift,
+    hue,
+    saturation,
+    lightness,
+    lineWidth,
+  ]);
 
   return (
     <div className="container">
@@ -62,73 +86,85 @@ const Lissajous = () => {
             X:{' '}
             <input
               type="range"
-              name="x"
+              name="xFrequence"
               step={1}
               min={1}
               max={32}
               ref={register}
             />{' '}
-            {x}
+            {xFrequence}
           </p>
           <p>
             Y:{' '}
             <input
               type="range"
-              name="y"
+              name="yFrequence"
               step={1}
               min={1}
               max={32}
               ref={register}
             />{' '}
-            {y}
+            {yFrequence}
           </p>
           <p>
             Δφ:{' '}
             <input
               type="range"
-              name="phi"
-              step={0.0625}
+              name="phaseShift"
+              step={1 / 24}
               min={0}
               max={1}
               ref={register}
             />{' '}
-            {phi}
+            {phaseShift}
           </p>
           <p>
-            h:{' '}
+            hue:{' '}
             <input
               type="range"
-              name="h"
+              name="hue"
               step={1}
               min={0}
               max={360}
               ref={register}
             />{' '}
-            {h}
+            {hue}
           </p>
           <p>
-            s:{' '}
+            saturation:{' '}
             <input
               type="range"
-              name="s"
+              name="saturation"
               step={0.01}
               min={0}
               max={1}
               ref={register}
             />{' '}
-            {s}
+            {saturation}
           </p>
           <p>
-            l:{' '}
+            lightness:{' '}
             <input
               type="range"
-              name="l"
+              name="lightness"
               step={0.01}
               min={0}
               max={1}
               ref={register}
             />{' '}
-            {l}
+            {lightness}
+          </p>
+          <p>
+            lineWidth:{' '}
+            <input
+              type="range"
+              name="lineWidth"
+              step={0.5}
+              min={0.5}
+              max={100}
+              ref={register}
+            />{' '}
+            {lineWidth}
           </p>
         </form>
       </div>
