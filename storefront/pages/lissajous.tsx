@@ -5,25 +5,29 @@ import { hsl } from 'd3-color';
 const Lissajous = () => {
   const { register, watch } = useForm({
     defaultValues: {
-      xFrequence: 1,
-      yFrequence: 1,
+      frequenceX: 1,
+      frequenceY: 1,
       phaseShift: 0.5,
       hue: 57,
       saturation: 1,
       lightness: 0.5,
       lineWidth: 10,
+      height: 16,
+      width: 16,
     },
   });
   const canvasRef = useRef(null);
 
   const {
-    xFrequence,
-    yFrequence,
+    frequenceX,
+    frequenceY,
     hue,
     saturation,
     lightness,
     phaseShift,
     lineWidth,
+    height,
+    width,
   } = watch();
 
   useLayoutEffect(() => {
@@ -32,12 +36,15 @@ const Lissajous = () => {
 
       const boundingRect = canvas.getBoundingClientRect();
 
-      canvas.height = boundingRect.height;
       canvas.width = boundingRect.width;
+      canvas.height = boundingRect.height;
 
       const ctx: CanvasRenderingContext2D = canvas.getContext('2d', {
         alpha: true,
       });
+
+      const amplitudeX = width / 16 / 2;
+      const amplitudeY = height / 16 / 2;
 
       const speed = 0.001;
       const steps = 10000;
@@ -49,12 +56,13 @@ const Lissajous = () => {
           .fill(0)
           .map((_, i) => {
             const currentX =
-              5 +
-              (canvas.width / 2 - 10) * (1 + Math.sin(i * speed * xFrequence));
+              canvas.width *
+              amplitudeX *
+              (1 + Math.sin(i * speed * frequenceX));
             const currentY =
-              5 +
-              (canvas.height / 2 - 10) *
-                (1 + Math.sin(i * speed * yFrequence + Math.PI * phaseShift));
+              canvas.height *
+              amplitudeY *
+              (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
 
             ctx.strokeStyle = hsl(hue, saturation, lightness).formatHex();
             ctx.lineWidth = lineWidth;
@@ -68,13 +76,15 @@ const Lissajous = () => {
       console.log(after.getDate() - before.getDate());
     }
   }, [
-    xFrequence,
-    yFrequence,
+    frequenceX,
+    frequenceY,
     phaseShift,
     hue,
     saturation,
     lightness,
     lineWidth,
+    height,
+    width,
   ]);
 
   return (
@@ -86,25 +96,25 @@ const Lissajous = () => {
             X:{' '}
             <input
               type="range"
-              name="xFrequence"
+              name="frequenceX"
               step={1}
               min={1}
               max={32}
               ref={register}
             />{' '}
-            {xFrequence}
+            {frequenceX}
           </p>
           <p>
             Y:{' '}
             <input
               type="range"
-              name="yFrequence"
+              name="frequenceY"
               step={1}
               min={1}
               max={32}
               ref={register}
             />{' '}
-            {yFrequence}
+            {frequenceY}
           </p>
           <p>
             Δφ:{' '}
@@ -165,6 +175,30 @@ const Lissajous = () => {
               ref={register}
             />{' '}
             {lineWidth}
+          </p>
+          <p>
+            height:{' '}
+            <input
+              type="range"
+              name="height"
+              step={1}
+              min={1}
+              max={16}
+              ref={register}
+            />{' '}
+            {height}
+          </p>
+          <p>
+            width:{' '}
+            <input
+              type="range"
+              name="width"
+              step={1}
+              min={1}
+              max={16}
+              ref={register}
+            />{' '}
+            {width}
           </p>
         </form>
       </div>
