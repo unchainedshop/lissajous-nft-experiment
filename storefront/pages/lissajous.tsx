@@ -1,13 +1,18 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
+import hslToRgb from '../utils/hslToRgb';
+
+const rgbArrayToString = (rgbArray) =>
+  `#${rgbArray.map((x) => Math.floor(x).toString(16)).join('')}`;
+
 const Lissajous = () => {
   const { register, watch } = useForm({
-    defaultValues: { x: 1, y: 1, phi: 0.5 },
+    defaultValues: { x: 1, y: 1, phi: 0.5, h: 0.51, s: 1, l: 1 },
   });
   const canvasRef = useRef(null);
 
-  const { x, y, phi } = watch();
+  const { x, y, h, s, l, phi } = watch();
 
   useLayoutEffect(() => {
     if (canvasRef?.current) {
@@ -22,9 +27,10 @@ const Lissajous = () => {
         alpha: true,
       });
 
-      const radius = canvas.height / 2 - 10;
       const speed = 0.001;
       const steps = 10000;
+
+      console.log(h, s, l, hslToRgb(h, s, l));
 
       const before = new Date();
       if (ctx) {
@@ -32,11 +38,15 @@ const Lissajous = () => {
         Array(steps)
           .fill(0)
           .map((_, i) => {
-            const currentX = 5 + radius * (1 + Math.sin(i * speed * x));
+            const currentX =
+              5 + (canvas.width / 2 - 10) * (1 + Math.sin(i * speed * x));
             const currentY =
-              5 + radius * (1 + Math.sin(i * speed * y + Math.PI * phi));
+              5 +
+              (canvas.height / 2 - 10) *
+                (1 + Math.sin(i * speed * y + Math.PI * phi));
 
-            ctx.strokeStyle = '#ff0000';
+            ctx.strokeStyle = 'black'; // `hsl(${h},${s},${l})`; // 'black'; // rgbArrayToString(hslToRgb(h, s, l));
+
             ctx.lineWidth = 10;
             ctx.beginPath();
             ctx.arc(currentX, currentY, 1, 0, 1 * Math.PI);
@@ -47,7 +57,7 @@ const Lissajous = () => {
 
       console.log(after.getDate() - before.getDate());
     }
-  }, [x, y, phi]);
+  }, [x, y, phi, h, s, l]);
 
   return (
     <div className="container">
@@ -90,6 +100,42 @@ const Lissajous = () => {
             />{' '}
             {phi}
           </p>
+          <p>
+            h:{' '}
+            <input
+              type="range"
+              name="h"
+              step={0.01}
+              min={0}
+              max={1}
+              ref={register}
+            />{' '}
+            {h}
+          </p>
+          <p>
+            s:{' '}
+            <input
+              type="range"
+              name="s"
+              step={0.01}
+              min={0}
+              max={1}
+              ref={register}
+            />{' '}
+            {s}
+          </p>
+          <p>
+            l:{' '}
+            <input
+              type="range"
+              name="l"
+              step={0.01}
+              min={0}
+              max={1}
+              ref={register}
+            />{' '}
+            {l}
+          </p>
         </form>
       </div>
 
@@ -101,7 +147,7 @@ const Lissajous = () => {
           height: 100%;
           margin: 0;
           padding: 0;
-          color: white;
+          color: black;
         }
 
         .container {
