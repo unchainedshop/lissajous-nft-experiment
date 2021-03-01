@@ -1,14 +1,15 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { hsl, rgb } from 'd3-color';
 
-import hslToRgb from '../utils/hslToRgb';
+// import hslToRgb from '../utils/hslToRgb';
 
 const rgbArrayToString = (rgbArray) =>
   `#${rgbArray.map((x) => Math.floor(x).toString(16)).join('')}`;
 
 const Lissajous = () => {
   const { register, watch } = useForm({
-    defaultValues: { x: 1, y: 1, phi: 0.5, h: 0.51, s: 1, l: 1 },
+    defaultValues: { x: 1, y: 1, phi: 0.5, h: 57, s: 1, l: 0.5 },
   });
   const canvasRef = useRef(null);
 
@@ -30,7 +31,11 @@ const Lissajous = () => {
       const speed = 0.001;
       const steps = 10000;
 
-      console.log(h, s, l, hslToRgb(h, s, l));
+      // console.log(h, s, l, hslToRgb(h, s, l));
+
+      console.log(rgb('#FFF200').formatHsl());
+
+      console.log(h, s, l, hsl(h, s, l).formatHex());
 
       const before = new Date();
       if (ctx) {
@@ -45,7 +50,7 @@ const Lissajous = () => {
               (canvas.height / 2 - 10) *
                 (1 + Math.sin(i * speed * y + Math.PI * phi));
 
-            ctx.strokeStyle = 'black'; // `hsl(${h},${s},${l})`; // 'black'; // rgbArrayToString(hslToRgb(h, s, l));
+            ctx.strokeStyle = hsl(h, s, l).formatHex(); // `hsl(${h},${s},${l})`; // 'black'; // rgbArrayToString(hslToRgb(h, s, l));
 
             ctx.lineWidth = 10;
             ctx.beginPath();
@@ -105,9 +110,9 @@ const Lissajous = () => {
             <input
               type="range"
               name="h"
-              step={0.01}
+              step={1}
               min={0}
-              max={1}
+              max={360}
               ref={register}
             />{' '}
             {h}
