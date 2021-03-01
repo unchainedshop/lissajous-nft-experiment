@@ -2,10 +2,12 @@ import { useLayoutEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 const Lissajous = () => {
-  const { register, watch } = useForm({ defaultValues: { x: 1, y: 1 } });
+  const { register, watch } = useForm({
+    defaultValues: { x: 1, y: 1, phi: 0.5 },
+  });
   const canvasRef = useRef(null);
 
-  const { x, y } = watch();
+  const { x, y, phi } = watch();
 
   useLayoutEffect(() => {
     if (canvasRef?.current) {
@@ -17,7 +19,7 @@ const Lissajous = () => {
       canvas.width = boundingRect.width;
 
       const ctx: CanvasRenderingContext2D = canvas.getContext('2d', {
-        alpha: false,
+        alpha: true,
       });
 
       const radius = canvas.height / 2 - 10;
@@ -30,11 +32,12 @@ const Lissajous = () => {
         Array(steps)
           .fill(0)
           .map((_, i) => {
-            const currentX = 5 + radius * (1 + Math.cos(i * speed * x));
-            const currentY = 5 + radius * (1 + Math.sin(i * speed * y));
+            const currentX = 5 + radius * (1 + Math.sin(i * speed * x));
+            const currentY =
+              5 + radius * (1 + Math.sin(i * speed * y + Math.PI * phi));
 
-            ctx.strokeStyle = '#ff9999';
-            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 10;
             ctx.beginPath();
             ctx.arc(currentX, currentY, 1, 0, 1 * Math.PI);
             ctx.stroke();
@@ -44,7 +47,7 @@ const Lissajous = () => {
 
       console.log(after.getDate() - before.getDate());
     }
-  }, [x, y]);
+  }, [x, y, phi]);
 
   return (
     <div className="container">
@@ -75,13 +78,25 @@ const Lissajous = () => {
             />{' '}
             {y}
           </p>
+          <p>
+            Δφ:{' '}
+            <input
+              type="range"
+              name="phi"
+              step={0.0625}
+              min={0}
+              max={1}
+              ref={register}
+            />{' '}
+            {phi}
+          </p>
         </form>
       </div>
 
       <style jsx>{`
         :global(html),
         :global(body) {
-          background-color: black;
+          background-color: white;
           width: 100%;
           height: 100%;
           margin: 0;
@@ -117,6 +132,7 @@ const Lissajous = () => {
           left: 0;
           height: 100%;
           width: 100%;
+          background-color: white;
         }
 
         form {
