@@ -1,11 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { hsl, rgb } from 'd3-color';
-
-// import hslToRgb from '../utils/hslToRgb';
-
-const rgbArrayToString = (rgbArray) =>
-  `#${rgbArray.map((x) => Math.floor(x).toString(16)).join('')}`;
+import { hsl } from 'd3-color';
 
 const Lissajous = () => {
   const { register, watch } = useForm({
@@ -30,12 +25,6 @@ const Lissajous = () => {
 
       const speed = 0.001;
       const steps = 10000;
-
-      // console.log(h, s, l, hslToRgb(h, s, l));
-
-      console.log(rgb('#FFF200').formatHsl());
-
-      console.log(h, s, l, hsl(h, s, l).formatHex());
 
       const before = new Date();
       if (ctx) {
