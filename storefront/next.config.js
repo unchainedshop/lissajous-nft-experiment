@@ -1,5 +1,3 @@
-const withTM = require('next-transpile-modules')([
-  '@private/tinac-nft-contracts',
-]);
+const withTM = require('next-transpile-modules')(['@private/contracts']);
 
 module.exports = withTM();

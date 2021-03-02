@@ -1,5 +1,5 @@
 {
-  "name": "@private/tinac-nft-contracts",
+  "name": "@private/contracts",
   "private": true,
   "main": "./index.ts",
   "devDependencies": {
@@ -27,6 +27,7 @@
   "scripts": {
     "format": "prettier --write .",
     "compile": "hardhat compile",
+    "postinstall": "npm run compile",
     "test": "hardhat test",
     "node": "hardhat node",
     "hardhat": "hardhat --network localhost",

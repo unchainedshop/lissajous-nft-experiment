@@ -1,8 +1,8 @@
 {
-  "name": "@private/tinac-nft-storefront",
+  "name": "@private/storefront",
   "private": true,
   "dependencies": {
-    "@private/tinac-nft-contracts": "../contracts",
+    "@private/contracts": "../contracts",
     "d3-color": "^2.0.0",
     "next": "^10.0.7",
     "next-transpile-modules": "^6.3.0",
