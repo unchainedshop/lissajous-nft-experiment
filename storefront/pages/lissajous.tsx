@@ -16,6 +16,7 @@ const Lissajous = () => {
       width: 16,
     },
   });
+
   const canvasRef = useRef(null);
 
   const {
@@ -46,23 +47,28 @@ const Lissajous = () => {
       const amplitudeX = width / 16 / 2;
       const amplitudeY = height / 16 / 2;
 
+      const translateX = (canvas.width - (canvas.width / 16) * width) / 2;
+      const translateY = (canvas.height - (canvas.height / 16) * height) / 2;
+
       const speed = 0.001;
       const steps = 10000;
 
-      const before = new Date();
+      // const before = new Date();
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         Array(steps)
           .fill(0)
           .map((_, i) => {
             const currentX =
+              translateX +
               canvas.width *
-              amplitudeX *
-              (1 + Math.sin(i * speed * frequenceX));
+                amplitudeX *
+                (1 + Math.sin(i * speed * frequenceX));
             const currentY =
+              translateY +
               canvas.height *
-              amplitudeY *
-              (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
+                amplitudeY *
+                (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
 
             ctx.strokeStyle = hsl(hue, saturation, lightness).formatHex();
             ctx.lineWidth = lineWidth;
@@ -71,9 +77,9 @@ const Lissajous = () => {
             ctx.stroke();
           });
       }
-      const after = new Date();
+      // const after = new Date();
 
-      console.log(after.getDate() - before.getDate());
+      // console.log(after.getDate() - before.getDate());
     }
   }, [
     frequenceX,
@@ -243,6 +249,7 @@ const Lissajous = () => {
           height: 100%;
           width: 100%;
           background-color: white;
+          border: 1px solid black;
         }
 
         form {
