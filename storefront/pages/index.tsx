@@ -1,3 +1,3 @@
-import Lissajous from './lissajous';
+const Index = () => <h1>Stay tuned ...</h1>;
 
-export default Lissajous;
+export default Index;
