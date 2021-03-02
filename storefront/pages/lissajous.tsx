@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import Lissajous from '../components/Lissajous';
-import FormInput from '../components/FormInput';
+import RangeInput from '../components/RangeInput';
 
 let routerUpdateTimeout;
 
@@ -49,101 +49,91 @@ const LissajousTest = (): React.ReactElement => {
         <Lissajous {...values} />
       </div>
       <form>
-        <FormInput
+        <RangeInput
           name="frequenceX"
           register={register}
           values={values}
-          type="range"
           step={1}
           min={1}
           max={32}
         />
 
-        <FormInput
+        <RangeInput
           name="frequenceY"
           register={register}
           values={values}
-          type="range"
           step={1}
           min={1}
           max={32}
         />
 
-        <FormInput
+        <RangeInput
           name="phaseShift"
           register={register}
           values={values}
-          type="range"
           step={1 / 24}
           min={0}
           max={1}
         />
 
-        <FormInput
+        <RangeInput
           name="phaseShift"
           register={register}
           values={values}
-          type="range"
           step={1 / 24}
           min={0}
           max={1}
         />
 
-        <FormInput
+        <RangeInput
           name="hue"
           register={register}
           values={values}
-          type="range"
           step={1}
           min={0}
           max={360}
         />
 
-        <FormInput
+        <RangeInput
           name="saturation"
           register={register}
           values={values}
-          type="range"
           step={0.01}
           min={0}
           max={1}
         />
 
-        <FormInput
+        <RangeInput
           name="lightness"
           register={register}
           values={values}
-          type="range"
           step={0.01}
           min={0}
           max={1}
         />
 
-        <FormInput
+        <RangeInput
           name="lineWidth"
           register={register}
           values={values}
-          type="range"
           step={0.5}
           min={0.5}
           max={100}
         />
 
-        <FormInput
+        <RangeInput
           name="height"
           register={register}
           values={values}
-          type="range"
           step={1}
           min={1}
           max={16}
         />
 
-        <FormInput
+        <RangeInput
           name="width"
           register={register}
           values={values}
-          type="range"
           step={1}
           min={1}
           max={16}
