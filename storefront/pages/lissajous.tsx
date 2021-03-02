@@ -8,19 +8,23 @@ import RangeInput from '../components/RangeInput';
 
 let routerUpdateTimeout;
 
+const defaultValues = {
+  frequenceX: 3,
+  frequenceY: 2,
+  phaseShift: 0.5,
+  strokeColor: '#FFD700',
+  lineWidth: 10,
+  height: 16,
+  width: 16,
+  totalSteps: 10000,
+  startStep: 0,
+};
+
 const LissajousTest = (): React.ReactElement => {
   const router = useRouter();
 
-  const { register, watch, setValue, control } = useForm({
-    defaultValues: {
-      frequenceX: 1,
-      frequenceY: 1,
-      phaseShift: 0.5,
-      strokeColor: '#FFD700',
-      lineWidth: 10,
-      height: 16,
-      width: 16,
-    },
+  const { register, watch, setValue, control, reset } = useForm({
+    defaultValues,
   });
 
   const values = watch();
@@ -103,6 +107,24 @@ const LissajousTest = (): React.ReactElement => {
           max={16}
         />
 
+        <RangeInput
+          name="totalSteps"
+          register={register}
+          values={values}
+          step={1}
+          min={1}
+          max={10000}
+        />
+
+        <RangeInput
+          name="startStep"
+          register={register}
+          values={values}
+          step={1}
+          min={1}
+          max={10000}
+        />
+
         <Controller
           control={control}
           name="strokeColor"
@@ -113,6 +135,8 @@ const LissajousTest = (): React.ReactElement => {
             />
           )}
         />
+
+        <button onClick={() => reset()}>Reset</button>
       </form>
 
       <style jsx>{`

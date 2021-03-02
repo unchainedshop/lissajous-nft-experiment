@@ -8,6 +8,8 @@ const Lissajous = ({
   height,
   width,
   strokeColor = '#FFD700',
+  startStep = 0,
+  totalSteps = 10000,
 }) => {
   const canvasRef = useRef(null);
 
@@ -31,25 +33,25 @@ const Lissajous = ({
       const translateY = (canvas.height - (canvas.height / 16) * height) / 2;
 
       const speed = 0.001;
-      const steps = 10000;
-
-      // console.log(strokeColor);
 
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        Array(steps)
+        Array(parseInt(totalSteps.toString(), 10))
           .fill(0)
-          .map((_, i) => {
+          .map((_, index) => {
+            const step = parseInt(startStep.toString(), 10) + index;
+
             const currentX =
               translateX +
               canvas.width *
                 amplitudeX *
-                (1 + Math.sin(i * speed * frequenceX));
+                (1 + Math.sin(step * speed * frequenceX));
             const currentY =
               translateY +
               canvas.height *
                 amplitudeY *
-                (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
+                (1 +
+                  Math.sin(step * speed * frequenceY + Math.PI * phaseShift));
 
             ctx.strokeStyle = strokeColor;
             ctx.lineWidth = lineWidth;
@@ -67,6 +69,8 @@ const Lissajous = ({
     lineWidth,
     height,
     width,
+    totalSteps,
+    startStep,
   ]);
 
   return (
