@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import Lissajous from '../components/Lissajous';
+import FormInput from '../components/FormInput';
 
 let routerUpdateTimeout;
 
@@ -48,114 +49,105 @@ const LissajousTest = (): React.ReactElement => {
         <Lissajous {...values} />
       </div>
       <form>
-        <div>
-          f<sub>x</sub>:{' '}
-          <input
-            type="range"
-            name="frequenceX"
-            step={1}
-            min={1}
-            max={32}
-            ref={register}
-          />{' '}
-          {values.frequenceX}
-        </div>
-        <div>
-          f<sub>y</sub>:{' '}
-          <input
-            type="range"
-            name="frequenceY"
-            step={1}
-            min={1}
-            max={32}
-            ref={register}
-          />{' '}
-          {values.frequenceY}
-        </div>
-        <div>
-          Δφ:{' '}
-          <input
-            type="range"
-            name="phaseShift"
-            step={1 / 24}
-            min={0}
-            max={1}
-            ref={register}
-          />{' '}
-          {values.phaseShift}
-        </div>
-        <div>
-          hue:{' '}
-          <input
-            type="range"
-            name="hue"
-            step={1}
-            min={0}
-            max={360}
-            ref={register}
-          />{' '}
-          {values.hue}
-        </div>
-        <div>
-          saturation:{' '}
-          <input
-            type="range"
-            name="saturation"
-            step={0.01}
-            min={0}
-            max={1}
-            ref={register}
-          />{' '}
-          {values.saturation}
-        </div>
-        <div>
-          lightness:{' '}
-          <input
-            type="range"
-            name="lightness"
-            step={0.01}
-            min={0}
-            max={1}
-            ref={register}
-          />{' '}
-          {values.lightness}
-        </div>
-        <div>
-          lineWidth:{' '}
-          <input
-            type="range"
-            name="lineWidth"
-            step={0.5}
-            min={0.5}
-            max={100}
-            ref={register}
-          />{' '}
-          {values.lineWidth}
-        </div>
-        <div>
-          height:{' '}
-          <input
-            type="range"
-            name="height"
-            step={1}
-            min={1}
-            max={16}
-            ref={register}
-          />{' '}
-          {values.height}
-        </div>
-        <div>
-          width:{' '}
-          <input
-            type="range"
-            name="width"
-            step={1}
-            min={1}
-            max={16}
-            ref={register}
-          />{' '}
-          {values.width}
-        </div>
+        <FormInput
+          name="frequenceX"
+          register={register}
+          values={values}
+          type="range"
+          step={1}
+          min={1}
+          max={32}
+        />
+
+        <FormInput
+          name="frequenceY"
+          register={register}
+          values={values}
+          type="range"
+          step={1}
+          min={1}
+          max={32}
+        />
+
+        <FormInput
+          name="phaseShift"
+          register={register}
+          values={values}
+          type="range"
+          step={1 / 24}
+          min={0}
+          max={1}
+        />
+
+        <FormInput
+          name="phaseShift"
+          register={register}
+          values={values}
+          type="range"
+          step={1 / 24}
+          min={0}
+          max={1}
+        />
+
+        <FormInput
+          name="hue"
+          register={register}
+          values={values}
+          type="range"
+          step={1}
+          min={0}
+          max={360}
+        />
+
+        <FormInput
+          name="saturation"
+          register={register}
+          values={values}
+          type="range"
+          step={0.01}
+          min={0}
+          max={1}
+        />
+
+        <FormInput
+          name="lightness"
+          register={register}
+          values={values}
+          type="range"
+          step={0.01}
+          min={0}
+          max={1}
+        />
+
+        <FormInput
+          name="lineWidth"
+          register={register}
+          values={values}
+          type="range"
+          step={0.5}
+          min={0.5}
+          max={100}
+        />
+
+        <FormInput
+          name="height"
+          register={register}
+          values={values}
+          type="range"
+          step={1}
+          min={1}
+          max={16}
+        />
+
+        <FormInput
+          name="width"
+          register={register}
+          values={values}
+          type="range"
+          step={1}
+          min={1}
+          max={16}
+        />
       </form>
 
       <style jsx>{`
