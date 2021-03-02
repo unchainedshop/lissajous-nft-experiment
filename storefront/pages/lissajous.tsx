@@ -5,7 +5,7 @@ import { hsl } from 'd3-color';
 
 let routerUpdateTimeout;
 
-const Lissajous = () => {
+const Lissajous = (): React.ReactElement => {
   const router = useRouter();
 
   const { register, watch, setValue } = useForm({
@@ -24,6 +24,8 @@ const Lissajous = () => {
 
   const values = watch();
 
+  const canvasRef = useRef(null);
+
   useEffect(() => {
     Object.entries(router.query).map(([key, value]) => {
       if (values[key] !== value && values[key] !== undefined) {
@@ -33,11 +35,7 @@ const Lissajous = () => {
     });
   }, [router.query]);
 
-  const canvasRef = useRef(null);
-
   useEffect(() => {
-    console.log('update');
-
     clearTimeout(routerUpdateTimeout);
     routerUpdateTimeout = window.setTimeout(() => {
       router.replace({
@@ -81,7 +79,6 @@ const Lissajous = () => {
       const speed = 0.001;
       const steps = 10000;
 
-      // const before = new Date();
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         Array(steps)
