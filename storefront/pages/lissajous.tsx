@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { ChromePicker } from 'react-color';
+
 import Lissajous from '../components/Lissajous';
 import RangeInput from '../components/RangeInput';
 
@@ -9,14 +11,12 @@ let routerUpdateTimeout;
 const LissajousTest = (): React.ReactElement => {
   const router = useRouter();
 
-  const { register, watch, setValue } = useForm({
+  const { register, watch, setValue, control } = useForm({
     defaultValues: {
       frequenceX: 1,
       frequenceY: 1,
       phaseShift: 0.5,
-      hue: 57,
-      saturation: 1,
-      lightness: 0.5,
+      strokeColor: '#FFD700',
       lineWidth: 10,
       height: 16,
       width: 16,
@@ -77,42 +77,6 @@ const LissajousTest = (): React.ReactElement => {
         />
 
         <RangeInput
-          name="phaseShift"
-          register={register}
-          values={values}
-          step={1 / 24}
-          min={0}
-          max={1}
-        />
-
-        <RangeInput
-          name="hue"
-          register={register}
-          values={values}
-          step={1}
-          min={0}
-          max={360}
-        />
-
-        <RangeInput
-          name="saturation"
-          register={register}
-          values={values}
-          step={0.01}
-          min={0}
-          max={1}
-        />
-
-        <RangeInput
-          name="lightness"
-          register={register}
-          values={values}
-          step={0.01}
-          min={0}
-          max={1}
-        />
-
-        <RangeInput
           name="lineWidth"
           register={register}
           values={values}
@@ -138,6 +102,17 @@ const LissajousTest = (): React.ReactElement => {
           min={1}
           max={16}
         />
+
+        <Controller
+          control={control}
+          name="strokeColor"
+          render={({ onChange, value }) => (
+            <ChromePicker
+              color={value}
+              onChange={(color) => onChange(color.hex)}
+            />
+          )}
+        />
       </form>
 
       <style jsx>{`
@@ -155,7 +130,7 @@ const LissajousTest = (): React.ReactElement => {
           position: absolute;
           top: 0;
           left 0;
-          width: 80%;
+          width: calc(100% - 225px);
           height: 100%;
           display: flex;
           align-items: center;
@@ -166,6 +141,7 @@ const LissajousTest = (): React.ReactElement => {
           position: fixed;
           top: 0;
           right: 0;
+          width: 225px;
         }
       `}</style>
     </>

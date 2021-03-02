@@ -1,16 +1,13 @@
 import { useLayoutEffect, useRef } from 'react';
-import { hsl } from 'd3-color';
 
 const Lissajous = ({
   frequenceX,
   frequenceY,
-  hue,
-  saturation,
-  lightness,
   phaseShift,
   lineWidth,
   height,
   width,
+  strokeColor = '#FFD700',
 }) => {
   const canvasRef = useRef(null);
 
@@ -36,6 +33,8 @@ const Lissajous = ({
       const speed = 0.001;
       const steps = 10000;
 
+      // console.log(strokeColor);
+
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         Array(steps)
@@ -52,7 +51,7 @@ const Lissajous = ({
                 amplitudeY *
                 (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
 
-            ctx.strokeStyle = hsl(hue, saturation, lightness).formatHex();
+            ctx.strokeStyle = strokeColor;
             ctx.lineWidth = lineWidth;
             ctx.beginPath();
             ctx.arc(currentX, currentY, 1, 0, 1 * Math.PI);
@@ -63,9 +62,7 @@ const Lissajous = ({
   }, [
     frequenceX,
     frequenceY,
-    hue,
-    saturation,
-    lightness,
+    strokeColor,
     phaseShift,
     lineWidth,
     height,
@@ -78,7 +75,7 @@ const Lissajous = ({
       <style jsx>{`
         .square {
           position: relative;
-          width: 100vmin;
+          width: 90vmin;
         }
 
         .square:after {
