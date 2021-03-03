@@ -1,9 +1,14 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { hsl } from 'd3-color';
 
+let routerUpdateTimeout;
+
 const Lissajous = () => {
-  const { register, watch } = useForm({
+  const router = useRouter();
+
+  const { register, watch, setValue } = useForm({
     defaultValues: {
       frequenceX: 1,
       frequenceY: 1,
@@ -16,22 +21,46 @@ const Lissajous = () => {
       width: 16,
     },
   });
+
+  const values = watch();
+
+  useEffect(() => {
+    Object.entries(router.query).map(([key, value]) => {
+      if (values[key] !== value && values[key] !== undefined) {
+        console.log('setValue', key, value);
+        setValue(key as any, value);
+      }
+    });
+  }, [router.query]);
+
   const canvasRef = useRef(null);
 
-  const {
-    frequenceX,
-    frequenceY,
-    hue,
-    saturation,
-    lightness,
-    phaseShift,
-    lineWidth,
-    height,
-    width,
-  } = watch();
+  useEffect(() => {
+    console.log('update');
+
+    clearTimeout(routerUpdateTimeout);
+    routerUpdateTimeout = window.setTimeout(() => {
+      router.replace({
+        pathname: router.pathname,
+        query: values,
+      });
+    }, 100);
+  }, Object.values(values));
 
   useLayoutEffect(() => {
     if (canvasRef?.current) {
+      const {
+        frequenceX,
+        frequenceY,
+        hue,
+        saturation,
+        lightness,
+        phaseShift,
+        lineWidth,
+        height,
+        width,
+      } = values;
+
       const canvas: HTMLCanvasElement = canvasRef.current;
 
       const boundingRect = canvas.getBoundingClientRect();
@@ -46,23 +75,28 @@ const Lissajous = () => {
       const amplitudeX = width / 16 / 2;
       const amplitudeY = height / 16 / 2;
 
+      const translateX = (canvas.width - (canvas.width / 16) * width) / 2;
+      const translateY = (canvas.height - (canvas.height / 16) * height) / 2;
+
       const speed = 0.001;
       const steps = 10000;
 
-      const before = new Date();
+      // const before = new Date();
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         Array(steps)
           .fill(0)
           .map((_, i) => {
             const currentX =
+              translateX +
               canvas.width *
-              amplitudeX *
-              (1 + Math.sin(i * speed * frequenceX));
+                amplitudeX *
+                (1 + Math.sin(i * speed * frequenceX));
             const currentY =
+              translateY +
               canvas.height *
-              amplitudeY *
-              (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
+                amplitudeY *
+                (1 + Math.sin(i * speed * frequenceY + Math.PI * phaseShift));
 
             ctx.strokeStyle = hsl(hue, saturation, lightness).formatHex();
             ctx.lineWidth = lineWidth;
@@ -71,21 +105,8 @@ const Lissajous = () => {
             ctx.stroke();
           });
       }
-      const after = new Date();
-
-      console.log(after.getDate() - before.getDate());
     }
-  }, [
-    frequenceX,
-    frequenceY,
-    phaseShift,
-    hue,
-    saturation,
-    lightness,
-    lineWidth,
-    height,
-    width,
-  ]);
+  }, Object.values(values));
 
   return (
     <div className="container">
@@ -93,7 +114,7 @@ const Lissajous = () => {
         <canvas ref={canvasRef}></canvas>
         <form>
           <p>
-            X:{' '}
+            f<sub>x</sub>:{' '}
             <input
               type="range"
               name="frequenceX"
@@ -102,10 +123,10 @@ const Lissajous = () => {
               max={32}
               ref={register}
             />{' '}
-            {frequenceX}
+            {values.frequenceX}
           </p>
           <p>
-            Y:{' '}
+            f<sub>y</sub>:{' '}
             <input
               type="range"
               name="frequenceY"
@@ -114,7 +135,7 @@ const Lissajous = () => {
               max={32}
               ref={register}
             />{' '}
-            {frequenceY}
+            {values.frequenceY}
           </p>
           <p>
             Δφ:{' '}
@@ -126,7 +147,7 @@ const Lissajous = () => {
               max={1}
               ref={register}
             />{' '}
-            {phaseShift}
+            {values.phaseShift}
           </p>
           <p>
             hue:{' '}
@@ -138,7 +159,7 @@ const Lissajous = () => {
               max={360}
               ref={register}
             />{' '}
-            {hue}
+            {values.hue}
           </p>
           <p>
             saturation:{' '}
@@ -150,7 +171,7 @@ const Lissajous = () => {
               max={1}
               ref={register}
             />{' '}
-            {saturation}
+            {values.saturation}
           </p>
           <p>
             lightness:{' '}
@@ -162,7 +183,7 @@ const Lissajous = () => {
               max={1}
               ref={register}
             />{' '}
-            {lightness}
+            {values.lightness}
           </p>
           <p>
             lineWidth:{' '}
@@ -174,7 +195,7 @@ const Lissajous = () => {
               max={100}
               ref={register}
             />{' '}
-            {lineWidth}
+            {values.lineWidth}
           </p>
           <p>
             height:{' '}
@@ -186,7 +207,7 @@ const Lissajous = () => {
               max={16}
               ref={register}
             />{' '}
-            {height}
+            {values.height}
           </p>
           <p>
             width:{' '}
@@ -198,7 +219,7 @@ const Lissajous = () => {
               max={16}
               ref={register}
             />{' '}
-            {width}
+            {values.width}
           </p>
         </form>
       </div>
@@ -237,12 +258,14 @@ const Lissajous = () => {
         }
 
         canvas {
+          box-sizing: border-box;
           position: absolute;
           top: 0;
           left: 0;
           height: 100%;
           width: 100%;
           background-color: white;
+          border: 1px solid black;
         }
 
         form {
