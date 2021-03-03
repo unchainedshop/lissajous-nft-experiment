@@ -2,7 +2,7 @@
 
 pragma solidity ^0.7.3;
 
-import '@openzeppelin/contracts/access/AccessControl.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
@@ -24,12 +24,8 @@ import '@openzeppelin/contracts/token/ERC721/ERC721Pausable.sol';
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract WhaleToken is Context, AccessControl, ERC721Burnable, ERC721Pausable {
+contract WhaleToken is Context, Ownable, ERC721Burnable, ERC721Pausable {
     using Counters for Counters.Counter;
-
-    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
-    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
-
     Counters.Counter private _tokenIdTracker;
 
     /**
@@ -44,11 +40,6 @@ contract WhaleToken is Context, AccessControl, ERC721Burnable, ERC721Pausable {
         string memory symbol,
         string memory baseURI
     ) public ERC721(name, symbol) {
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-
-        _setupRole(MINTER_ROLE, _msgSender());
-        _setupRole(PAUSER_ROLE, _msgSender());
-
         _setBaseURI(baseURI);
     }
 
@@ -84,11 +75,7 @@ contract WhaleToken is Context, AccessControl, ERC721Burnable, ERC721Pausable {
      *
      * - the caller must have the `PAUSER_ROLE`.
      */
-    function pause() public virtual {
-        require(
-            hasRole(PAUSER_ROLE, _msgSender()),
-            'ERC721PresetMinterPauserAutoId: must have pauser role to pause'
-        );
+    function pause() public virtual onlyOwner {
         _pause();
     }
 
@@ -101,11 +88,7 @@ contract WhaleToken is Context, AccessControl, ERC721Burnable, ERC721Pausable {
      *
      * - the caller must have the `PAUSER_ROLE`.
      */
-    function unpause() public virtual {
-        require(
-            hasRole(PAUSER_ROLE, _msgSender()),
-            'ERC721PresetMinterPauserAutoId: must have pauser role to unpause'
-        );
+    function unpause() public virtual onlyOwner {
         _unpause();
     }
 
