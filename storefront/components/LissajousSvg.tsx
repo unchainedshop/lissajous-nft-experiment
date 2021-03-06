@@ -5,7 +5,7 @@ const LissajousSvg = ({
   frequenceX,
   frequenceY,
   phaseShift,
-  lineWidth,
+  lineWidth: lineWidthInput,
   height,
   width,
   strokeColor = '#FFD700',
@@ -13,6 +13,8 @@ const LissajousSvg = ({
   totalSteps = 16,
 }) => {
   const canvasRef = useRef(null);
+
+  const lineWidth = parseInt(lineWidthInput, 10);
 
   useEffect(() => {
     const svg = d3.select(canvasRef.current);
@@ -25,14 +27,16 @@ const LissajousSvg = ({
     const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
     const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 
-    const canvasHeight = boundingRect.width;
-    const canvasWidth = boundingRect.height;
+    const canvasHeight = boundingRect.width - lineWidth - 4;
+    const canvasWidth = boundingRect.height - lineWidth - 4;
 
     const amplitudeX = width / 16 / 2;
     const amplitudeY = height / 16 / 2;
 
-    const translateX = (canvasWidth - (canvasWidth / 16) * width) / 2;
-    const translateY = (canvasHeight - (canvasHeight / 16) * height) / 2;
+    const translateX =
+      lineWidth / 2 + (canvasWidth - (canvasWidth / 16) * width) / 2 + 1;
+    const translateY =
+      lineWidth / 2 + (canvasHeight - (canvasHeight / 16) * height) / 2 + 1;
 
     const speed = 0.03;
 
