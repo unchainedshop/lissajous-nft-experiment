@@ -138,7 +138,7 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
     function aspectRatio(uint256 tokenId)
         public
         view
-        returns (int8 height, int8 width)
+        returns (uint8 height, uint8 width)
     {
         bytes32 mintBlockHash = tokenMintBlockHash(tokenId);
         uint8 first = uint8(mintBlockHash[0]);
@@ -160,6 +160,34 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         }
 
         return (10, 10);
+    }
+
+    function lissajousArguments(uint256 tokenId)
+        public
+        view
+        returns (
+            uint8 frequenceX,
+            uint8 frequenceY,
+            uint8 phaseShift,
+            uint8 totalSteps,
+            uint8 startStep
+        )
+    {
+        bytes32 mintBlockHash = tokenMintBlockHash(tokenId);
+
+        uint8 second = uint8(mintBlockHash[1]);
+        uint8 third = uint8(mintBlockHash[2]);
+        uint8 fourth = uint8(mintBlockHash[3]);
+        uint8 fifth = uint8(mintBlockHash[4]);
+        uint8 sixth = uint8(mintBlockHash[5]);
+
+        return (
+            (second % 16) + 1,
+            (third % 16) + 1,
+            fourth % 16,
+            (fifth % 16) + 1,
+            (sixth % 16) + 1
+        );
     }
 
     function withdraw() public onlyOwner {

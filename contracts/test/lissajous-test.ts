@@ -18,7 +18,7 @@ describe('LissajousToken', function () {
     const LissajousTokenContract = await ethers.getContractFactory(
       'LissajousToken',
     );
-    const tx = await LissajousTokenContract.deploy(
+    const contract = await LissajousTokenContract.deploy(
       'Lissajous Token',
       'LISSA',
       BASE_URI,
@@ -28,7 +28,14 @@ describe('LissajousToken', function () {
       START_PRICE,
     );
 
-    token = ((await tx.deployed()) as any) as LissajousToken;
+    const tx = await contract.deployed();
+    token = (tx as any) as LissajousToken;
+    const receipt = await tx.deployTransaction.wait();
+
+    console.log(
+      'Gas fees with 100 gwei gas price: ETH',
+      ethers.utils.formatEther(receipt.gasUsed.mul(100).mul(1000000000)),
+    );
 
     expect(await token.name()).to.equal('Lissajous Token');
     expect((await token.totalSupply()).toString()).to.equal('0');
@@ -116,7 +123,15 @@ describe('LissajousToken', function () {
     const aspectRatio = await token.aspectRatio(0);
     expect(aspectRatio.height).equal(12);
     expect(aspectRatio.width).equal(16);
+
+    const lissajousArguments = await token.lissajousArguments(0);
+    expect(lissajousArguments.frequenceX).to.equal(12);
+    expect(lissajousArguments.frequenceY).to.equal(4);
+    expect(lissajousArguments.phaseShift).to.equal(4);
+    expect(lissajousArguments.totalSteps).to.equal(6);
+    expect(lissajousArguments.startStep).to.equal(13);
   });
 
+  // TODO
   it.skip('Owner can stop minting', () => {});
 });
