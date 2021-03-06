@@ -4,22 +4,22 @@ import LissajousCanvas from '../components/LissajousCanvas';
 import LissajousSvg from '../components/LissajousSvg';
 
 const colors = [
-  '#ffd700',
-  '#555555',
-  '#0000AA',
-  '#5555FF',
-  '#00AA00',
-  '#55FF55',
-  '#00AAAA',
-  '#55FFFF',
-  '#AA0000',
-  '#FF5555',
-  '#AA00AA',
-  '#FF55FF',
-  '#AA5500',
-  '#FFFF55',
-  '#AAAAAA',
-  '#FFFFFF',
+  '#ffd700', // Gold
+  '#55FF55', // light green
+  '#FFFF55', // yellow
+  '#FF55FF', // light magenta
+  '#55FFFF', // light cyan
+  '#FF5555', // light red
+  '#5555FF', // ligth blue
+  '#FFFFFF', // white
+  '#AAAAAA', // light gray
+  '#00AA00', // green
+  '#AA5500', // brown
+  '#AA00AA', // magenta
+  '#00AAAA', // cyan
+  '#0000AA', // blue
+  '#AA0000', // red
+  '#555555', // dark grey
 ];
 
 const aspectRatios = [
@@ -43,7 +43,6 @@ const Plot = () => {
         ethers.utils.hexlify(currentBlock),
       );
       const array = ethers.utils.arrayify(currentHash);
-      // console.log(array);
 
       const aspectRatio = aspectRatios[array[0] % 8];
 
@@ -73,8 +72,6 @@ const Plot = () => {
   console.log(
     figures.reduce((acc, curr) => (curr.frequenceX === 4 ? acc + 1 : acc), 0),
   );
-
-  const blocksPerDay = 6408;
 
   const possibleCombinations = 8 * 16 * 16 * 16;
 
