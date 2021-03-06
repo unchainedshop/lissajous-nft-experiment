@@ -67,7 +67,7 @@ const LissajousSvg = ({
       .datum(points)
       .attr('d', valueline as any)
       .attr('stroke', strokeColor)
-      .attr('stroke-width', lineWidth)
+      .attr('stroke-width', lineWidth + 1)
       .attr('fill', 'none');
   }, [
     frequenceX,

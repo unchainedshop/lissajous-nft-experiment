@@ -83,13 +83,14 @@ const Plot = () => {
   return (
     <div>
       {figures.slice(0, 200).map((figure, i) => (
-        <div key={i} className="figure">
-          {i % 2 ? (
+        <>
+          <div key={i} className="figure">
             <LissajousCanvas {...figure} />
-          ) : (
+          </div>
+          <div key={`${i}_`} className="figure">
             <LissajousSvg {...figure} />
-          )}
-        </div>
+          </div>
+        </>
       ))}
 
       <style jsx>{`
