@@ -135,6 +135,33 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         return 0x555555; // dark_grey
     }
 
+    function aspectRatio(uint256 tokenId)
+        public
+        view
+        returns (int8 height, int8 width)
+    {
+        bytes32 mintBlockHash = tokenMintBlockHash(tokenId);
+        uint8 first = uint8(mintBlockHash[0]);
+
+        if (first % 8 == 0) {
+            return (16, 16);
+        } else if (first % 8 == 1) {
+            return (16, 9);
+        } else if (first % 8 == 2) {
+            return (9, 16);
+        } else if (first % 8 == 3) {
+            return (12, 16);
+        } else if (first % 8 == 4) {
+            return (16, 12);
+        } else if (first % 8 == 5) {
+            return (3, 16);
+        } else if (first % 8 == 6) {
+            return (16, 3);
+        }
+
+        return (10, 10);
+    }
+
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
         msg.sender.transfer(balance);

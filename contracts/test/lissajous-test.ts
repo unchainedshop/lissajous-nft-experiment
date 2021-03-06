@@ -112,6 +112,10 @@ describe('LissajousToken', function () {
 
     const tokenColor = await token.tokenColor(0);
     expect(tokenColor).equal('0xaa0000');
+
+    const aspectRatio = await token.aspectRatio(0);
+    expect(aspectRatio.height).equal(12);
+    expect(aspectRatio.width).equal(16);
   });
 
   it.skip('Owner can stop minting', () => {});
