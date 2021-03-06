@@ -1,9 +1,9 @@
 import fs from 'fs';
 
 async function main() {
-  const WhaleToken = await global.ethers.getContractFactory('WhaleToken');
+  const LissajousToken = await global.ethers.getContractFactory('LissajousToken');
   const { chainId } = await global.ethers.provider.getNetwork();
-  const whaleToken = await WhaleToken.deploy(
+  const LissajousToken = await LissajousToken.deploy(
     'Lets Save The Wales Token',
     'LSTWT',
     'https://token.thisisnotacommercial.com/',
@@ -14,13 +14,13 @@ async function main() {
   const newAddresses = {
     ...JSON.parse(addresses),
     [chainId]: {
-      WhaleToken: whaleToken.address,
+      LissajousToken: LissajousToken.address,
     },
   };
 
   fs.writeFileSync(`./addresses.json`, JSON.stringify(newAddresses, null, 2));
 
-  console.log('Whale Token deployed to:', whaleToken.address);
+  console.log('Whale Token deployed to:', LissajousToken.address);
 }
 
 main()

@@ -33,13 +33,13 @@ task('mint', 'Mint a token for someone')
   .setAction(async ({ to }, { ethers }) => {
     const [signer] = await ethers.getSigners();
     const { chainId } = await ethers.provider.getNetwork();
-    const whaleToken = await ethers.getContractAt(
-      'WhaleToken',
-      addresses[chainId].WhaleToken,
+    const LissajousToken = await ethers.getContractAt(
+      'LissajousToken',
+      addresses[chainId].LissajousToken,
       signer,
     );
 
-    await whaleToken.mint(to);
+    await LissajousToken.mint(to);
   });
 
 // You need to export an object to set up your config

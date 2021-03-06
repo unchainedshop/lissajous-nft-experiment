@@ -24,9 +24,13 @@ import '@openzeppelin/contracts/token/ERC721/ERC721Pausable.sol';
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract WhaleToken is Context, Ownable, ERC721Burnable, ERC721Pausable {
+contract LissajousToken is Context, Ownable, ERC721Burnable, ERC721Pausable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdTracker;
+
+    uint256 private _startBlock;
+    uint256 private _endBlock;
+    uint64 private _maxSupply;
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
@@ -38,9 +42,15 @@ contract WhaleToken is Context, Ownable, ERC721Burnable, ERC721Pausable {
     constructor(
         string memory name,
         string memory symbol,
-        string memory baseURI
+        string memory baseURI,
+        uint256 startBlock_,
+        uint256 endBlock_,
+        uint64 maxSupply_
     ) public ERC721(name, symbol) {
         _setBaseURI(baseURI);
+        _startBlock = startBlock_;
+        _endBlock = endBlock_;
+        _maxSupply = maxSupply_;
     }
 
     /**
@@ -50,16 +60,8 @@ contract WhaleToken is Context, Ownable, ERC721Burnable, ERC721Pausable {
      *
      * See {ERC721-_mint}.
      *
-     * Requirements:
-     *
-     * - the caller must have the `MINTER_ROLE`.
      */
     function mint(address to) public virtual {
-        // require(
-        //     hasRole(MINTER_ROLE, _msgSender()),
-        //     'ERC721PresetMinterPauserAutoId: must have minter role to mint'
-        // );
-
         // We cannot just use balanceOf to create the new tokenId because tokens
         // can be burned (destroyed), so we need a separate counter.
         _mint(to, _tokenIdTracker.current());
