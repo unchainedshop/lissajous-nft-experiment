@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-import Lissajous from '../components/Lissajous';
+import LissajousCanvas from '../components/LissajousCanvas';
 
 const colors = [
   '#ffd700',
@@ -83,7 +83,7 @@ const Plot = () => {
     <div>
       {figures.slice(0, 200).map((figure, i) => (
         <div key={i} className="figure">
-          <Lissajous {...figure} />
+          <LissajousCanvas {...figure} />
         </div>
       ))}
 

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 
-const Lissajous = ({
+const LissajousCanvas = ({
   frequenceX,
   frequenceY,
   phaseShift,
@@ -109,4 +109,4 @@ const Lissajous = ({
   );
 };
 
-export default Lissajous;
+export default LissajousCanvas;
