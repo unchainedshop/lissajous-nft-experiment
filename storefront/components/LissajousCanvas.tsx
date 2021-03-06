@@ -39,31 +39,35 @@ const LissajousCanvas = ({
 
       const speed = 0.001;
 
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        Array(absoluteTotalSteps)
-          .fill(0)
-          .map((_, index) => {
-            const step = absoluteStartStep + index;
+      const points = Array(absoluteTotalSteps)
+        .fill(0)
+        .map((_, index) => {
+          const step = absoluteStartStep + index;
 
-            const currentX =
+          return {
+            x:
               translateX +
               canvas.width *
                 amplitudeX *
-                (1 + Math.sin(step * speed * frequenceX));
-            const currentY =
+                (1 + Math.sin(step * speed * frequenceX)),
+            y:
               translateY +
               canvas.height *
                 amplitudeY *
                 (1 +
-                  Math.sin(step * speed * frequenceY + Math.PI * phaseShift));
+                  Math.sin(step * speed * frequenceY + Math.PI * phaseShift)),
+          };
+        });
 
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = lineWidth;
-            ctx.beginPath();
-            ctx.arc(currentX, currentY, 1, 0, 1 * Math.PI);
-            ctx.stroke();
-          });
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        points.map(({ x, y }) => {
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = lineWidth;
+          ctx.beginPath();
+          ctx.arc(x, y, 1, 0, 1 * Math.PI);
+          ctx.stroke();
+        });
       }
     }
   }, [
