@@ -75,6 +75,28 @@ describe('LissajousToken', function () {
     }
   });
 
-  it.skip('Owner can withdraw ether', () => {});
+  it('Owner can withdraw ether', async () => {
+    const [owner] = await ethers.getSigners();
+    const balanceBefore = await owner.getBalance();
+    const txResponse = await owner.sendTransaction(
+      await token.populateTransaction.withdraw(),
+    );
+    const txReceipt = await txResponse.wait();
+    const gasCost = txReceipt.gasUsed.mul(txResponse.gasPrice);
+    const balanceAfter = await owner.getBalance();
+    expect(balanceAfter.gt(balanceBefore.add(gasCost).add(START_PRICE)));
+  });
+
+  it('Only Owner can withdraw ether', async () => {
+    const [_, someone] = await ethers.getSigners();
+    try {
+      await someone.sendTransaction(await token.populateTransaction.withdraw());
+      // await token.withdraw();
+      expect(false).to.equal(true);
+    } catch (e) {
+      expect(e.message).to.include('from address mismatch');
+    }
+  });
+
   it.skip('Owner can stop minting', () => {});
 });
