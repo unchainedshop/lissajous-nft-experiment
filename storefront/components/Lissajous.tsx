@@ -79,7 +79,8 @@ const Lissajous = ({
       <style jsx>{`
         .square {
           position: relative;
-          width: 90vmin;
+          width: 100%;
+          max-height: 100%;
         }
 
         .square:after {
@@ -95,7 +96,7 @@ const Lissajous = ({
           left: 0;
           height: 100%;
           width: 100%;
-          background-color: white;
+          // background-color: white;
           border: 1px solid black;
         }
       `}</style>

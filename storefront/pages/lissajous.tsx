@@ -50,7 +50,9 @@ const LissajousTest = (): React.ReactElement => {
   return (
     <>
       <div className="container">
-        <Lissajous {...values} />
+        <div className="holder">
+          <Lissajous {...values} />
+        </div>
       </div>
       <form>
         <RangeInput
@@ -148,6 +150,11 @@ const LissajousTest = (): React.ReactElement => {
           margin: 0;
           padding: 0;
           color: black;
+        }
+
+        .holder {
+          height: 512px;
+          width: 512px;
         }
 
         .container {
