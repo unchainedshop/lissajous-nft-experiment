@@ -3,6 +3,9 @@ import { ethers } from 'hardhat';
 import { LissajousToken } from '../artifacts/typechain';
 
 describe('LissajousToken', function () {
+  const START_BLOCK = 3; // First blocks are for minting
+  const END_BLOCK = 5;
+  const MAX_SUPPLY = 1;
   let token: LissajousToken;
 
   it('Deploy', async function () {
@@ -13,9 +16,9 @@ describe('LissajousToken', function () {
       'Lissajous Token',
       'LISSA',
       'https://lissajous.art/api/token',
-      5,
-      20,
-      5,
+      START_BLOCK,
+      END_BLOCK,
+      MAX_SUPPLY,
     );
 
     token = ((await tx.deployed()) as any) as LissajousToken;
@@ -32,6 +35,19 @@ describe('LissajousToken', function () {
       expect(e.message).to.include('Sale not yet started');
     }
     // expect((await token.totalSupply()).toString()).to.equal('1');
+  });
+
+  it('Mint a block manually', async () => {
+    const beforeBlock = await ethers.provider.getBlockNumber();
+    await ethers.provider.send('evm_mine', []);
+    const afterBlock = await ethers.provider.getBlockNumber();
+    expect(afterBlock).to.be.greaterThan(beforeBlock);
+    expect(afterBlock).to.be.greaterThan(START_BLOCK - 1);
+  });
+
+  it('Mint a token after starting block work', async () => {
+    await token.mint();
+    expect((await token.totalSupply()).toString()).to.equal('1');
   });
 
   it.skip('Owner can withdraw ether', () => {});
