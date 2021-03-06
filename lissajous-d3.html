@@ -1,0 +1,51 @@
+<html>
+<head>
+
+<script type="text/javascript" nonce="fdbbae9b177249bca1e964453ce" src="//local.adguard.org?ts=1615019388436&amp;type=content-script&amp;dmn=bl.ocks.org&amp;app=com.apple.Safari&amp;css=1&amp;js=1&amp;gcss=1&amp;rel=1&amp;rji=1&amp;sbe=0&amp;stealth=1&amp;uag="></script>
+<script type="text/javascript" nonce="fdbbae9b177249bca1e964453ce" src="//local.adguard.org?ts=1615019388436&amp;name=AdGuard%20Extra&amp;type=user-script"></script></head>
+
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript">
+//The data for our line
+const lineData = [];
+
+for (let i = 0; i < 256; i++) {
+  lineData.push({
+    x: 100 * Math.cos((15 * 2 * 3.14159 * i) / 180) + 125,
+    y: 100 * Math.sin((16 * 2 * 3.14159 * i) / 180) + 125,
+  });
+}
+
+console.log(lineData.length)
+console.table(lineData)
+
+//This is the accessor function we talked about above
+const lineFunction = d3.svg
+  .line()
+  .x(function (d) {
+    return d.x;
+  })
+  .y(function (d) {
+    return d.y;
+  })
+  .interpolate('curveCatmullRom');
+
+//The SVG Container
+const svgContainer = d3
+  .select('body')
+  .append('svg')
+  .attr('width', 300)
+  .attr('height', 300);
+
+//The line SVG Path we draw8
+const lineGraph = svgContainer
+  .append('path')
+  .attr('d', lineFunction(lineData))
+  .attr('stroke', 'blue')
+  .attr('stroke-width', 2)
+  .attr('fill', 'none');
+</script>
+</body>
+
+</html>
