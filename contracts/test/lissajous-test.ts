@@ -10,6 +10,8 @@ describe('LissajousToken', function () {
   const MAX_SUPPLY = 2;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH
+  const BASE_URI = 'https://lissajous.art/api/token/';
+
   let token: LissajousToken;
 
   it('Deploy', async function () {
@@ -19,7 +21,7 @@ describe('LissajousToken', function () {
     const tx = await LissajousTokenContract.deploy(
       'Lissajous Token',
       'LISSA',
-      'https://lissajous.art/api/token',
+      BASE_URI,
       START_BLOCK,
       END_BLOCK,
       MAX_SUPPLY,
@@ -96,6 +98,11 @@ describe('LissajousToken', function () {
     } catch (e) {
       expect(e.message).to.include('from address mismatch');
     }
+  });
+
+  it('Get token URI', async () => {
+    const uri = await token.tokenURI(0);
+    expect(uri).equal(`${BASE_URI}${0}`);
   });
 
   it.skip('Owner can stop minting', () => {});

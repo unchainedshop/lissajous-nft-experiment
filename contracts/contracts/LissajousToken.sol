@@ -15,6 +15,7 @@ const compoundInterest = (initialValue, interest, iterations) =>
   initialValue * (1 + interest) ** iterations;
  */
 
+// https://docs.opensea.io/docs/metadata-standards
 /**
  * @dev {ERC721} token, including:
  *
