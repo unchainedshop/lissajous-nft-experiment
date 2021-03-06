@@ -100,9 +100,15 @@ describe('LissajousToken', function () {
     }
   });
 
-  it('Get token URI', async () => {
+  it('Get token MetaData', async () => {
     const uri = await token.tokenURI(0);
     expect(uri).equal(`${BASE_URI}${0}`);
+
+    const mintValue = await token.tokenMintValue(0);
+    expect(mintValue.eq(START_PRICE));
+
+    const mintBlock = await token.tokenMintBlock(0);
+    expect(mintBlock.eq(4));
   });
 
   it.skip('Owner can stop minting', () => {});

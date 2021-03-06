@@ -45,6 +45,12 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
     // Blocks. This is a bit more than one day. ~6525 blocks per day
     uint256 public constant priceDecreasePeriod = 8192;
 
+    // save the block when a token is minted
+    mapping(uint256 => uint256) private _mintBlocks;
+
+    // save the value provided when a token is minted
+    mapping(uint256 => uint256) private _mintValue;
+
     constructor(
         string memory name,
         string memory symbol,
@@ -74,7 +80,17 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         // We cannot just use balanceOf to create the new tokenId because tokens
         // can be burned (destroyed), so we need a separate counter.
         _mint(msg.sender, _tokenIdTracker.current());
+        _mintValue[_tokenIdTracker.current()] = msg.value;
+        _mintBlocks[_tokenIdTracker.current()] = block.number;
         _tokenIdTracker.increment();
+    }
+
+    function tokenMintValue(uint256 tokenId) public view returns (uint256) {
+        return _mintValue[tokenId];
+    }
+
+    function tokenMintBlock(uint256 tokenId) public view returns (uint256) {
+        return _mintBlocks[tokenId];
     }
 
     function withdraw() public onlyOwner {
