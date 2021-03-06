@@ -30,17 +30,7 @@ const LissajousSvg = ({
     const translateX = (canvasWidth - (canvasWidth / 16) * width) / 2;
     const translateY = (canvasHeight - (canvasHeight / 16) * height) / 2;
 
-    // //The data for our line
-    // const lineData = [];
-
-    // for (let i = 0; i < 256; i++) {
-    //   lineData.push({
-    //     x: 100 * Math.cos((15 * 2 * 3.14159 * i) / 180) + 512,
-    //     y: 100 * Math.sin((16 * 2 * 3.14159 * i) / 180) + 512,
-    //   });
-    // }
-
-    const speed = 1;
+    const speed = 0.03;
 
     const points = Array(absoluteTotalSteps)
       .fill(0)
@@ -61,8 +51,6 @@ const LissajousSvg = ({
         };
       });
 
-    console.table(points);
-
     // define the line
     const valueline = d3
       .line()
@@ -74,8 +62,8 @@ const LissajousSvg = ({
       .append('path')
       .datum(points)
       .attr('d', valueline as any)
-      .attr('stroke', 'blue')
-      .attr('stroke-width', 2)
+      .attr('stroke', strokeColor)
+      .attr('stroke-width', lineWidth)
       .attr('fill', 'none');
   }, [
     frequenceX,
