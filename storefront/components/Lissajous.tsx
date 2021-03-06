@@ -8,10 +8,15 @@ const Lissajous = ({
   height,
   width,
   strokeColor = '#FFD700',
-  startStep = 0,
-  totalSteps = 10000,
+  startStep = 1,
+  totalSteps = 16,
 }) => {
   const canvasRef = useRef(null);
+
+  const numberOfSteps = 16;
+  const stepsUntilFull = 6384;
+  const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
+  const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 
   useLayoutEffect(() => {
     if (canvasRef?.current) {
@@ -36,10 +41,10 @@ const Lissajous = ({
 
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        Array(parseInt(totalSteps.toString(), 10))
+        Array(absoluteTotalSteps)
           .fill(0)
           .map((_, index) => {
-            const step = parseInt(startStep.toString(), 10) + index;
+            const step = absoluteStartStep + index;
 
             const currentX =
               translateX +

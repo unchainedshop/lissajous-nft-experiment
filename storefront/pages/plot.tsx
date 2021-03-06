@@ -51,10 +51,8 @@ const Plot = () => {
       const frequenceX = (array[2] % 16) + 1;
       const frequenceY = (array[3] % 16) + 1;
       const phaseShift = (1 / 16) * (array[5] % 16);
-      // const totalSteps = 6384;
-      // const totalSteps = 1000;
-      const totalSteps = (6384 / 16) * ((array[6] % 16) + 1);
-      const startStep = (6384 / 16) * ((array[7] % 16) + 1);
+      const totalSteps = (array[6] % 16) + 1;
+      const startStep = (array[7] % 16) + 1;
       const lineWidth = 1;
       const strokeColor = colors[array[6] % 16];
 

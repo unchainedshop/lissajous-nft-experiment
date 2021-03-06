@@ -16,7 +16,7 @@ const defaultValues = {
   lineWidth: 10,
   height: 16,
   width: 16,
-  totalSteps: 10000,
+  totalSteps: 16,
   startStep: 0,
 };
 
@@ -115,7 +115,7 @@ const LissajousTest = (): React.ReactElement => {
           values={values}
           step={1}
           min={1}
-          max={10000}
+          max={16}
         />
 
         <RangeInput
@@ -124,7 +124,7 @@ const LissajousTest = (): React.ReactElement => {
           values={values}
           step={1}
           min={1}
-          max={10000}
+          max={16}
         />
 
         <Controller
