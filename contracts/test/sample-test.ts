@@ -25,8 +25,13 @@ describe('LissajousToken', function () {
   });
 
   it('Mint a token before starting block should fail', async () => {
-    await token.mint();
-    expect((await token.totalSupply()).toString()).to.equal('1');
+    try {
+      await token.mint();
+      expect(false).to.equal(true);
+    } catch (e) {
+      expect(e.message).to.include('Sale not yet started');
+    }
+    // expect((await token.totalSupply()).toString()).to.equal('1');
   });
 
   it.skip('Owner can withdraw ether', () => {});
