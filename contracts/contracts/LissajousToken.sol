@@ -6,7 +6,6 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '@openzeppelin/contracts/token/ERC721/ERC721Pausable.sol';
 
 import 'hardhat/console.sol';
 
@@ -26,7 +25,7 @@ import 'hardhat/console.sol';
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract LissajousToken is Context, Ownable, ERC721Pausable {
+contract LissajousToken is Context, Ownable, ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIndexTracker;
 
@@ -39,11 +38,13 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
     uint256 public constant _priceIncreasePercent = 108;
     uint256 public constant _priceDecreasePercent = 98;
 
-    // save the block when a token is minted
-    mapping(uint256 => uint256) private _mintBlocks;
+    struct TokenInfo {
+        uint256 mintValue;
+        uint256 mintBlock;
+        uint256 minPrice; // used for next price calculation
+    }
 
-    // save the value provided when a token is minted
-    mapping(uint256 => uint256) private _mintValues;
+    mapping(uint256 => TokenInfo) private _tokenInfos;
 
     constructor(
         uint256 startBlock_,
@@ -127,17 +128,20 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         // We cannot just use balanceOf to create the new tokenIndex because tokens
         // can be burned (destroyed), so we need a separate counter.
         _mint(msg.sender, _tokenIndexTracker.current());
-        _mintValues[_tokenIndexTracker.current()] = msg.value;
-        _mintBlocks[_tokenIndexTracker.current()] = block.number;
+        _tokenInfos[_tokenIndexTracker.current()] = TokenInfo(
+            msg.value,
+            block.number,
+            minPrice()
+        );
         _tokenIndexTracker.increment();
     }
 
     function tokenMintValue(uint256 tokenIndex) public view returns (uint256) {
-        return _mintValues[tokenIndex];
+        return _tokenInfos[tokenIndex].mintValue;
     }
 
     function tokenMintBlock(uint256 tokenIndex) public view returns (uint256) {
-        return _mintBlocks[tokenIndex];
+        return _tokenInfos[tokenIndex].mintBlock;
     }
 
     function tokenMintBlockHash(uint256 tokenIndex)
@@ -145,7 +149,7 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         view
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_mintBlocks[tokenIndex]));
+        return keccak256(abi.encodePacked(_tokenInfos[tokenIndex].mintBlock));
     }
 
     function tokenColor(uint256 tokenIndex) public view returns (bytes3) {
