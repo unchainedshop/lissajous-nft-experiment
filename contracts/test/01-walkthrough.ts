@@ -3,6 +3,7 @@ import { ethers } from 'hardhat';
 import { BigNumber } from '@ethersproject/bignumber';
 
 import { LissajousToken } from '../artifacts/typechain';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for minting
@@ -12,8 +13,14 @@ describe('LissajousToken', function () {
   const BASE_URI = 'https://lissajous.art/api/token/';
 
   let token: LissajousToken;
+  let owner: SignerWithAddress;
+  let someone: SignerWithAddress;
+  let ownerAddress: string;
 
   it('Deploy', async function () {
+    [owner, someone] = await ethers.getSigners();
+    ownerAddress = await owner.getAddress();
+
     const LissajousTokenContract = await ethers.getContractFactory(
       'LissajousToken',
     );
@@ -38,7 +45,7 @@ describe('LissajousToken', function () {
 
   it('Mint a token before starting block should fail', async () => {
     try {
-      await token.mint({ value: SAFE_PRICE });
+      await token.mint(ownerAddress, 1, { value: SAFE_PRICE });
       expect(false).to.equal(true);
     } catch (e) {
       expect(e.message).to.include('Sale not yet started');
@@ -55,7 +62,7 @@ describe('LissajousToken', function () {
 
   it('Mint a token with too little value', async () => {
     try {
-      await token.mint();
+      await token.mint(ownerAddress, 1);
       expect(false).to.equal(true);
     } catch (e) {
       expect(e.message).to.include('Min price not met');
@@ -63,24 +70,44 @@ describe('LissajousToken', function () {
   });
 
   it('Mint a token after starting block works with correct value', async () => {
-    await token.mint({ value: START_PRICE });
+    await token.mint(ownerAddress, 1, { value: START_PRICE });
     expect((await token.totalSupply()).toString()).to.equal('1');
   });
 
-  it('Mint the second token with the same value fails because of price increase', async () => {
-    const minPrice = await token.minPrice();
-
+  it('Mint more token with the same value fails because of price increase', async () => {
     try {
-      await token.mint({ value: START_PRICE });
+      await token.mint(ownerAddress, 16, { value: START_PRICE });
       expect(false).to.equal(true);
     } catch (e) {
       expect(e.message).to.include('Min price not met');
     }
   });
 
-  it('Mint the second token with the correct value', async () => {
-    await token.mint({ value: START_PRICE.mul(1001).div(1000) });
-    expect((await token.totalSupply()).toString()).to.equal('2');
+  it('Mint more than 24 is forbidden', async () => {
+    try {
+      await token.mint(ownerAddress, 17, {
+        value: START_PRICE.mul(1001).div(1000).mul(17),
+      });
+
+      expect(false).to.equal(true);
+    } catch (e) {
+      expect(e.message).to.include('Only 16 token at a time');
+    }
+  });
+
+  it('Mint more token with the correct value', async () => {
+    const tx = await token.mint(ownerAddress, 16, {
+      value: START_PRICE.mul(1001).div(1000).mul(16),
+    });
+    const receipt = await tx.wait();
+    console.log(receipt.gasUsed.toString());
+    expect((await token.totalSupply()).toString()).to.equal('17');
+  });
+
+  it('Price is up after minting several tokens', async () => {
+    const currentMinPrice = await token.currentMinPrice();
+    const priceIncrease = BigNumber.from(1001).div(1000);
+    expect(currentMinPrice.eq(START_PRICE.mul(priceIncrease.pow(17))));
   });
 
   it('Minting after last block denied', async () => {
@@ -88,7 +115,7 @@ describe('LissajousToken', function () {
       await ethers.provider.send('evm_mine', []);
     }
     try {
-      await token.mint({ value: SAFE_PRICE });
+      await token.mint(ownerAddress, 1, { value: SAFE_PRICE });
       expect(false).to.equal(true);
     } catch (e) {
       expect(e.message).to.include('Sale ended');
@@ -96,7 +123,6 @@ describe('LissajousToken', function () {
   });
 
   it('Owner can withdraw ether', async () => {
-    const [owner] = await ethers.getSigners();
     const balanceBefore = await owner.getBalance();
     const txResponse = await owner.sendTransaction(
       await token.populateTransaction.withdraw(),
@@ -108,7 +134,6 @@ describe('LissajousToken', function () {
   });
 
   it('Only Owner can withdraw ether', async () => {
-    const [_, someone] = await ethers.getSigners();
     try {
       await someone.sendTransaction(await token.populateTransaction.withdraw());
       // await token.withdraw();

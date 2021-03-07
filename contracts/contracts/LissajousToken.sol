@@ -3,16 +3,15 @@
 pragma solidity ^0.7.3;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 
 import 'hardhat/console.sol';
 
 // https://docs.opensea.io/docs/metadata-standards
 contract LissajousToken is Context, Ownable, ERC721 {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIndexTracker;
+    using SafeMath for uint256;
 
     uint256 private _startBlock;
     uint256 private _endBlock;
@@ -39,28 +38,38 @@ contract LissajousToken is Context, Ownable, ERC721 {
         _startPrice = startPrice_;
     }
 
-    function minPrice() public view returns (uint256) {
-        uint256 tokenIndex = _tokenIndexTracker.current();
+    function minPrice(uint256 tokenIndex) public view returns (uint256) {
         if (tokenIndex == 0) return _startPrice;
-        uint256 lastMinPrice =
-            _tokenInfos[_tokenIndexTracker.current() - 1].minPrice;
+        uint256 lastMinPrice = _tokenInfos[tokenIndex - 1].minPrice;
         return (lastMinPrice * _priceIncreasePromille) / 1000;
     }
 
-    function mint() public payable {
+    function currentMinPrice() public view returns (uint256) {
+        return minPrice(totalSupply());
+    }
+
+    /**
+     * If minting more than one, the lower minimum mint price is used for all tokens
+     */
+    function mint(address to, uint8 amount) public payable {
+        require(amount > 0, 'Mint at least one token');
+        require(amount <= 16, 'Only 16 token at a time');
         require(block.number > _startBlock, 'Sale not yet started');
         require(block.number < _endBlock, 'Sale ended');
-        require(msg.value >= minPrice(), 'Min price not met');
-
-        // We cannot just use balanceOf to create the new tokenIndex because tokens
-        // can be burned (destroyed), so we need a separate counter.
-        _mint(msg.sender, _tokenIndexTracker.current());
-        _tokenInfos[_tokenIndexTracker.current()] = TokenInfo(
-            msg.value,
-            block.number,
-            minPrice()
+        require(
+            msg.value >= minPrice(totalSupply()).mul(amount),
+            'Min price not met'
         );
-        _tokenIndexTracker.increment();
+
+        for (uint8 i = 0; i < amount; i++) {
+            uint256 tokenIndex = totalSupply();
+            _safeMint(to, tokenIndex);
+            _tokenInfos[tokenIndex] = TokenInfo(
+                msg.value.div(amount),
+                block.number.add(i),
+                minPrice(tokenIndex)
+            );
+        }
     }
 
     function tokenMintValue(uint256 tokenIndex) public view returns (uint256) {
