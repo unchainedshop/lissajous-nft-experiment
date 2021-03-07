@@ -105,7 +105,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
             return 0xFF5555; // light_red
         } else if (mintValue >= 1 ether) {
             return 0xFF5555; // ligth_blue
-        } else if (mintValue >= 0.4 ether) {
+        } else if (mintValue >= 0.7 ether) {
             return 0xFFFFFF; // white
         } else if (mintValue >= 0.4 ether) {
             return 0xAAAAAA; // light_gray
