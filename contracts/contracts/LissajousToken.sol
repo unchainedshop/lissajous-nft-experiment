@@ -10,33 +10,15 @@ import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import 'hardhat/console.sol';
 
 // https://docs.opensea.io/docs/metadata-standards
-/**
- * @dev {ERC721} token, including:
- *
- *  - ability for holders to burn (destroy) their tokens
- *  - a minter role that allows for token minting (creation)
- *  - a pauser role that allows to stop all token transfers
- *  - token ID and URI autogeneration
- *
- * This contract uses {AccessControl} to lock permissioned functions using the
- * different roles - head to its documentation for details.
- *
- * The account that deploys the contract will be granted the minter and pauser
- * roles, as well as the default admin role, which will let it grant both minter
- * and pauser roles to other accounts.
- */
 contract LissajousToken is Context, Ownable, ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIndexTracker;
 
     uint256 private _startBlock;
     uint256 private _endBlock;
-    uint64 private _maxSupply;
     uint256 private _startPrice;
-    uint64 private _priceDecreasePeriod;
 
-    uint256 public constant _priceIncreasePercent = 108;
-    uint256 public constant _priceDecreasePercent = 98;
+    uint256 public constant _priceIncreasePromille = 1001;
 
     struct TokenInfo {
         uint256 mintValue;
@@ -49,80 +31,25 @@ contract LissajousToken is Context, Ownable, ERC721 {
     constructor(
         uint256 startBlock_,
         uint256 endBlock_, // Maybe 64 * 8192 (=~80 days)
-        uint64 maxSupply_, // 524288
-        uint256 startPrice_, // 0.01 ether
-        uint64 priceDecreasePeriod_ // 8192, This is a bit more than one day. ~6525 blocks per day
+        uint256 startPrice_ // 0.01 ether
     ) ERC721('Lissajous Token', 'LISSA') {
         _setBaseURI('https://lissajous.art/api/token/');
         _startBlock = startBlock_;
         _endBlock = endBlock_;
-        _maxSupply = maxSupply_;
         _startPrice = startPrice_;
-        _priceDecreasePeriod = priceDecreasePeriod_;
-    }
-
-    function pricing(
-        uint256 tokenIndex,
-        uint256 startPrice,
-        uint256 priceIncreasePercent,
-        uint256 priceDecreasePeriod,
-        uint256 startBlock,
-        uint256 currentBlock,
-        uint256 priceDecreasePercent
-    ) public pure returns (uint256) {
-        if (tokenIndex == 0) return startPrice;
-
-        uint256 increased =
-            (startPrice * (priceIncreasePercent**tokenIndex)) /
-                (100**tokenIndex);
-
-        uint256 periodsSinceInception =
-            (currentBlock - startBlock) / priceDecreasePeriod;
-
-        if (periodsSinceInception < 0) return increased;
-
-        uint256 decreased =
-            (increased * (priceDecreasePercent**periodsSinceInception)) /
-                100**periodsSinceInception;
-
-        return decreased;
-    }
-
-    function pricingPreview(uint256 tokenIndex, uint256 currentBlock)
-        public
-        view
-        returns (uint256)
-    {
-        return
-            pricing(
-                tokenIndex,
-                _startPrice,
-                _priceIncreasePercent,
-                _priceDecreasePeriod,
-                _startBlock,
-                currentBlock,
-                _priceDecreasePercent
-            );
     }
 
     function minPrice() public view returns (uint256) {
-        return
-            pricing(
-                _tokenIndexTracker.current(),
-                _startPrice,
-                _priceIncreasePercent,
-                _priceDecreasePeriod,
-                _startBlock,
-                block.number,
-                _priceDecreasePercent
-            );
+        uint256 tokenIndex = _tokenIndexTracker.current();
+        if (tokenIndex == 0) return _startPrice;
+        uint256 lastMinPrice =
+            _tokenInfos[_tokenIndexTracker.current() - 1].minPrice;
+        return (lastMinPrice * _priceIncreasePromille) / 1000;
     }
 
-    // TODO: iKnowWhatImDoing, ExclusiveBlock
     function mint() public payable {
         require(block.number > _startBlock, 'Sale not yet started');
         require(block.number < _endBlock, 'Sale ended');
-        require(totalSupply() < _maxSupply, 'All items sold');
         require(msg.value >= minPrice(), 'Min price not met');
 
         // We cannot just use balanceOf to create the new tokenIndex because tokens
@@ -182,12 +109,11 @@ contract LissajousToken is Context, Ownable, ERC721 {
         } else if (mintValue >= 0.04 ether) {
             return 0x00AAAA; // cyan
         } else if (mintValue >= 0.02 ether) {
-            return 0x0000AA; // blue
-        } else if (mintValue >= 0.01 ether) {
             return 0xAA0000; // red
+        } else if (mintValue >= 0.01 ether) {
+            return 0x555555; // dark_grey
         }
-
-        return 0x555555; // dark_grey
+        return 0x0000AA; // blue
     }
 
     function aspectRatio(uint256 tokenIndex)

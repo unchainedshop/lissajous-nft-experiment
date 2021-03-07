@@ -7,11 +7,9 @@ import { LissajousToken } from '../artifacts/typechain';
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for minting
   const END_BLOCK = 20;
-  const MAX_SUPPLY = 3;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH
   const BASE_URI = 'https://lissajous.art/api/token/';
-  const PRICE_DECREASE_PERIOD = 10;
 
   let token: LissajousToken;
 
@@ -22,9 +20,7 @@ describe('LissajousToken', function () {
     const contract = await LissajousTokenContract.deploy(
       START_BLOCK,
       END_BLOCK,
-      MAX_SUPPLY,
       START_PRICE,
-      PRICE_DECREASE_PERIOD,
     );
 
     const tx = await contract.deployed();
@@ -83,7 +79,7 @@ describe('LissajousToken', function () {
   });
 
   it('Mint the second token with the correct value', async () => {
-    await token.mint({ value: START_PRICE.mul(108).div(100) });
+    await token.mint({ value: START_PRICE.mul(1001).div(1000) });
     expect((await token.totalSupply()).toString()).to.equal('2');
   });
 
@@ -133,7 +129,7 @@ describe('LissajousToken', function () {
     expect(mintBlock.eq(4));
 
     const tokenColor = await token.tokenColor(0);
-    expect(tokenColor).equal('0xaa0000');
+    expect(tokenColor).equal('0x555555');
 
     const aspectRatio = await token.aspectRatio(0);
     expect(aspectRatio.height).equal(12);

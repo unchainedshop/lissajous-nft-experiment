@@ -4,7 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 
 import { LissajousToken } from '../artifacts/typechain';
 
-describe('LissajousToken Pricing', function () {
+describe.skip('LissajousToken Pricing', function () {
   const START_BLOCK = 12800000;
   const PRICE_DECREASE_PERIOD = 8192;
   const END_BLOCK = START_BLOCK + 64 * PRICE_DECREASE_PERIOD;
