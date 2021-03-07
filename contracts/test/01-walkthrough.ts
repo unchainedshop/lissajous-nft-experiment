@@ -6,8 +6,8 @@ import { LissajousToken } from '../artifacts/typechain';
 
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for minting
-  const END_BLOCK = 6;
-  const MAX_SUPPLY = 2;
+  const END_BLOCK = 20;
+  const MAX_SUPPLY = 3;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH
   const BASE_URI = 'https://lissajous.art/api/token/';
@@ -71,8 +71,24 @@ describe('LissajousToken', function () {
     expect((await token.totalSupply()).toString()).to.equal('1');
   });
 
+  it('Mint the second token with the same value fails because of price increase', async () => {
+    const minPrice = await token.minPrice();
+
+    try {
+      await token.mint({ value: START_PRICE });
+      expect(false).to.equal(true);
+    } catch (e) {
+      expect(e.message).to.include('Min price not met');
+    }
+  });
+
+  it('Mint the second token with the correct value', async () => {
+    await token.mint({ value: START_PRICE.mul(108).div(100) });
+    expect((await token.totalSupply()).toString()).to.equal('2');
+  });
+
   it('Minting after last block denied', async () => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       await ethers.provider.send('evm_mine', []);
     }
     try {

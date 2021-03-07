@@ -8,6 +8,8 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721Pausable.sol';
 
+import 'hardhat/console.sol';
+
 // https://docs.opensea.io/docs/metadata-standards
 /**
  * @dev {ERC721} token, including:
@@ -26,7 +28,7 @@ import '@openzeppelin/contracts/token/ERC721/ERC721Pausable.sol';
  */
 contract LissajousToken is Context, Ownable, ERC721Pausable {
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIdTracker;
+    Counters.Counter private _tokenIndexTracker;
 
     uint256 private _startBlock;
     uint256 private _endBlock;
@@ -34,8 +36,8 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
     uint256 private _startPrice;
     uint64 private _priceDecreasePeriod;
 
-    uint256 public constant priceIncreasePercent = 108;
-    uint256 public constant priceDecreasePercent = 98;
+    uint256 public constant _priceIncreasePercent = 108;
+    uint256 public constant _priceDecreasePercent = 98;
 
     // save the block when a token is minted
     mapping(uint256 => uint256) private _mintBlocks;
@@ -58,53 +60,96 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         _priceDecreasePeriod = priceDecreasePeriod_;
     }
 
-    function minPrice() public view returns (uint256) {
-        if (_tokenIdTracker.current() == 1) return _startPrice;
+    function pricing(
+        uint256 tokenIndex,
+        uint256 startPrice,
+        uint256 priceIncreasePercent,
+        uint256 priceDecreasePeriod,
+        uint256 startBlock,
+        uint256 currentBlock,
+        uint256 priceDecreasePercent
+    ) public pure returns (uint256) {
+        if (tokenIndex == 0) return startPrice;
 
         uint256 increased =
-            _startPrice *
-                (priceIncreasePercent / 100)**_tokenIdTracker.current();
+            (startPrice * (priceIncreasePercent**tokenIndex)) /
+                (100**tokenIndex);
 
         uint256 periodsSinceInception =
-            (block.number - _startBlock) / _priceDecreasePeriod;
+            (currentBlock - startBlock) / priceDecreasePeriod;
 
         if (periodsSinceInception < 0) return increased;
 
         uint256 decreased =
-            increased * (priceDecreasePercent / 100)**periodsSinceInception;
+            (increased * (priceDecreasePercent**periodsSinceInception)) /
+                100**periodsSinceInception;
 
         return decreased;
     }
 
+    function pricingPreview(uint256 tokenIndex, uint256 currentBlock)
+        public
+        view
+        returns (uint256)
+    {
+        return
+            pricing(
+                tokenIndex,
+                _startPrice,
+                _priceIncreasePercent,
+                _priceDecreasePeriod,
+                _startBlock,
+                currentBlock,
+                _priceDecreasePercent
+            );
+    }
+
+    function minPrice() public view returns (uint256) {
+        return
+            pricing(
+                _tokenIndexTracker.current(),
+                _startPrice,
+                _priceIncreasePercent,
+                _priceDecreasePeriod,
+                _startBlock,
+                block.number,
+                _priceDecreasePercent
+            );
+    }
+
     // TODO: iKnowWhatImDoing, ExclusiveBlock
     function mint() public payable {
-        require(totalSupply() < _maxSupply, 'All items sold');
-        require(block.number < _endBlock, 'Sale ended');
         require(block.number > _startBlock, 'Sale not yet started');
+        require(block.number < _endBlock, 'Sale ended');
+        require(totalSupply() < _maxSupply, 'All items sold');
         require(msg.value >= minPrice(), 'Min price not met');
 
-        // We cannot just use balanceOf to create the new tokenId because tokens
+        // We cannot just use balanceOf to create the new tokenIndex because tokens
         // can be burned (destroyed), so we need a separate counter.
-        _mint(msg.sender, _tokenIdTracker.current());
-        _mintValues[_tokenIdTracker.current()] = msg.value;
-        _mintBlocks[_tokenIdTracker.current()] = block.number;
-        _tokenIdTracker.increment();
+        _mint(msg.sender, _tokenIndexTracker.current());
+        _mintValues[_tokenIndexTracker.current()] = msg.value;
+        _mintBlocks[_tokenIndexTracker.current()] = block.number;
+        _tokenIndexTracker.increment();
     }
 
-    function tokenMintValue(uint256 tokenId) public view returns (uint256) {
-        return _mintValues[tokenId];
+    function tokenMintValue(uint256 tokenIndex) public view returns (uint256) {
+        return _mintValues[tokenIndex];
     }
 
-    function tokenMintBlock(uint256 tokenId) public view returns (uint256) {
-        return _mintBlocks[tokenId];
+    function tokenMintBlock(uint256 tokenIndex) public view returns (uint256) {
+        return _mintBlocks[tokenIndex];
     }
 
-    function tokenMintBlockHash(uint256 tokenId) public view returns (bytes32) {
-        return keccak256(abi.encodePacked(_mintBlocks[tokenId]));
+    function tokenMintBlockHash(uint256 tokenIndex)
+        public
+        view
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(_mintBlocks[tokenIndex]));
     }
 
-    function tokenColor(uint256 tokenId) public view returns (bytes3) {
-        uint256 mintValue = tokenMintValue(tokenId);
+    function tokenColor(uint256 tokenIndex) public view returns (bytes3) {
+        uint256 mintValue = tokenMintValue(tokenIndex);
 
         if (mintValue >= 100 ether) {
             return 0xffd700; // Gold
@@ -141,12 +186,12 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         return 0x555555; // dark_grey
     }
 
-    function aspectRatio(uint256 tokenId)
+    function aspectRatio(uint256 tokenIndex)
         public
         view
         returns (uint8 height, uint8 width)
     {
-        bytes32 mintBlockHash = tokenMintBlockHash(tokenId);
+        bytes32 mintBlockHash = tokenMintBlockHash(tokenIndex);
         uint8 first = uint8(mintBlockHash[0]);
 
         if (first % 8 == 0) {
@@ -168,7 +213,7 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
         return (10, 10);
     }
 
-    function lissajousArguments(uint256 tokenId)
+    function lissajousArguments(uint256 tokenIndex)
         public
         view
         returns (
@@ -179,7 +224,7 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
             uint8 startStep
         )
     {
-        bytes32 mintBlockHash = tokenMintBlockHash(tokenId);
+        bytes32 mintBlockHash = tokenMintBlockHash(tokenIndex);
 
         uint8 second = uint8(mintBlockHash[1]);
         uint8 third = uint8(mintBlockHash[2]);
