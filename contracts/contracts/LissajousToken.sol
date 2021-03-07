@@ -8,13 +8,6 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721Pausable.sol';
 
-/**
-Compound interest in JavaScript:
-
-const compoundInterest = (initialValue, interest, iterations) =>
-  initialValue * (1 + interest) ** iterations;
- */
-
 // https://docs.opensea.io/docs/metadata-standards
 /**
  * @dev {ERC721} token, including:
@@ -39,11 +32,10 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
     uint256 private _endBlock;
     uint64 private _maxSupply;
     uint256 private _startPrice;
+    uint64 private _priceDecreasePeriod;
 
     uint256 public constant priceIncreasePercent = 108;
     uint256 public constant priceDecreasePercent = 98;
-    // Blocks. This is a bit more than one day. ~6525 blocks per day
-    uint256 public constant priceDecreasePeriod = 8192;
 
     // save the block when a token is minted
     mapping(uint256 => uint256) private _mintBlocks;
@@ -52,25 +44,39 @@ contract LissajousToken is Context, Ownable, ERC721Pausable {
     mapping(uint256 => uint256) private _mintValues;
 
     constructor(
-        string memory name,
-        string memory symbol,
-        string memory baseURI,
         uint256 startBlock_,
-        uint256 endBlock_,
-        uint64 maxSupply_,
-        uint256 startPrice_
-    ) ERC721(name, symbol) {
-        _setBaseURI(baseURI);
+        uint256 endBlock_, // Maybe 64 * 8192 (=~80 days)
+        uint64 maxSupply_, // 524288
+        uint256 startPrice_, // 0.01 ether
+        uint64 priceDecreasePeriod_ // 8192, This is a bit more than one day. ~6525 blocks per day
+    ) ERC721('Lissajous Token', 'LISSA') {
+        _setBaseURI('https://lissajous.art/api/token/');
         _startBlock = startBlock_;
         _endBlock = endBlock_;
         _maxSupply = maxSupply_;
         _startPrice = startPrice_;
+        _priceDecreasePeriod = priceDecreasePeriod_;
     }
 
     function minPrice() public view returns (uint256) {
-        return _startPrice;
+        if (_tokenIdTracker.current() == 1) return _startPrice;
+
+        uint256 increased =
+            _startPrice *
+                (priceIncreasePercent / 100)**_tokenIdTracker.current();
+
+        uint256 periodsSinceInception =
+            (block.number - _startBlock) / _priceDecreasePeriod;
+
+        if (periodsSinceInception < 0) return increased;
+
+        uint256 decreased =
+            increased * (priceDecreasePercent / 100)**periodsSinceInception;
+
+        return decreased;
     }
 
+    // TODO: iKnowWhatImDoing, ExclusiveBlock
     function mint() public payable {
         require(totalSupply() < _maxSupply, 'All items sold');
         require(block.number < _endBlock, 'Sale ended');

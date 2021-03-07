@@ -11,6 +11,7 @@ describe('LissajousToken', function () {
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH
   const BASE_URI = 'https://lissajous.art/api/token/';
+  const PRICE_DECREASE_PERIOD = 10;
 
   let token: LissajousToken;
 
@@ -19,13 +20,11 @@ describe('LissajousToken', function () {
       'LissajousToken',
     );
     const contract = await LissajousTokenContract.deploy(
-      'Lissajous Token',
-      'LISSA',
-      BASE_URI,
       START_BLOCK,
       END_BLOCK,
       MAX_SUPPLY,
       START_PRICE,
+      PRICE_DECREASE_PERIOD,
     );
 
     const tx = await contract.deployed();
@@ -133,5 +132,7 @@ describe('LissajousToken', function () {
   });
 
   // TODO
-  it.skip('Owner can stop minting', () => {});
+  it.skip('Owner can stop minting (?)', () => {});
+  it.skip('Enumerating', () => {});
+  it.skip('Prevent double minting', () => {});
 });
