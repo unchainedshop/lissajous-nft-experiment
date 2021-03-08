@@ -6,7 +6,7 @@ import { LissajousToken } from '../artifacts/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 
 describe('LissajousToken', function () {
-  const START_BLOCK = 3; // First blocks are for minting
+  const START_BLOCK = 3; // First blocks are for contract creation
   const END_BLOCK = 20;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH

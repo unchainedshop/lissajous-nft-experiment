@@ -32,6 +32,12 @@ contract LissajousToken is Context, Ownable, ERC721 {
         uint256 endBlock_, // Maybe 64 * 8192 (=~80 days)
         uint256 startPrice_ // 0.01 ether
     ) ERC721('Lissajous Token', 'LISSA') {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        if (id == 56) revert("Nope!");
+        if (id == 97) revert("Nope!");
         _setBaseURI('https://lissajous.art/api/token/');
         _startBlock = startBlock_;
         _endBlock = endBlock_;

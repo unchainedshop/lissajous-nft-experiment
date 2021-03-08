@@ -1,3 +1,4 @@
+require('dotenv-extended').load();
 import { task } from 'hardhat/config';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-ethers';
@@ -55,6 +56,10 @@ export default {
     localhost: {
       url: 'http://127.0.0.1:7545',
       // accounts: [privateKey1, privateKey2, ...]
+    },
+    goerli: {
+      url: 'https://rpc.slock.it/goerli',
+      accounts: [process.env.PRIVATE_KEY_GOERLI],
     },
   },
   paths: {

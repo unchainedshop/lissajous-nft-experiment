@@ -1,12 +1,19 @@
 import fs from 'fs';
+import { BigNumber } from '@ethersproject/bignumber';
 
 async function main() {
-  const LissajousToken = await global.ethers.getContractFactory('LissajousToken');
+  const START_BLOCK = 4406363;
+  const END_BLOCK = 4506363;
+  const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
+
+  const LissajousToken = await global.ethers.getContractFactory(
+    'LissajousToken',
+  );
   const { chainId } = await global.ethers.provider.getNetwork();
   const LissajousToken = await LissajousToken.deploy(
-    'Lets Save The Wales Token',
-    'LSTWT',
-    'https://token.thisisnotacommercial.com/',
+    START_BLOCK,
+    END_BLOCK,
+    START_PRICE,
   );
 
   const addresses = fs.readFileSync(`./addresses.json`);
@@ -20,7 +27,7 @@ async function main() {
 
   fs.writeFileSync(`./addresses.json`, JSON.stringify(newAddresses, null, 2));
 
-  console.log('Whale Token deployed to:', LissajousToken.address);
+  console.log('Contract deployed to:', LissajousToken.address);
 }
 
 main()

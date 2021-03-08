@@ -31,9 +31,11 @@
     "test": "hardhat test",
     "node": "hardhat node",
     "hardhat": "hardhat --network localhost",
-    "deploy": "hardhat run --network localhost scripts/deploy.js"
+    "deploy:local": "hardhat run --network localhost scripts/deploy.js",
+    "deploy:goerli": "hardhat run --network goerli scripts/deploy.js"
   },
   "dependencies": {
-    "@ethersproject/bignumber": "^5.0.14"
+    "@ethersproject/bignumber": "^5.0.14",
+    "dotenv-extended": "^2.9.0"
   }
 }
