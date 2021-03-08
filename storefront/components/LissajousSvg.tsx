@@ -23,7 +23,7 @@ const LissajousSvg = ({
     const boundingRect = canvasRef?.current?.getBoundingClientRect();
 
     const numberOfSteps = 16;
-    const stepsUntilFull = 256;
+    const stepsUntilFull = 512;
     const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
     const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 

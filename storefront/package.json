@@ -2,6 +2,7 @@
   "name": "@private/storefront",
   "private": true,
   "dependencies": {
+    "@ethersproject/bignumber": "^5.0.15",
     "@private/contracts": "../contracts",
     "d3": "^6.5.0",
     "d3-color": "^2.0.0",
