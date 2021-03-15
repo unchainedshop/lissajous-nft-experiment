@@ -115,7 +115,7 @@ const Index = () => {
   console.log(lissajousArgs);
 
   const mint = async () => {
-    await contract.mint(address, 1, { value: BigNumber.from('10').pow('16') });
+    await contract.mint(address, 1, { value: BigNumber.from('10').pow('17') });
   };
 
   return (
