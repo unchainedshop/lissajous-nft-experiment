@@ -19,6 +19,42 @@ contract LissajousToken is Context, Ownable, ERC721 {
 
     uint256 public constant _priceIncreasePromille = 1001;
 
+    uint256[15] public priceSteps = [
+        100 ether,
+        10 ether,
+        5 ether,
+        3 ether,
+        1 ether,
+        0.8 ether,
+        0.6 ether,
+        0.4 ether,
+        0.2 ether,
+        0.1 ether,
+        0.08 ether,
+        0.06 ether,
+        0.04 ether,
+        0.02 ether,
+        0.01 ether
+    ];
+
+    bytes3[15] public sortedColorList = [
+        bytes3(0xE5E4E2), // Platinum
+        bytes3(0xffd700), // Gold
+        bytes3(0x55FF55), // light_green
+        bytes3(0xFFFF55), // yellow
+        bytes3(0xFF55FF), // light_magenta
+        bytes3(0x55FFFF), // light_cyan
+        bytes3(0xFF5555), // light_red
+        bytes3(0xFF5555), // ligth_blue
+        bytes3(0xFFFFFF), // white
+        bytes3(0xAAAAAA), // light_gray
+        bytes3(0x00AA00), // green
+        bytes3(0xAA5500), // brown
+        bytes3(0xAA00AA), // magenta
+        bytes3(0x00AAAA), // cyan
+        bytes3(0xAA0000) // red
+    ];
+
     struct TokenInfo {
         uint256 mintValue;
         uint256 mintBlock;
@@ -36,8 +72,8 @@ contract LissajousToken is Context, Ownable, ERC721 {
         assembly {
             id := chainid()
         }
-        if (id == 56) revert("Nope!");
-        if (id == 97) revert("Nope!");
+        if (id == 56) revert('Nope!');
+        if (id == 97) revert('Nope!');
         _setBaseURI('https://lissajous.art/api/token/');
         _startBlock = startBlock_;
         _endBlock = endBlock_;
@@ -97,38 +133,13 @@ contract LissajousToken is Context, Ownable, ERC721 {
     function tokenColor(uint256 tokenIndex) public view returns (bytes3) {
         uint256 mintValue = tokenMintValue(tokenIndex);
 
-        if (mintValue >= 100 ether) {
-            return 0xffd700; // Gold
-        } else if (mintValue >= 70 ether) {
-            return 0x55FF55; // light_green
-        } else if (mintValue >= 30 ether) {
-            return 0xFFFF55; // yellow
-        } else if (mintValue >= 10 ether) {
-            return 0xFF55FF; // light_magenta
-        } else if (mintValue >= 7 ether) {
-            return 0x55FFFF; // light_cyan
-        } else if (mintValue >= 3 ether) {
-            return 0xFF5555; // light_red
-        } else if (mintValue >= 1 ether) {
-            return 0xFF5555; // ligth_blue
-        } else if (mintValue >= 0.7 ether) {
-            return 0xFFFFFF; // white
-        } else if (mintValue >= 0.4 ether) {
-            return 0xAAAAAA; // light_gray
-        } else if (mintValue >= 0.2 ether) {
-            return 0x00AA00; // green
-        } else if (mintValue >= 0.1 ether) {
-            return 0xAA5500; // brown
-        } else if (mintValue >= 0.07 ether) {
-            return 0xAA00AA; // magenta
-        } else if (mintValue >= 0.04 ether) {
-            return 0x00AAAA; // cyan
-        } else if (mintValue >= 0.02 ether) {
-            return 0xAA0000; // red
-        } else if (mintValue >= 0.01 ether) {
-            return 0x555555; // dark_grey
+        for (uint256 i; i < priceSteps.length; i++) {
+            if (mintValue >= priceSteps[i]) {
+                return sortedColorList[i];
+            }
         }
-        return 0x0000AA; // blue
+
+        return sortedColorList[sortedColorList.length - 1];
     }
 
     function aspectRatio(uint256 tokenIndex)

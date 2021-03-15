@@ -154,7 +154,7 @@ describe('LissajousToken', function () {
     expect(mintBlock.eq(4));
 
     const tokenColor = await token.tokenColor(0);
-    expect(tokenColor).equal('0x555555');
+    expect(tokenColor).equal('0xaa0000');
 
     const aspectRatio = await token.aspectRatio(0);
     expect(aspectRatio.height).equal(12);
