@@ -59,11 +59,11 @@ export default {
     },
     goerli: {
       url: 'https://rpc.slock.it/goerli',
-      accounts: [process.env.PRIVATE_KEY_GOERLI],
+      accounts: [process.env.PRIVATE_KEY_GOERLI].filter(Boolean),
     },
     rinkeby: {
       url: process.env.RPC_ENDPOINT_RINKEBY,
-      accounts: [process.env.PRIVATE_KEY_RINKEBY],
+      accounts: [process.env.PRIVATE_KEY_RINKEBY].filter(Boolean),
     },
   },
   paths: {

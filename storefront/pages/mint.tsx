@@ -117,7 +117,7 @@ const Index = () => {
     const totalSteps = (array[6] % 16) + 1;
     const startStep = (array[7] % 16) + 1;
     const lineWidth = 3;
-    const strokeColor = colors[array[6] % 16];
+    const strokeColor = '#555555';
 
     setLissajousArgs({
       height,
