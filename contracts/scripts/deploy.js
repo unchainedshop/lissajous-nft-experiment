@@ -2,15 +2,15 @@ import fs from 'fs';
 import { BigNumber } from '@ethersproject/bignumber';
 
 async function main() {
-  const START_BLOCK = 4406363;
-  const END_BLOCK = 4506363;
+  const START_BLOCK = 8239787;
+  const END_BLOCK = 8139787;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
 
-  const LissajousToken = await global.ethers.getContractFactory(
+  const LissajousTokenFactory = await global.ethers.getContractFactory(
     'LissajousToken',
   );
   const { chainId } = await global.ethers.provider.getNetwork();
-  const LissajousToken = await LissajousToken.deploy(
+  const LissajousToken = await LissajousTokenFactory.deploy(
     START_BLOCK,
     END_BLOCK,
     START_PRICE,

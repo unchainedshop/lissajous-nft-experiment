@@ -61,6 +61,10 @@ export default {
       url: 'https://rpc.slock.it/goerli',
       accounts: [process.env.PRIVATE_KEY_GOERLI],
     },
+    rinkeby: {
+      url: process.env.RPC_ENDPOINT_RINKEBY,
+      accounts: [process.env.PRIVATE_KEY_RINKEBY],
+    },
   },
   paths: {
     react: './generated/hardhat',
