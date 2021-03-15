@@ -62,7 +62,7 @@ export default {
       accounts: [process.env.PRIVATE_KEY_GOERLI].filter(Boolean),
     },
     rinkeby: {
-      url: process.env.RPC_ENDPOINT_RINKEBY,
+      url: process.env.RPC_ENDPOINT_RINKEBY || '',
       accounts: [process.env.PRIVATE_KEY_RINKEBY].filter(Boolean),
     },
   },
