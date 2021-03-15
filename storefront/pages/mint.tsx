@@ -149,7 +149,7 @@ const Index = () => {
         </button>
       </p>
       <div className="figure">
-        {lissajousArgs && <LissajousSvg {...lissajousArgs} />}
+        {lissajousArgs && <LissajousSvg {...(lissajousArgs as any)} />}
       </div>
       <style jsx>{`
         :global(html),
