@@ -108,6 +108,11 @@ contract LissajousToken is Context, Ownable, ERC721 {
 
         require(msg.value >= txMinPrice, 'Min price not met');
 
+        uint256 pricePerToken = msg.value.div(amount);
+        uint256 priceStep = priceStepFromValue(pricePerToken);
+        uint256 aboveMinPrice = pricePerToken.sub(currentMinPrice());
+        uint256 abovePriceStep = pricePerToken.sub(priceStep);
+
         for (uint8 i = 0; i < amount; i++) {
             uint256 tokenIndex = totalSupply();
             _safeMint(to, tokenIndex);
@@ -118,16 +123,11 @@ contract LissajousToken is Context, Ownable, ERC721 {
             );
         }
 
-        // uint256 pricePerToken = msg.value.div(amount);
-        // uint256 priceStep = priceStepFromValue(pricePerToken);
-        // uint256 aboveMinPrice = pricePerToken.sub(currentMinPrice);
-        // uint256 abovePriceStep = pricePerToken.sub(priceStep);
-
-        // if (aboveMinPrice < abovePriceStep) {
-        //     msg.sender.transfer(aboveMinPrice.mul(amount));
-        // } else {
-        //     msg.sender.transfer(abovePriceStep.mul(amount));
-        // }
+        if (aboveMinPrice < abovePriceStep) {
+            msg.sender.transfer(aboveMinPrice.mul(amount));
+        } else {
+            msg.sender.transfer(abovePriceStep.mul(amount));
+        }
     }
 
     function tokenMintValue(uint256 tokenIndex) public view returns (uint256) {

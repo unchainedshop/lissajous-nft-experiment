@@ -110,7 +110,7 @@ describe('LissajousToken', function () {
     expect(currentMinPrice.eq(START_PRICE.mul(priceIncrease.pow(17))));
   });
 
-  it('Change if over minPrice', async () => {
+  it('Return change if over minPrice', async () => {
     const tooHighPrice = ethers.utils.parseEther('0.019');
     const currentMinPrice = await token.currentMinPrice();
     const balanceBefore = await owner.getBalance();
@@ -123,18 +123,6 @@ describe('LissajousToken', function () {
     const txReceipt = await txResponse.wait();
     const gasCost = txReceipt.gasUsed.mul(txResponse.gasPrice);
     const balanceAfter = await owner.getBalance();
-
-    console.log(balanceBefore.add('1000000000000000000000000').toString());
-    // console.log(currentMinPrice.add('1000000000000000000000000').toString());
-    // console.log(gasCost.add('1000000000000000000000000').toString());
-    console.log(balanceAfter.add('1000000000000000000000000').toString());
-    console.log(
-      balanceAfter
-        .add(gasCost)
-        .add(currentMinPrice)
-        .add('1000000000000000000000000')
-        .toString(),
-    );
 
     expect(balanceAfter.add(gasCost).add(currentMinPrice).toString()).equals(
       balanceBefore.toString(),
@@ -155,19 +143,22 @@ describe('LissajousToken', function () {
 
   it('Owner can withdraw ether', async () => {
     const balanceBefore = await owner.getBalance();
+    const contractBalance = await ethers.provider.getBalance(token.address);
     const txResponse = await owner.sendTransaction(
       await token.populateTransaction.withdraw(),
     );
     const txReceipt = await txResponse.wait();
     const gasCost = txReceipt.gasUsed.mul(txResponse.gasPrice);
     const balanceAfter = await owner.getBalance();
-    expect(balanceAfter.gt(balanceBefore.add(gasCost).add(START_PRICE.mul(2))));
+
+    expect(balanceAfter.add(gasCost).toString()).equals(
+      balanceBefore.add(contractBalance).toString(),
+    );
   });
 
   it('Only Owner can withdraw ether', async () => {
     try {
       await someone.sendTransaction(await token.populateTransaction.withdraw());
-      // await token.withdraw();
       expect(false).to.equal(true);
     } catch (e) {
       expect(e.message).to.include('from address mismatch');
