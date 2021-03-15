@@ -4,6 +4,9 @@ import { BigNumber } from '@ethersproject/bignumber';
 
 import { LissajousToken } from '../artifacts/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import simulateLissajousArgs, {
+  getBlockHash,
+} from '../lib/simulateLissajousArgs';
 
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for contract creation
@@ -39,14 +42,14 @@ describe('LissajousToken', function () {
       ethers.utils.formatEther(receipt.gasUsed.mul(100).mul(1000000000)),
     );
 
-    expect(await token.name()).to.equal('Lissajous Token');
-    expect((await token.totalSupply()).toString()).to.equal('0');
+    expect(await token.name()).equal('Lissajous Token');
+    expect((await token.totalSupply()).toString()).equal('0');
   });
 
   it('Mint a token before starting block should fail', async () => {
     try {
       await token.mint(ownerAddress, 1, { value: SAFE_PRICE });
-      expect(false).to.equal(true);
+      expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Sale not yet started');
     }
@@ -63,7 +66,7 @@ describe('LissajousToken', function () {
   it('Mint a token with too little value', async () => {
     try {
       await token.mint(ownerAddress, 1);
-      expect(false).to.equal(true);
+      expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Min price not met');
     }
@@ -71,13 +74,13 @@ describe('LissajousToken', function () {
 
   it('Mint a token after starting block works with correct value', async () => {
     await token.mint(ownerAddress, 1, { value: START_PRICE });
-    expect((await token.totalSupply()).toString()).to.equal('1');
+    expect((await token.totalSupply()).toString()).equal('1');
   });
 
   it('Mint more token with the same value fails because of price increase', async () => {
     try {
       await token.mint(ownerAddress, 16, { value: START_PRICE });
-      expect(false).to.equal(true);
+      expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Min price not met');
     }
@@ -89,7 +92,7 @@ describe('LissajousToken', function () {
         value: START_PRICE.mul(1001).div(1000).mul(17),
       });
 
-      expect(false).to.equal(true);
+      expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Only 16 token at a time');
     }
@@ -101,7 +104,7 @@ describe('LissajousToken', function () {
     });
     const receipt = await tx.wait();
     console.log(receipt.gasUsed.toString());
-    expect((await token.totalSupply()).toString()).to.equal('17');
+    expect((await token.totalSupply()).toString()).equal('17');
   });
 
   it('Price is up after minting several tokens', async () => {
@@ -135,7 +138,7 @@ describe('LissajousToken', function () {
     }
     try {
       await token.mint(ownerAddress, 1, { value: SAFE_PRICE });
-      expect(false).to.equal(true);
+      expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Sale ended');
     }
@@ -159,7 +162,7 @@ describe('LissajousToken', function () {
   it('Only Owner can withdraw ether', async () => {
     try {
       await someone.sendTransaction(await token.populateTransaction.withdraw());
-      expect(false).to.equal(true);
+      expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('from address mismatch');
     }
@@ -183,15 +186,51 @@ describe('LissajousToken', function () {
     expect(aspectRatio.width).equal(16);
 
     const lissajousArguments = await token.lissajousArguments(0);
-    expect(lissajousArguments.frequenceX).to.equal(12);
-    expect(lissajousArguments.frequenceY).to.equal(4);
-    expect(lissajousArguments.phaseShift).to.equal(4);
-    expect(lissajousArguments.totalSteps).to.equal(6);
-    expect(lissajousArguments.startStep).to.equal(13);
+    expect(lissajousArguments.frequenceX).equal(12);
+    expect(lissajousArguments.frequenceY).equal(4);
+    expect(lissajousArguments.phaseShift).equal(4);
+    expect(lissajousArguments.totalSteps).equal(6);
+    expect(lissajousArguments.startStep).equal(13);
   });
 
-  // TODO
-  it.skip('Owner can stop minting (?)', () => {});
-  it.skip('Enumerating', () => {});
-  it.skip('Prevent double minting', () => {});
+  it('Check simulated lissajous', async () => {
+    const tokenId = 3;
+    const uri = await token.tokenURI(tokenId);
+    expect(uri).equal(`${BASE_URI}${tokenId}`);
+
+    const mintValue = await token.tokenMintValue(tokenId);
+    const mintBlock = await token.tokenMintBlock(tokenId);
+    const tokenColor = await token.tokenColor(tokenId);
+    const aspectRatio = await token.aspectRatio(tokenId);
+    const lissajousArguments = await token.lissajousArguments(tokenId);
+    const tokenMintBlockHash = await token.tokenMintBlockHash(tokenId);
+
+    expect(tokenMintBlockHash).equal(getBlockHash(mintBlock.toNumber()));
+
+    const simulatedLissajousArgs = simulateLissajousArgs(
+      mintBlock.toNumber(),
+      mintValue,
+    );
+
+    expect(tokenColor.replace('0x', '#')).equal(
+      simulatedLissajousArgs.strokeColor,
+    );
+    expect(aspectRatio.height).equal(simulatedLissajousArgs.height);
+    expect(aspectRatio.width).equal(simulatedLissajousArgs.width);
+    expect(lissajousArguments.frequenceX).equal(
+      simulatedLissajousArgs.frequenceX,
+    );
+    expect(lissajousArguments.frequenceY).equal(
+      simulatedLissajousArgs.frequenceY,
+    );
+    expect((1 / 16) * lissajousArguments.phaseShift).equal(
+      simulatedLissajousArgs.phaseShift,
+    );
+    expect(lissajousArguments.totalSteps).equal(
+      simulatedLissajousArgs.totalSteps,
+    );
+    expect(lissajousArguments.startStep).equal(
+      simulatedLissajousArgs.startStep,
+    );
+  });
 });

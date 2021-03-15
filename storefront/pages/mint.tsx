@@ -102,6 +102,8 @@ const Index = () => {
   useEffect(() => {
     if (!currentBlock) return;
 
+    console.log(currentBlock);
+
     const currentHash = ethers.utils.keccak256(
       ethers.utils.hexlify(currentBlock),
     );

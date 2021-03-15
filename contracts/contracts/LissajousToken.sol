@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 
-import 'hardhat/console.sol';
+// import 'hardhat/console.sol';
 
 // https://docs.opensea.io/docs/metadata-standards
 contract LissajousToken is Context, Ownable, ERC721 {
@@ -143,7 +143,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
         view
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_tokenInfos[tokenIndex].mintBlock));
+        return keccak256(abi.encode(_tokenInfos[tokenIndex].mintBlock));
     }
 
     function tokenColor(uint256 tokenIndex) public view returns (bytes3) {
