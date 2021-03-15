@@ -6,45 +6,15 @@ import {
   addresses,
   LissajousToken,
   LissajousToken__factory,
+  simulateLissajousArgs,
 } from '@private/contracts';
 import LissajousSvg from '../components/LissajousSvg';
-
-const colors = [
-  '#ffd700', // Gold
-  '#55FF55', // light green
-  '#FFFF55', // yellow
-  '#FF55FF', // light magenta
-  '#55FFFF', // light cyan
-  '#FF5555', // light red
-  '#5555FF', // ligth blue
-  '#FFFFFF', // white
-  '#AAAAAA', // light gray
-  '#00AA00', // green
-  '#AA5500', // brown
-  '#AA00AA', // magenta
-  '#00AAAA', // cyan
-  '#0000AA', // blue
-  '#AA0000', // red
-  '#555555', // dark grey
-];
-
-const aspectRatios = [
-  { h: 16, w: 16 },
-  { h: 16, w: 9 },
-  { h: 9, w: 16 },
-  { h: 12, w: 16 },
-  { h: 16, w: 12 },
-  { h: 3, w: 16 },
-  { h: 16, w: 3 },
-  { h: 10, w: 10 },
-];
 
 const Index = () => {
   const [address, setAddress] = useState('');
   const [contract, setContract] = useState<LissajousToken>();
   const [totalSupply, setTotalSupply] = useState<number>();
   const [currentBlock, setCurrentBlock] = useState<number>();
-  const [lissajousArgs, setLissajousArgs] = useState<Record<string, any>>({});
 
   useEffect(() => {
     (async () => {
@@ -55,10 +25,6 @@ const Index = () => {
 
       const accounts = await (window as any).ethereum.request({
         method: 'eth_accounts',
-      });
-
-      provider.on('block', (blockNumber) => {
-        setCurrentBlock(blockNumber);
       });
 
       if (!accounts.length) {
@@ -89,6 +55,7 @@ const Index = () => {
       setTotalSupply((await contract.totalSupply()).toNumber());
 
       provider.on('block', (blockNumber) => {
+        console.log('newBlcok');
         setCurrentBlock(blockNumber);
       });
 
@@ -98,43 +65,6 @@ const Index = () => {
       });
     })();
   }, []);
-
-  useEffect(() => {
-    if (!currentBlock) return;
-
-    console.log(currentBlock);
-
-    const currentHash = ethers.utils.keccak256(
-      ethers.utils.hexlify(currentBlock),
-    );
-    const array = ethers.utils.arrayify(currentHash);
-
-    const aspectRatio = aspectRatios[array[0] % 8];
-
-    const height = aspectRatio.h;
-    const width = aspectRatio.w;
-    const frequenceX = (array[2] % 16) + 1;
-    const frequenceY = (array[3] % 16) + 1;
-    const phaseShift = (1 / 16) * (array[5] % 16);
-    const totalSteps = (array[6] % 16) + 1;
-    const startStep = (array[7] % 16) + 1;
-    const lineWidth = 3;
-    const strokeColor = '#555555';
-
-    setLissajousArgs({
-      height,
-      width,
-      frequenceX,
-      frequenceY,
-      lineWidth,
-      phaseShift,
-      totalSteps,
-      strokeColor,
-      startStep,
-    });
-  }, [currentBlock]);
-
-  console.log(lissajousArgs);
 
   const mint = async () => {
     await contract.mint(address, 1, { value: BigNumber.from('10').pow('17') });
@@ -150,8 +80,17 @@ const Index = () => {
           <i>Mint!</i>
         </button>
       </p>
-      <div className="figure">
-        {lissajousArgs && <LissajousSvg {...(lissajousArgs as any)} />}
+      <div className="holder">
+        {currentBlock &&
+          Array(128)
+            .fill(0)
+            .map((_, i) => (
+              <div className="figure" key={currentBlock + i}>
+                <LissajousSvg
+                  {...(simulateLissajousArgs(currentBlock + i) as any)}
+                />
+              </div>
+            ))}
       </div>
       <style jsx>{`
         :global(html),
@@ -166,8 +105,8 @@ const Index = () => {
         .figure {
           position: relative;
           display: inline-block;
-          height: 512px;
-          width: 512px;
+          height: 128px;
+          width: 128px;
           margin: 10px;
           border: 1px solid darkgrey;
         }

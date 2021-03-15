@@ -46,13 +46,11 @@ export const getBlockHash = (blockNumber: number) =>
 
 const simulateLissajousArgs = (
   blockNumber: number,
-  tokenPrice: BigNumber,
+  tokenPrice: BigNumber = BigNumber.from(0),
 ): LissajousArgs => {
+  console.log(blockNumber);
   const currentHash = getBlockHash(blockNumber);
   const array = ethers.utils.arrayify(currentHash);
-
-  console.log(currentHash);
-  console.log(ethers.utils.hexlify(blockNumber));
 
   const aspectRatio = aspectRatios[array[0] % 8];
 
@@ -68,7 +66,7 @@ const simulateLissajousArgs = (
     phaseShift: (1 / 16) * (array[3] % 16),
     totalSteps: (array[4] % 16) + 1,
     startStep: (array[5] % 16) + 1,
-    lineWidth: 3,
+    lineWidth: 10,
     strokeColor: (strokeColor as string).toLowerCase(),
   };
 };

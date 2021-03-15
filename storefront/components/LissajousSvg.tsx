@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { LissajousArgs } from '@private/contracts';
 
 const LissajousSvg = ({
   frequenceX,
@@ -11,10 +12,10 @@ const LissajousSvg = ({
   strokeColor = '#FFD700',
   startStep = 1,
   totalSteps = 16,
-}) => {
+}: LissajousArgs) => {
   const canvasRef = useRef(null);
 
-  const lineWidth = parseInt(lineWidthInput, 10);
+  const lineWidth = parseInt(lineWidthInput as any, 10);
 
   useEffect(() => {
     const svg = d3.select(canvasRef.current);
@@ -27,8 +28,8 @@ const LissajousSvg = ({
     const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
     const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 
-    const canvasHeight = boundingRect.width - lineWidth - 4;
-    const canvasWidth = boundingRect.height - lineWidth - 4;
+    const canvasHeight = 512 - lineWidth - 4;
+    const canvasWidth = 512 - lineWidth - 4;
 
     const amplitudeX = width / 16 / 2;
     const amplitudeY = height / 16 / 2;
@@ -72,7 +73,8 @@ const LissajousSvg = ({
       .attr('d', valueline as any)
       .attr('stroke', strokeColor)
       .attr('stroke-width', lineWidth + 1)
-      .attr('fill', 'none');
+      .attr('fill', 'none')
+      .attr('transform', 'scale(0.25 0.25)');
   }, [
     frequenceX,
     frequenceY,
