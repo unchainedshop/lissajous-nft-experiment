@@ -110,6 +110,37 @@ describe('LissajousToken', function () {
     expect(currentMinPrice.eq(START_PRICE.mul(priceIncrease.pow(17))));
   });
 
+  it('Change if over minPrice', async () => {
+    const tooHighPrice = ethers.utils.parseEther('0.019');
+    const currentMinPrice = await token.currentMinPrice();
+    const balanceBefore = await owner.getBalance();
+    const txResponse = await owner.sendTransaction(
+      await token.populateTransaction.mint(ownerAddress, 1, {
+        value: tooHighPrice,
+      }),
+    );
+
+    const txReceipt = await txResponse.wait();
+    const gasCost = txReceipt.gasUsed.mul(txResponse.gasPrice);
+    const balanceAfter = await owner.getBalance();
+
+    console.log(balanceBefore.add('1000000000000000000000000').toString());
+    // console.log(currentMinPrice.add('1000000000000000000000000').toString());
+    // console.log(gasCost.add('1000000000000000000000000').toString());
+    console.log(balanceAfter.add('1000000000000000000000000').toString());
+    console.log(
+      balanceAfter
+        .add(gasCost)
+        .add(currentMinPrice)
+        .add('1000000000000000000000000')
+        .toString(),
+    );
+
+    expect(balanceAfter.add(gasCost).add(currentMinPrice).toString()).equals(
+      balanceBefore.toString(),
+    );
+  });
+
   it('Minting after last block denied', async () => {
     for (let i = 0; i < 20; i++) {
       await ethers.provider.send('evm_mine', []);
@@ -130,7 +161,7 @@ describe('LissajousToken', function () {
     const txReceipt = await txResponse.wait();
     const gasCost = txReceipt.gasUsed.mul(txResponse.gasPrice);
     const balanceAfter = await owner.getBalance();
-    expect(balanceAfter.gt(balanceBefore.add(gasCost).add(START_PRICE)));
+    expect(balanceAfter.gt(balanceBefore.add(gasCost).add(START_PRICE.mul(2))));
   });
 
   it('Only Owner can withdraw ether', async () => {

@@ -92,16 +92,21 @@ contract LissajousToken is Context, Ownable, ERC721 {
 
     /**
      * If minting more than one, the lower minimum mint price is used for all tokens
+     *
+     * Returns change:
+     * - If current minPrice is 0.15 and the sender sends 0.19 -> 0.04 change
+     * - If current minPrice is 0.15 and the sender sends 0.2 (next price step) -> 0 change
+     * - If current minPrice is 0.15 and the sender sends 0.21 (down to next price step) -> 0.01 change
      */
     function mint(address to, uint8 amount) public payable {
         require(amount > 0, 'Mint at least one token');
         require(amount <= 16, 'Only 16 token at a time');
         require(block.number > _startBlock, 'Sale not yet started');
         require(block.number < _endBlock, 'Sale ended');
-        require(
-            msg.value >= minPrice(totalSupply()).mul(amount),
-            'Min price not met'
-        );
+
+        uint256 txMinPrice = currentMinPrice().mul(amount);
+
+        require(msg.value >= txMinPrice, 'Min price not met');
 
         for (uint8 i = 0; i < amount; i++) {
             uint256 tokenIndex = totalSupply();
@@ -112,6 +117,17 @@ contract LissajousToken is Context, Ownable, ERC721 {
                 minPrice(tokenIndex)
             );
         }
+
+        // uint256 pricePerToken = msg.value.div(amount);
+        // uint256 priceStep = priceStepFromValue(pricePerToken);
+        // uint256 aboveMinPrice = pricePerToken.sub(currentMinPrice);
+        // uint256 abovePriceStep = pricePerToken.sub(priceStep);
+
+        // if (aboveMinPrice < abovePriceStep) {
+        //     msg.sender.transfer(aboveMinPrice.mul(amount));
+        // } else {
+        //     msg.sender.transfer(abovePriceStep.mul(amount));
+        // }
     }
 
     function tokenMintValue(uint256 tokenIndex) public view returns (uint256) {
@@ -140,6 +156,20 @@ contract LissajousToken is Context, Ownable, ERC721 {
         }
 
         return sortedColorList[sortedColorList.length - 1];
+    }
+
+    function priceStepFromValue(uint256 valuePerToken)
+        public
+        view
+        returns (uint256)
+    {
+        for (uint256 i; i < priceSteps.length; i++) {
+            if (valuePerToken >= priceSteps[i]) {
+                return priceSteps[i];
+            }
+        }
+
+        return 0;
     }
 
     function aspectRatio(uint256 tokenIndex)
