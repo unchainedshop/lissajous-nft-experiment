@@ -52,6 +52,26 @@ const Index = () => {
         (window as any).ethereum,
       );
       const { chainId } = await provider.getNetwork();
+
+      const accounts = await (window as any).ethereum.request({
+        method: 'eth_accounts',
+      });
+
+      provider.on('block', (blockNumber) => {
+        setCurrentBlock(blockNumber);
+      });
+
+      if (!accounts.length) {
+        alert('Please install & unlock metamask');
+        return;
+      }
+
+      if (chainId !== 4) {
+        alert('Please switch to Rinkeby');
+      }
+
+      console.log({ chainId, provider });
+
       const signer = await provider.getSigner();
 
       setAddress(await signer.getAddress());
