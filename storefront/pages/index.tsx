@@ -63,6 +63,14 @@ const Index = () => {
 
   const startBlock = onLoadBlock - 8;
 
+  const isMarked = (currentBlock, startBlock, i, amount) => {
+    const currentFigure = startBlock + i;
+    const firstMarked = currentBlock + 1;
+    const lastMarked = currentBlock + parseInt(amount, 10);
+
+    return firstMarked <= currentFigure && currentFigure <= lastMarked;
+  };
+
   return (
     <div className="container">
       <div className="holder">
@@ -74,12 +82,17 @@ const Index = () => {
                 <div
                   className="figure"
                   key={startBlock + i}
-                  data-current={currentBlock + 1 === startBlock + i}
+                  data-current={isMarked(currentBlock, startBlock, i, amount)}
                 >
                   <Link href={`block/${startBlock + i}`}>
                     <a>
                       <LissajousSvg
-                        {...(simulateLissajousArgs(startBlock + i) as any)}
+                        {...(simulateLissajousArgs(
+                          startBlock + i,
+                          isMarked(currentBlock, startBlock, i, amount)
+                            ? ethers.utils.parseEther(price || '0')
+                            : undefined,
+                        ) as any)}
                       />
                     </a>
                   </Link>
@@ -102,6 +115,7 @@ const Index = () => {
                   disabled={!accounts[0]}
                   name="amount"
                   defaultValue="1"
+                  min={1}
                   type="number"
                   ref={register({ required: true })}
                 />
@@ -142,10 +156,11 @@ const Index = () => {
           height: 128px;
           width: 128px;
           margin: 5px;
+          box-sizing: border-box;
         }
 
         .figure[data-current='true'] {
-          border: 1px solid lightgrey;
+          // border: 1px solid lightgrey;
         }
 
         .container {
@@ -168,6 +183,7 @@ const Index = () => {
           border: 1px solid white;
           font-family: monospace;
           font-size: 1.5em;
+          padding: 0.2em 0.2em;
           color: white;
           width: 100%;
         }
@@ -177,6 +193,7 @@ const Index = () => {
           background-color: white;
           border: 1px solid white;
           font-size: 1.5em;
+          padding: 0.1em 0.2em;
           color: black;
           width: 100%;
         }
