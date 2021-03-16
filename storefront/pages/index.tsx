@@ -6,7 +6,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 
 import {
   addresses,
-  LissajousToken,
   LissajousToken__factory,
   simulateLissajousArgs,
 } from '@private/contracts';
@@ -134,15 +133,6 @@ const Index = () => {
             ))}
       </div>
       <style jsx>{`
-        :global(html),
-        :global(body) {
-          background-color: black;
-          width: 100%;
-          height: 100%;
-          margin: 0;
-          padding: 0;
-          color: white;
-        }
         .figure {
           position: relative;
           display: inline-block;

@@ -1,6 +1,9 @@
-const Address = ({ url }) => {
-  console.log(url.query);
-  return <div>{url.query.address}</div>;
+import { useRouter } from 'next/router';
+
+const Address = () => {
+  const router = useRouter();
+  // console.log(router);
+  return <div>{router.query.address}</div>;
 };
 
 export default Address;
