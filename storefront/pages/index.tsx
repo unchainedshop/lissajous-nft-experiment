@@ -18,6 +18,8 @@ const Index = () => {
     minPrice,
   } = useAppContext();
 
+  console.log(hasSigner);
+
   const { register, handleSubmit, watch } = useForm();
 
   const { price, amount } = watch();
@@ -39,15 +41,16 @@ const Index = () => {
   return (
     <div>
       <header>
-        {accounts[0] ? (
+        {accounts[0] && (
           <Link href={`/address/${accounts[0]}`}>
             <a>{accounts[0]}</a>
           </Link>
+        )}
+        {hasSigner ? (
+          <button onClick={connect}>Connect</button>
         ) : (
-          <button onClick={connect} disabled={!hasSigner}>
-            Connect
-          </button>
-        )}{' '}
+          'No MetaMask found :('
+        )}
       </header>
       <h1>LissajousToken</h1>
       <h2>{totalSupply} already minted</h2>
