@@ -1,22 +1,38 @@
 import Link from 'next/link';
+import { useAppContext } from './AppContextWrapper';
 
 const Layout = (props) => {
+  const { hasSigner, accounts, connect } = useAppContext();
+
   return (
     <div className="page-layout">
-      <div>
-        <Link href="/">
-          <a>home</a>
-        </Link>{' '}
-        -{' '}
-        <Link href="/gallery">
-          <a>gallery</a>
-        </Link>
-      </div>
-      {props.children}
+      <header>
+        <nav>
+          <Link href="/">
+            <a>Lissajous Token</a>
+          </Link>{' '}
+          |{' '}
+          <Link href="/gallery">
+            <a>Gallery</a>
+          </Link>
+        </nav>
+        <div className="right">
+          {accounts[0] && (
+            <Link href={`/address/${accounts[0]}`}>
+              <a className="account">{accounts[0]}</a>
+            </Link>
+          )}
+          {!accounts[0] && hasSigner && (
+            <button onClick={connect}>Connect</button>
+          )}
+          {!hasSigner && 'No MetaMask found :('}
+        </div>
+      </header>
+      <div className="content">{props.children}</div>
       <style jsx global>{`
         html,
         body {
-          font-family: lunchtype22regular;
+          font-family: lunchtype22light;
           background-color: black;
           width: 100%;
           height: 100%;
@@ -34,6 +50,28 @@ const Layout = (props) => {
 
         a {
           color: white;
+          text-decoration: none;
+          font-family: lunchtype22regular;
+        }
+
+        header {
+          z-index: 10;
+          position: fixed;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          padding: 2px 5px;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .account {
+          font-family: monospace;
+        }
+
+        .content {
+          padding-top: 2em;
+          padding-left: 1em;
+          padding-right: 1em;
         }
       `}</style>
     </div>
