@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {
   addresses,
   LissajousToken,
@@ -10,16 +10,13 @@ export const AppContext = React.createContext<{
   accounts: string[];
   totalSupply?: number;
   currentBlock?: number;
+  minPrice?: BigNumber;
   connect: () => Promise<void>;
   readContract?: LissajousToken;
   writeContract?: LissajousToken;
 }>({
   accounts: [],
-  totalSupply: null,
-  currentBlock: null,
   connect: () => null,
-  readContract: null,
-  writeContract: null,
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -35,6 +32,9 @@ export const AppContextWrapper = ({ children }) => {
   const [contractAddress, setContractAddress] = useState<string>('');
   const [readContract, setReadContract] = useState<LissajousToken>();
   const [writeContract, setWriteContract] = useState<LissajousToken>();
+  const [minPrice, setMinPrice] = useState<BigNumber>(
+    ethers.utils.parseEther('0.01'),
+  );
 
   useEffect(() => {
     (async () => {
@@ -71,8 +71,6 @@ export const AppContextWrapper = ({ children }) => {
         alert('Please switch to Rinkeby');
       }
 
-      // const blockNumber = await provider.getBlockNumber();
-
       console.log(contractAddress, provider);
 
       const contract = LissajousToken__factory.connect(
@@ -81,12 +79,13 @@ export const AppContextWrapper = ({ children }) => {
       );
       setReadContract(contract);
 
-      // const baseUri = await contract.baseURI();
       setTotalSupply((await contract.totalSupply()).toNumber());
 
-      provider.on('block', (blockNumber) => {
+      provider.on('block', async (blockNumber) => {
         // console.log('newBlcok');
+        const minPrice = await contract.currentMinPrice();
         setCurrentBlock(blockNumber);
+        setMinPrice(minPrice);
       });
 
       contract.on('Transfer', async (from, to, tokenId) => {
@@ -125,6 +124,7 @@ export const AppContextWrapper = ({ children }) => {
         connect,
         readContract,
         writeContract,
+        minPrice,
       }}
     >
       {children}

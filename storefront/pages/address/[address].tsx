@@ -34,8 +34,6 @@ const Address = () => {
 
         const configs = await Promise.all(promises);
 
-        console.log(configs);
-
         setTokens(
           configs.map(({ block, value }) =>
             simulateLissajousArgs(block, value),

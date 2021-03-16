@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-
+import { useForm } from 'react-hook-form';
+import { ethers } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 
 import { simulateLissajousArgs } from '@private/contracts';
@@ -14,12 +15,21 @@ const Index = () => {
     currentBlock,
     connect,
     writeContract,
+    minPrice,
   } = useAppContext();
+
+  const { register, handleSubmit, watch } = useForm();
+
+  const { price, amount } = watch();
+
+  console.log(typeof price);
+
+  const defaultPrice = ethers.utils.formatEther(minPrice.mul(1000).div(999));
 
   const mint = async () => {
     try {
-      await writeContract.mint(accounts[0], 1, {
-        value: BigNumber.from('10').pow('17'),
+      await writeContract.mint(accounts[0], amount, {
+        value: ethers.utils.parseEther(price).mul(amount),
       });
     } catch (e) {
       console.error(e);
@@ -43,9 +53,45 @@ const Index = () => {
       <h2>{totalSupply} already minted</h2>
       <h2>Block Number: {currentBlock}</h2>
       <p>
-        <button onClick={mint} disabled={!accounts[0]}>
-          <i>Mint!</i>
-        </button>
+        <form onSubmit={handleSubmit(mint)}>
+          {/* register your input into the hook by invoking the "register" function */}
+          <p>
+            <label>
+              How many?
+              <input
+                disabled={!accounts[0]}
+                name="amount"
+                defaultValue="1"
+                type="number"
+                ref={register({ required: true })}
+              />
+            </label>
+          </p>
+
+          <p>
+            <label>
+              Price Per Token Ξ
+              <input
+                disabled={!accounts[0]}
+                name="price"
+                defaultValue={defaultPrice}
+                type="string"
+                ref={register({ required: true })}
+              />
+            </label>
+          </p>
+
+          <p>
+            Total: Ξ
+            {ethers.utils.formatEther(
+              ethers.utils.parseEther(price || '0').mul(amount || '1'),
+            )}
+          </p>
+
+          <button disabled={!accounts[0]} type="submit">
+            <i>Mint!</i>
+          </button>
+        </form>
       </p>
       <div className="holder">
         {currentBlock &&
