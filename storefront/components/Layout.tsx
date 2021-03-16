@@ -12,6 +12,7 @@ const Layout = (props) => {
       <style jsx global>{`
         html,
         body {
+          font-family: lunchtype22regular;
           background-color: black;
           width: 100%;
           height: 100%;
@@ -25,6 +26,10 @@ const Layout = (props) => {
         }
         p {
           margin-bottom: 10px;
+        }
+
+        a {
+          color: white;
         }
       `}</style>
     </div>
