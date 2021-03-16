@@ -14,8 +14,9 @@ import LissajousSvg from '../components/LissajousSvg';
 const ethereum = (global as any).ethereum;
 
 const Index = () => {
-  const [address, setAddress] = useState('');
-  const [contract, setContract] = useState<LissajousToken>();
+  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
+  const [accounts, setAccounts] = useState<string[]>([]);
+  const [chainId, setChainId] = useState(0);
   const [totalSupply, setTotalSupply] = useState<number>();
   const [currentBlock, setCurrentBlock] = useState<number>();
 
@@ -29,37 +30,33 @@ const Index = () => {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const { chainId } = await provider.getNetwork();
 
+      setProvider(provider);
+
       const accounts = await (window as any).ethereum.request({
         method: 'eth_accounts',
       });
+      setAccounts(accounts);
 
-      ethereum.on('accountsChanged', function (accounts) {
+      provider.on('accountsChanged', (accounts) => {
         console.log('accounts changed');
+        setAccounts(accounts);
       });
 
-      if (!accounts.length) {
-        alert('Please unlock metamask');
-        return;
-      }
+      provider.on('chainChanged', (chainId) => {
+        console.log('accounts changed');
+        setChainId(chainId);
+      });
 
       if (chainId !== 4) {
         alert('Please switch to Rinkeby');
       }
 
-      console.log({ chainId, provider });
-
-      const signer = await provider.getSigner();
-
-      setAddress(await signer.getAddress());
-
       // const blockNumber = await provider.getBlockNumber();
 
       const contract = LissajousToken__factory.connect(
         addresses[chainId].LissajousToken,
-        signer,
+        provider,
       );
-
-      setContract(contract);
 
       // const baseUri = await contract.baseURI();
       setTotalSupply((await contract.totalSupply()).toNumber());
@@ -76,17 +73,36 @@ const Index = () => {
     })();
   }, []);
 
+  const connect = async () => {
+    await ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await ethereum.request({
+      method: 'eth_accounts',
+    });
+    setAccounts(accounts);
+  };
+
   const mint = async () => {
-    await contract.mint(address, 1, { value: BigNumber.from('10').pow('17') });
+    const signer = await provider.getSigner();
+
+    const contract = LissajousToken__factory.connect(
+      addresses[chainId].LissajousToken,
+      signer,
+    );
+    await contract.mint(accounts[0], 1, {
+      value: BigNumber.from('10').pow('17'),
+    });
   };
 
   return (
     <div>
+      <header>
+        {accounts[0] || <button onClick={connect}>Connect</button>}{' '}
+      </header>
       <h1>LissajousToken</h1>
       <h2>{totalSupply} already minted</h2>
       <h2>Block Number: {currentBlock}</h2>
       <p>
-        <button onClick={mint}>
+        <button onClick={mint} disabled={!accounts[0]}>
           <i>Mint!</i>
         </button>
       </p>
