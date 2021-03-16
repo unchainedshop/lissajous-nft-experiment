@@ -56,22 +56,6 @@ export const AppContextWrapper = ({ children }) => {
       setContractAddress(addresses[chainId].LissajousToken);
 
       const blockNumber = await scopedProvider.getBlockNumber();
-      const onBlock = async (blockNumber) => {
-        setCurrentBlock(blockNumber);
-
-        if (scopedProvider) {
-          const block = await scopedProvider.getBlock(blockNumber);
-
-          setLastBlockTimestamps((oldTimetamps) =>
-            unique([block.timestamp, ...oldTimetamps]).slice(0, 10),
-          );
-        }
-        if (readContract) {
-          const minPrice = await readContract.currentMinPrice();
-          setMinPrice(minPrice);
-        }
-      };
-      onBlock(blockNumber);
 
       scopedProvider.on('chainChanged', (chainId) => {
         console.log('chainChanged');
@@ -87,11 +71,23 @@ export const AppContextWrapper = ({ children }) => {
         contractAddress,
         scopedProvider,
       );
+
       setReadContract(contract);
 
-      setTotalSupply((await contract.totalSupply()).toNumber());
+      const onBlock = async (blockNumber) => {
+        setCurrentBlock(blockNumber);
+        const block = await scopedProvider.getBlock(blockNumber);
 
+        setLastBlockTimestamps((oldTimetamps) =>
+          unique([block.timestamp, ...oldTimetamps]).slice(0, 10),
+        );
+        const minPrice = await contract.currentMinPrice();
+        setMinPrice(minPrice);
+      };
+      onBlock(blockNumber);
       scopedProvider.on('block', onBlock);
+
+      setTotalSupply((await contract.totalSupply()).toNumber());
 
       contract.on('Transfer', async (from, to, tokenId) => {
         console.log('Transfer', { from, to, tokenId });

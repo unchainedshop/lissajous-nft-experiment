@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useAppContext } from './AppContextWrapper';
 
 const Layout = (props) => {
-  const { hasSigner, accounts, connect } = useAppContext();
+  const { hasSigner, accounts, connect, totalSupply } = useAppContext();
 
   return (
     <div className="page-layout">
@@ -13,7 +13,7 @@ const Layout = (props) => {
           </Link>{' '}
           |{' '}
           <Link href="/gallery">
-            <a>Gallery</a>
+            <a>Gallery ({totalSupply})</a>
           </Link>
         </nav>
         <div className="right">
@@ -72,6 +72,11 @@ const Layout = (props) => {
           padding-top: 2em;
           padding-left: 1em;
           padding-right: 1em;
+        }
+
+        .right {
+          left: -1em;
+          position: relative;
         }
       `}</style>
     </div>
