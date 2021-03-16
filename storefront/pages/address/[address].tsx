@@ -2,15 +2,16 @@ import { useRouter } from 'next/router';
 import { simulateLissajousArgs } from '@private/contracts';
 import { useAppContext } from '../../components/AppContextWrapper';
 import { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
 import LissajousSvg from '../../components/LissajousSvg';
 
 const Address = () => {
   const router = useRouter();
-  const { readContract } = useAppContext();
+  const { readContract, accounts } = useAppContext();
   const [tokens, setTokens] = useState([]);
 
   const address = router.query.address as string;
+
+  const isOwner = address === accounts[0];
 
   useEffect(() => {
     if (readContract) {
@@ -46,8 +47,8 @@ const Address = () => {
 
   return (
     <div>
-      {router.query.address}
       <div>
+        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
         {tokens.map((args, i) => (
           <div className="figure" key={i}>
             <LissajousSvg {...args} />

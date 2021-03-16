@@ -1,6 +1,13 @@
+import Link from 'next/link';
+
 const Layout = (props) => {
   return (
     <div className="page-layout">
+      <div>
+        <Link href="/">
+          <a>home</a>
+        </Link>
+      </div>
       {props.children}
       <style jsx global>{`
         html,
