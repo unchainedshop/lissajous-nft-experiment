@@ -10,15 +10,23 @@ import {
   simulateLissajousArgs,
 } from '@private/contracts';
 import LissajousSvg from '../components/LissajousSvg';
+import { useAppContext } from '../components/AppContextWrapper';
 
 const ethereum = (global as any).ethereum;
 
 const Index = () => {
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
-  const [accounts, setAccounts] = useState<string[]>([]);
-  const [chainId, setChainId] = useState(0);
-  const [totalSupply, setTotalSupply] = useState<number>();
-  const [currentBlock, setCurrentBlock] = useState<number>();
+  const {
+    provider,
+    setProvider,
+    accounts,
+    setAccounts,
+    chainId,
+    setChainId,
+    totalSupply,
+    setTotalSupply,
+    currentBlock,
+    setCurrentBlock,
+  } = useAppContext();
 
   useEffect(() => {
     (async () => {
