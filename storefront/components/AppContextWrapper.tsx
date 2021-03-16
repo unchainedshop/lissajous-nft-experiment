@@ -15,9 +15,12 @@ export const AppContext = React.createContext<{
   connect: () => Promise<void>;
   readContract?: LissajousToken;
   writeContract?: LissajousToken;
+  transactions: ethers.ContractTransaction[];
+  addTransaction: (t: ethers.ContractTransaction) => void;
 }>({
   accounts: [],
   connect: () => null,
+  transactions: [],
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -27,6 +30,9 @@ const ethereum = (global as any).ethereum;
 const unique = (arr) => arr.filter((v, i, a) => a.indexOf(v) === i);
 
 export const AppContextWrapper = ({ children }) => {
+  const [transactions, setTransactions] = useState<
+    ethers.ContractTransaction[]
+  >([]);
   const [provider, setProvider] = useState<ethers.providers.BaseProvider>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [chainId, setChainId] = useState(0);
@@ -133,6 +139,15 @@ export const AppContextWrapper = ({ children }) => {
     setAccounts(accounts);
   };
 
+  const addTransaction = (tx) => {
+    setTransactions((current) => [tx, ...current]);
+    tx.wait().then(() => {
+      setTransactions((current) =>
+        current.filter((t) => t.nonce !== tx.nonce && tx.from !== t.from),
+      );
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -144,6 +159,8 @@ export const AppContextWrapper = ({ children }) => {
         readContract,
         writeContract,
         minPrice,
+        transactions,
+        addTransaction,
       }}
     >
       {children}

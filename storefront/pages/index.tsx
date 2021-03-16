@@ -6,11 +6,19 @@ import { ethers } from 'ethers';
 import { simulateLissajousArgs } from '@private/contracts';
 import LissajousSvg from '../components/LissajousSvg';
 import { useAppContext } from '../components/AppContextWrapper';
+import { useRouter } from 'next/router';
 
 let renderTimestamp: Date;
 
 const Index = () => {
-  const { accounts, currentBlock, writeContract, minPrice } = useAppContext();
+  const {
+    accounts,
+    currentBlock,
+    writeContract,
+    minPrice,
+    addTransaction,
+  } = useAppContext();
+  const router = useRouter();
   const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
   const scrollingEl = useRef(null);
   const { register, handleSubmit, watch } = useForm();
@@ -21,9 +29,13 @@ const Index = () => {
 
   const mint = async () => {
     try {
-      await writeContract.mint(accounts[0], amount, {
+      const tx = await writeContract.mint(accounts[0], amount, {
         value: ethers.utils.parseEther(price).mul(amount),
       });
+
+      addTransaction(tx);
+
+      router.push(`/address/${accounts[0]}`);
     } catch (e) {
       console.error(e);
       // alert(e.message.match(/"message":"execution reverted:(.*)"$/gm));

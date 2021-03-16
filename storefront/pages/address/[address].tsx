@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 const Address = () => {
   const router = useRouter();
-  const { readContract, accounts } = useAppContext();
+  const { readContract, accounts, transactions } = useAppContext();
   const [tokens, setTokens] = useState([]);
 
   const address = router.query.address as string;
@@ -50,6 +50,9 @@ const Address = () => {
     <div>
       <div>
         <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
+        {transactions.length > 0 && (
+          <div>{transactions.length} pending transactions</div>
+        )}
         {tokens.map((token, i) => (
           <div className="figure" key={i}>
             <Link href={`/token/${token.tokenId}`}>
