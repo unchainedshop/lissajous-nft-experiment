@@ -10,6 +10,7 @@ import { useAppContext } from '../components/AppContextWrapper';
 
 const Index = () => {
   const {
+    hasSigner,
     accounts,
     totalSupply,
     currentBlock,
@@ -46,53 +47,55 @@ const Index = () => {
             <a>{accounts[0]}</a>
           </Link>
         ) : (
-          <button onClick={connect}>Connect</button>
+          <button onClick={connect} disabled={!hasSigner}>
+            Connect
+          </button>
         )}{' '}
       </header>
       <h1>LissajousToken</h1>
       <h2>{totalSupply} already minted</h2>
       <h2>Block Number: {currentBlock}</h2>
-      <p>
-        <form onSubmit={handleSubmit(mint)}>
-          {/* register your input into the hook by invoking the "register" function */}
-          <p>
-            <label>
-              How many?
-              <input
-                disabled={!accounts[0]}
-                name="amount"
-                defaultValue="1"
-                type="number"
-                ref={register({ required: true })}
-              />
-            </label>
-          </p>
 
-          <p>
-            <label>
-              Price Per Token Ξ
-              <input
-                disabled={!accounts[0]}
-                name="price"
-                defaultValue={defaultPrice}
-                type="string"
-                ref={register({ required: true })}
-              />
-            </label>
-          </p>
+      <form onSubmit={handleSubmit(mint)}>
+        {/* register your input into the hook by invoking the "register" function */}
+        <p>
+          <label>
+            How many?
+            <input
+              disabled={!accounts[0]}
+              name="amount"
+              defaultValue="1"
+              type="number"
+              ref={register({ required: true })}
+            />
+          </label>
+        </p>
 
-          <p>
-            Total: Ξ
-            {ethers.utils.formatEther(
-              ethers.utils.parseEther(price || '0').mul(amount || '1'),
-            )}
-          </p>
+        <p>
+          <label>
+            Price Per Token Ξ
+            <input
+              disabled={!accounts[0]}
+              name="price"
+              defaultValue={defaultPrice}
+              type="string"
+              ref={register({ required: true })}
+            />
+          </label>
+        </p>
 
-          <button disabled={!accounts[0]} type="submit">
-            <i>Mint!</i>
-          </button>
-        </form>
-      </p>
+        <p>
+          Total: Ξ
+          {ethers.utils.formatEther(
+            ethers.utils.parseEther(price || '0').mul(amount || '1'),
+          )}
+        </p>
+
+        <button disabled={!accounts[0]} type="submit">
+          <i>Mint!</i>
+        </button>
+      </form>
+
       <div className="holder">
         {currentBlock &&
           Array(128)

@@ -1,5 +1,5 @@
 import React from 'react';
-import App, { Container } from 'next/app';
+import App from 'next/app';
 import Layout from '../components/Layout';
 import { AppContextWrapper } from '../components/AppContextWrapper';
 
@@ -8,13 +8,11 @@ import { AppContextWrapper } from '../components/AppContextWrapper';
 
 const UnchainedApp = ({ Component, pageProps }) => {
   return (
-    <Container>
-      <AppContextWrapper>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </AppContextWrapper>
-    </Container>
+    <AppContextWrapper>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </AppContextWrapper>
   );
 };
 

@@ -7,6 +7,7 @@ import {
 } from '@private/contracts';
 
 export const AppContext = React.createContext<{
+  hasSigner: boolean;
   accounts: string[];
   totalSupply?: number;
   currentBlock?: number;
@@ -24,7 +25,7 @@ export const useAppContext = () => useContext(AppContext);
 const ethereum = (global as any).ethereum;
 
 export const AppContextWrapper = ({ children }) => {
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
+  const [provider, setProvider] = useState<ethers.providers.BaseProvider>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [chainId, setChainId] = useState(0);
   const [totalSupply, setTotalSupply] = useState<number>();
@@ -40,26 +41,22 @@ export const AppContextWrapper = ({ children }) => {
     (async () => {
       if (!ethereum) {
         alert('Please install metamask');
-        return;
       }
 
-      const provider = new ethers.providers.Web3Provider(ethereum);
+      const provider = ethereum
+        ? new ethers.providers.Web3Provider(ethereum)
+        : ethers.getDefaultProvider('rinkeby', {
+            alchemy: 'IAShCvvktlU_ZEHJOvhLYXngadTDjBdX',
+          });
+
+      console.log(provider);
+
       const { chainId } = await provider.getNetwork();
       setChainId(chainId);
       const contractAddress = addresses[chainId].LissajousToken;
       setContractAddress(addresses[chainId].LissajousToken);
 
       setProvider(provider);
-
-      const accounts = await (window as any).ethereum.request({
-        method: 'eth_accounts',
-      });
-      setAccounts(accounts);
-
-      provider.on('accountsChanged', (accounts) => {
-        console.log('accounts changed');
-        setAccounts(accounts);
-      });
 
       provider.on('chainChanged', (chainId) => {
         console.log('accounts changed');
@@ -92,14 +89,26 @@ export const AppContextWrapper = ({ children }) => {
         console.log('Transfer', { from, to, tokenId });
         setTotalSupply((await contract.totalSupply()).toNumber());
       });
+
+      if (ethereum) {
+        const accounts = ethereum.request({
+          method: 'eth_accounts',
+        });
+        setAccounts(accounts);
+
+        provider.on('accountsChanged', (accounts) => {
+          console.log('accounts changed');
+          setAccounts(accounts);
+        });
+      }
     })();
   }, []);
 
   useEffect(() => {
-    if (!provider) return;
+    if (!(provider as any)?.getSigner) return;
 
     (async () => {
-      const signer = await provider.getSigner();
+      const signer = await (provider as any).getSigner();
 
       const contract = LissajousToken__factory.connect(contractAddress, signer);
 
@@ -118,6 +127,7 @@ export const AppContextWrapper = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
+        hasSigner: !!ethereum,
         accounts,
         totalSupply,
         currentBlock,
