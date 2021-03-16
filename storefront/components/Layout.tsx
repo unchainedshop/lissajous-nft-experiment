@@ -6,6 +6,10 @@ const Layout = (props) => {
       <div>
         <Link href="/">
           <a>home</a>
+        </Link>{' '}
+        -{' '}
+        <Link href="/gallery">
+          <a>gallery</a>
         </Link>
       </div>
       {props.children}
