@@ -6,14 +6,18 @@ import {
   LissajousToken__factory,
 } from '@private/contracts';
 
-export const AppContext = React.createContext({
-  contractAddress: '',
-  provider: null,
+export const AppContext = React.createContext<{
+  accounts: string[];
+  totalSupply?: number;
+  currentBlock?: number;
+  connect: () => Promise<void>;
+  readContract?: LissajousToken;
+  writeContract?: LissajousToken;
+}>({
   accounts: [],
-  chainId: 0,
   totalSupply: null,
   currentBlock: null,
-  connect: (f) => f,
+  connect: () => null,
   readContract: null,
   writeContract: null,
 });
@@ -42,6 +46,7 @@ export const AppContextWrapper = ({ children }) => {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const { chainId } = await provider.getNetwork();
       setChainId(chainId);
+      const contractAddress = addresses[chainId].LissajousToken;
       setContractAddress(addresses[chainId].LissajousToken);
 
       setProvider(provider);
@@ -68,8 +73,10 @@ export const AppContextWrapper = ({ children }) => {
 
       // const blockNumber = await provider.getBlockNumber();
 
+      console.log(contractAddress, provider);
+
       const contract = LissajousToken__factory.connect(
-        addresses[chainId].LissajousToken,
+        contractAddress,
         provider,
       );
       setReadContract(contract);
@@ -95,10 +102,7 @@ export const AppContextWrapper = ({ children }) => {
     (async () => {
       const signer = await provider.getSigner();
 
-      const contract = LissajousToken__factory.connect(
-        addresses[chainId].LissajousToken,
-        signer,
-      );
+      const contract = LissajousToken__factory.connect(contractAddress, signer);
 
       setWriteContract(contract);
     })();
@@ -115,10 +119,7 @@ export const AppContextWrapper = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
-        contractAddress,
-        provider,
         accounts,
-        chainId,
         totalSupply,
         currentBlock,
         connect,
