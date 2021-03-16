@@ -7,7 +7,7 @@ import {
 } from '@private/contracts';
 
 export const AppContext = React.createContext<{
-  hasSigner: boolean;
+  hasSigner?: boolean;
   accounts: string[];
   totalSupply?: number;
   currentBlock?: number;
@@ -49,8 +49,6 @@ export const AppContextWrapper = ({ children }) => {
             alchemy: 'IAShCvvktlU_ZEHJOvhLYXngadTDjBdX',
           });
 
-      console.log(provider);
-
       const { chainId } = await provider.getNetwork();
       setChainId(chainId);
       const contractAddress = addresses[chainId].LissajousToken;
@@ -59,7 +57,7 @@ export const AppContextWrapper = ({ children }) => {
       setProvider(provider);
 
       provider.on('chainChanged', (chainId) => {
-        console.log('accounts changed');
+        console.log('chainChanged');
         setChainId(chainId);
         setContractAddress(addresses[chainId].LissajousToken);
       });
@@ -67,8 +65,6 @@ export const AppContextWrapper = ({ children }) => {
       if (chainId !== 4) {
         alert('Please switch to Rinkeby');
       }
-
-      console.log(contractAddress, provider);
 
       const contract = LissajousToken__factory.connect(
         contractAddress,
@@ -91,9 +87,10 @@ export const AppContextWrapper = ({ children }) => {
       });
 
       if (ethereum) {
-        const accounts = ethereum.request({
+        const accounts = await ethereum.request({
           method: 'eth_accounts',
         });
+
         setAccounts(accounts);
 
         provider.on('accountsChanged', (accounts) => {

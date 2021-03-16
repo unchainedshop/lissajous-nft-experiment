@@ -2,7 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
-import { BigNumber } from '@ethersproject/bignumber';
 
 import { simulateLissajousArgs } from '@private/contracts';
 import LissajousSvg from '../components/LissajousSvg';
@@ -22,8 +21,6 @@ const Index = () => {
   const { register, handleSubmit, watch } = useForm();
 
   const { price, amount } = watch();
-
-  console.log(typeof price);
 
   const defaultPrice = ethers.utils.formatEther(minPrice.mul(1000).div(999));
 
