@@ -7,7 +7,8 @@
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ schmidsi/generic-erc721-subgraph",
     "create-local": "graph create --node http://localhost:8020/ schmidsi/generic-erc721-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ schmidsi/generic-erc721-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 schmidsi/generic-erc721-subgraph"
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 schmidsi/generic-erc721-subgraph",
+    "postinstall": "npm run codegen"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.20.0",
