@@ -1,13 +1,25 @@
 import { useRouter } from 'next/router';
 import { simulateLissajousArgs } from '@private/contracts';
+import { useAppContext } from '../../components/AppContextWrapper';
+import { useEffect, useState } from 'react';
 import LissajousSvg from '../../components/LissajousSvg';
 
-const BlockNumber = () => {
+const Token = () => {
   const router = useRouter();
+  const [args, setArgs] = useState(null);
 
-  const blockNumber = router.query.blockNumber as string;
+  const tokenId = router.query.tokenId as string;
 
-  const args = simulateLissajousArgs(parseInt(blockNumber, 10));
+  const { readContract } = useAppContext();
+
+  useEffect(() => {
+    (async () => {
+      const block = await readContract.tokenMintBlock(tokenId);
+      const value = await readContract.tokenMintValue(tokenId);
+
+      setArgs(simulateLissajousArgs(block.toNumber(), value));
+    })();
+  }, [tokenId]);
 
   return (
     <div>
@@ -30,4 +42,4 @@ const BlockNumber = () => {
   );
 };
 
-export default BlockNumber;
+export default Token;

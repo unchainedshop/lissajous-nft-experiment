@@ -3,6 +3,7 @@ import { simulateLissajousArgs } from '@private/contracts';
 import { useAppContext } from '../../components/AppContextWrapper';
 import { useEffect, useState } from 'react';
 import LissajousSvg from '../../components/LissajousSvg';
+import Link from 'next/link';
 
 const Address = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ const Address = () => {
             const value = await readContract.tokenMintValue(tokenId);
 
             return {
+              tokenId,
               block: block.toNumber(),
               value,
             };
@@ -35,9 +37,10 @@ const Address = () => {
         const configs = await Promise.all(promises);
 
         setTokens(
-          configs.map(({ block, value }) =>
-            simulateLissajousArgs(block, value),
-          ),
+          configs.map(({ tokenId, block, value }) => ({
+            tokenId,
+            args: simulateLissajousArgs(block, value),
+          })),
         );
       })();
     }
@@ -47,9 +50,13 @@ const Address = () => {
     <div>
       <div>
         <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
-        {tokens.map((args, i) => (
+        {tokens.map((token, i) => (
           <div className="figure" key={i}>
-            <LissajousSvg {...args} />
+            <Link href={`/token/${token.tokenId}`}>
+              <a>
+                <LissajousSvg {...token.args} />
+              </a>
+            </Link>
           </div>
         ))}
       </div>
