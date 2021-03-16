@@ -45,14 +45,14 @@ contract LissajousToken is Context, Ownable, ERC721 {
         bytes3(0xFF55FF), // light_magenta
         bytes3(0x55FFFF), // light_cyan
         bytes3(0xFF5555), // light_red
-        bytes3(0xFF5555), // ligth_blue
+        bytes3(0x5555FF), // ligth_blue
         bytes3(0xFFFFFF), // white
-        bytes3(0xAAAAAA), // light_gray
         bytes3(0x00AA00), // green
         bytes3(0xAA5500), // brown
         bytes3(0xAA00AA), // magenta
         bytes3(0x00AAAA), // cyan
-        bytes3(0xAA0000) // red
+        bytes3(0xAA0000), // red
+        bytes3(0xAAAAAA) // light_gray
     ];
 
     struct TokenInfo {

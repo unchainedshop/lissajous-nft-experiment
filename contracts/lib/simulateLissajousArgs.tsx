@@ -12,21 +12,21 @@ const aspectRatios = [
 ];
 
 const priceColorMap = [
-  [ethers.utils.parseEther('100'), '#E5E4E2'], // Platinum
-  [ethers.utils.parseEther('10'), '#ffd700'], // Gold
-  [ethers.utils.parseEther('5'), '#55FF55'], // light_green
-  [ethers.utils.parseEther('3'), '#FFFF55'], // yellow
-  [ethers.utils.parseEther('1'), '#FF55FF'], // light_magenta
-  [ethers.utils.parseEther('0.8'), '#55FFFF'], // light_cyan
-  [ethers.utils.parseEther('0.6'), '#FF5555'], // light_red
-  [ethers.utils.parseEther('0.4'), '#FF5555'], // ligth_blue
-  [ethers.utils.parseEther('0.2'), '#FFFFFF'], // white
-  [ethers.utils.parseEther('0.1'), '#AAAAAA'], // light_gray
-  [ethers.utils.parseEther('0.08'), '#00AA00'], // green
-  [ethers.utils.parseEther('0.06'), '#AA5500'], // brown
-  [ethers.utils.parseEther('0.04'), '#AA00AA'], // magenta
-  [ethers.utils.parseEther('0.02'), '#00AAAA'], // cyan
-  [ethers.utils.parseEther('0.01'), '#AA0000'], // red]
+  [ethers.utils.parseEther('100'), '#E5E4E2'],
+  [ethers.utils.parseEther('10'), '#ffd700'],
+  [ethers.utils.parseEther('5'), '#55FF55'],
+  [ethers.utils.parseEther('3'), '#FFFF55'],
+  [ethers.utils.parseEther('1'), '#FF55FF'],
+  [ethers.utils.parseEther('0.8'), '#55FFFF'],
+  [ethers.utils.parseEther('0.6'), '#FF5555'],
+  [ethers.utils.parseEther('0.4'), '#5555FF'],
+  [ethers.utils.parseEther('0.2'), '#FFFFFF'],
+  [ethers.utils.parseEther('0.1'), '#00AA00'],
+  [ethers.utils.parseEther('0.08'), '#AA5500'],
+  [ethers.utils.parseEther('0.06'), '#AA00AA'],
+  [ethers.utils.parseEther('0.04'), '#00AAAA'],
+  [ethers.utils.parseEther('0.02'), '#AA0000'],
+  [ethers.utils.parseEther('0.01'), '#AAAAAA'],
 ];
 
 export type LissajousArgs = {
