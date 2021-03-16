@@ -48,7 +48,6 @@ const simulateLissajousArgs = (
   blockNumber: number,
   tokenPrice: BigNumber = BigNumber.from(0),
 ): LissajousArgs => {
-  console.log(blockNumber);
   const currentHash = getBlockHash(blockNumber);
   const array = ethers.utils.arrayify(currentHash);
 

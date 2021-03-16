@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+
 import { BigNumber } from '@ethersproject/bignumber';
 
 import {
@@ -10,6 +11,8 @@ import {
 } from '@private/contracts';
 import LissajousSvg from '../components/LissajousSvg';
 
+const ethereum = (global as any).ethereum;
+
 const Index = () => {
   const [address, setAddress] = useState('');
   const [contract, setContract] = useState<LissajousToken>();
@@ -18,17 +21,24 @@ const Index = () => {
 
   useEffect(() => {
     (async () => {
-      const provider = new ethers.providers.Web3Provider(
-        (window as any).ethereum,
-      );
+      if (!ethereum) {
+        alert('Please install metamask');
+        return;
+      }
+
+      const provider = new ethers.providers.Web3Provider(ethereum);
       const { chainId } = await provider.getNetwork();
 
       const accounts = await (window as any).ethereum.request({
         method: 'eth_accounts',
       });
 
+      ethereum.on('accountsChanged', function (accounts) {
+        console.log('accounts changed');
+      });
+
       if (!accounts.length) {
-        alert('Please install & unlock metamask');
+        alert('Please unlock metamask');
         return;
       }
 
@@ -55,7 +65,7 @@ const Index = () => {
       setTotalSupply((await contract.totalSupply()).toNumber());
 
       provider.on('block', (blockNumber) => {
-        console.log('newBlcok');
+        // console.log('newBlcok');
         setCurrentBlock(blockNumber);
       });
 
