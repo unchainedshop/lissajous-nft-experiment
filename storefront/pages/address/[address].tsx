@@ -49,9 +49,21 @@ const Address = () => {
       {router.query.address}
       <div>
         {tokens.map((args, i) => (
-          <LissajousSvg key={i} {...args} />
+          <div className="figure" key={i}>
+            <LissajousSvg {...args} />
+          </div>
         ))}
       </div>
+      <style jsx>{`
+        .figure {
+          position: relative;
+          display: inline-block;
+          height: 128px;
+          width: 128px;
+          margin: 10px;
+          border: 1px solid darkgrey;
+        }
+      `}</style>
     </div>
   );
 };
