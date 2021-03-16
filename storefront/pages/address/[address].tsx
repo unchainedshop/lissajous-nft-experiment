@@ -17,25 +17,29 @@ const Address = () => {
       (async () => {
         const balance = await readContract.balanceOf(address);
 
-        const first = await readContract.tokenOfOwnerByIndex(
-          address,
-          balance.sub(1),
+        const promises = Array(balance.toNumber())
+          .fill(0)
+          .map(async (_, i) => {
+            const tokenId = await readContract.tokenOfOwnerByIndex(address, i);
+
+            const block = await readContract.tokenMintBlock(tokenId);
+            const value = await readContract.tokenMintValue(tokenId);
+
+            return {
+              block: block.toNumber(),
+              value,
+            };
+          });
+
+        const configs = await Promise.all(promises);
+
+        console.log(configs);
+
+        setTokens(
+          configs.map(({ block, value }) =>
+            simulateLissajousArgs(block, value),
+          ),
         );
-
-        const firstBlock = await readContract.tokenMintBlock(first);
-        const firstValue = await readContract.tokenMintValue(first);
-
-        console.log({
-          firstBlock: firstBlock.toNumber(),
-          firstValue: ethers.utils.formatEther(firstValue),
-        });
-
-        setTokens([
-          ...tokens,
-          simulateLissajousArgs(firstBlock.toNumber(), firstValue),
-        ]);
-
-        console.log(balance);
       })();
     }
   }, [readContract]);
