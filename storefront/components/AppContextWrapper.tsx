@@ -24,6 +24,8 @@ export const useAppContext = () => useContext(AppContext);
 
 const ethereum = (global as any).ethereum;
 
+const unique = (arr) => arr.filter((v, i, a) => a.indexOf(v) === i);
+
 export const AppContextWrapper = ({ children }) => {
   const [provider, setProvider] = useState<ethers.providers.BaseProvider>();
   const [accounts, setAccounts] = useState<string[]>([]);
@@ -36,27 +38,42 @@ export const AppContextWrapper = ({ children }) => {
   const [minPrice, setMinPrice] = useState<BigNumber>(
     ethers.utils.parseEther('0.01'),
   );
+  const [lastBlockTimestamps, setLastBlockTimestamps] = useState([]);
 
   useEffect(() => {
     (async () => {
-      if (!ethereum) {
-        alert('Please install metamask');
-      }
-
-      const provider = ethereum
+      const scopedProvider = ethereum
         ? new ethers.providers.Web3Provider(ethereum)
         : ethers.getDefaultProvider('rinkeby', {
             alchemy: 'IAShCvvktlU_ZEHJOvhLYXngadTDjBdX',
           });
 
-      const { chainId } = await provider.getNetwork();
+      setProvider(scopedProvider);
+
+      const { chainId } = await scopedProvider.getNetwork();
       setChainId(chainId);
       const contractAddress = addresses[chainId].LissajousToken;
       setContractAddress(addresses[chainId].LissajousToken);
 
-      setProvider(provider);
+      const blockNumber = await scopedProvider.getBlockNumber();
+      const onBlock = async (blockNumber) => {
+        setCurrentBlock(blockNumber);
 
-      provider.on('chainChanged', (chainId) => {
+        if (scopedProvider) {
+          const block = await scopedProvider.getBlock(blockNumber);
+
+          setLastBlockTimestamps((oldTimetamps) =>
+            unique([block.timestamp, ...oldTimetamps]).slice(0, 10),
+          );
+        }
+        if (readContract) {
+          const minPrice = await readContract.currentMinPrice();
+          setMinPrice(minPrice);
+        }
+      };
+      onBlock(blockNumber);
+
+      scopedProvider.on('chainChanged', (chainId) => {
         console.log('chainChanged');
         setChainId(chainId);
         setContractAddress(addresses[chainId].LissajousToken);
@@ -68,18 +85,13 @@ export const AppContextWrapper = ({ children }) => {
 
       const contract = LissajousToken__factory.connect(
         contractAddress,
-        provider,
+        scopedProvider,
       );
       setReadContract(contract);
 
       setTotalSupply((await contract.totalSupply()).toNumber());
 
-      provider.on('block', async (blockNumber) => {
-        // console.log('newBlcok');
-        const minPrice = await contract.currentMinPrice();
-        setCurrentBlock(blockNumber);
-        setMinPrice(minPrice);
-      });
+      scopedProvider.on('block', onBlock);
 
       contract.on('Transfer', async (from, to, tokenId) => {
         console.log('Transfer', { from, to, tokenId });
@@ -93,11 +105,15 @@ export const AppContextWrapper = ({ children }) => {
 
         setAccounts(accounts);
 
-        provider.on('accountsChanged', (accounts) => {
+        scopedProvider.on('accountsChanged', (accounts) => {
           console.log('accounts changed');
           setAccounts(accounts);
         });
       }
+
+      // return () => {
+      //   provider.off('block');
+      // };
     })();
   }, []);
 

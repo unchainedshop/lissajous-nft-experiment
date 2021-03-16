@@ -18,8 +18,6 @@ const Index = () => {
     minPrice,
   } = useAppContext();
 
-  console.log(hasSigner);
-
   const { register, handleSubmit, watch } = useForm();
 
   const { price, amount } = watch();
