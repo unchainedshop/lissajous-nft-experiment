@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
 import { ChromePicker } from 'react-color';
 
-import LissajousSvg from '../components/LissajousSvg';
-import RangeInput from '../components/RangeInput';
+import LissajousCanvas from '../../components/LissajousCanvas';
+import RangeInput from '../../components/RangeInput';
 
 let routerUpdateTimeout;
 
@@ -51,7 +51,7 @@ const LissajousTest = (): React.ReactElement => {
     <>
       <div className="container">
         <div className="holder">
-          <LissajousSvg {...values} />
+          <LissajousCanvas {...values} />
         </div>
       </div>
       <form>

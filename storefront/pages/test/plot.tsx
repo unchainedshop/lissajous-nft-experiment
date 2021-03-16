@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 
-import LissajousCanvas from '../components/LissajousCanvas';
-import LissajousSvg from '../components/LissajousSvg';
+import LissajousCanvas from '../../components/LissajousCanvas';
+import LissajousSvg from '../../components/LissajousSvg';
 
 const colors = [
   '#ffd700', // Gold
