@@ -95,13 +95,17 @@ const Index = () => {
 
       <div className="holder">
         {currentBlock &&
-          Array(128)
+          Array(512)
             .fill(0)
             .map((_, i) => (
               <div className="figure" key={currentBlock + i}>
-                <LissajousSvg
-                  {...(simulateLissajousArgs(currentBlock + i) as any)}
-                />
+                <Link href={`block/${currentBlock + i}`}>
+                  <a>
+                    <LissajousSvg
+                      {...(simulateLissajousArgs(currentBlock + i) as any)}
+                    />
+                  </a>
+                </Link>
               </div>
             ))}
       </div>

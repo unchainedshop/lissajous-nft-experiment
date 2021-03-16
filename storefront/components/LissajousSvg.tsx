@@ -21,23 +21,26 @@ const LissajousSvg = ({
     const svg = d3.select(canvasRef.current);
     svg.selectAll('path').remove();
 
-    const boundingRect = canvasRef?.current?.getBoundingClientRect();
+    const boundingRect: DOMRect = canvasRef?.current?.getBoundingClientRect();
+
+    const canvasHeight = 512;
+    const canvasWidth = 512;
 
     const numberOfSteps = 16;
     const stepsUntilFull = 512;
     const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
     const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 
-    const canvasHeight = 512 - lineWidth - 4;
-    const canvasWidth = 512 - lineWidth - 4;
+    const figureHeight = 512 - lineWidth - 4;
+    const figureWidht = 512 - lineWidth - 4;
 
     const amplitudeX = width / 16 / 2;
     const amplitudeY = height / 16 / 2;
 
     const translateX =
-      lineWidth / 2 + (canvasWidth - (canvasWidth / 16) * width) / 2 + 1;
+      lineWidth / 2 + (figureWidht - (figureWidht / 16) * width) / 2 + 1;
     const translateY =
-      lineWidth / 2 + (canvasHeight - (canvasHeight / 16) * height) / 2 + 1;
+      lineWidth / 2 + (figureHeight - (figureHeight / 16) * height) / 2 + 1;
 
     const speed = 0.03;
 
@@ -49,12 +52,12 @@ const LissajousSvg = ({
         return {
           x:
             translateX +
-            canvasWidth *
+            figureWidht *
               amplitudeX *
               (1 + Math.sin(step * speed * frequenceX)),
           y:
             translateY +
-            canvasHeight *
+            figureHeight *
               amplitudeY *
               (1 + Math.sin(step * speed * frequenceY + Math.PI * phaseShift)),
         };
@@ -74,7 +77,12 @@ const LissajousSvg = ({
       .attr('stroke', strokeColor)
       .attr('stroke-width', lineWidth + 1)
       .attr('fill', 'none')
-      .attr('transform', 'scale(0.25 0.25)');
+      .attr(
+        'transform',
+        `scale(${boundingRect.height / canvasHeight} ${
+          boundingRect.width / canvasWidth
+        })`,
+      );
   }, [
     frequenceX,
     frequenceY,

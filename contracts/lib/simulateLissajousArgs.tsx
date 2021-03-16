@@ -65,7 +65,7 @@ const simulateLissajousArgs = (
     phaseShift: (1 / 16) * (array[3] % 16),
     totalSteps: (array[4] % 16) + 1,
     startStep: (array[5] % 16) + 1,
-    lineWidth: 10,
+    lineWidth: 8,
     strokeColor: (strokeColor as string).toLowerCase(),
   };
 };
