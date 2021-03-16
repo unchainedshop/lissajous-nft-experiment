@@ -15,7 +15,7 @@ but it can easily be forked and pointed to another contract that follows this
 standard.
 
 See playground:
-https://thegraph.com/explorer/subgraph/schmidsi/generic-erc721-subgraph
+https://thegraph.com/explorer/subgraph/xecutors/nft-playground
 
 ## Fork and use your own contract
 
@@ -27,7 +27,7 @@ the name of your token, the `address` is where it is deployed and `startBlock`
 is the block in which the token was deployed.
 
 In `package.json` you need to search and replace
-`schmidsi/generic-erc721-subgraph` with your Subgraph ID in the form of
+`xecutors/nft-playground` with your Subgraph ID in the form of
 `account-name/subgraph-name`. See
 https://thegraph.com/docs/deploy-a-subgraph#create-a-graph-explorer-account
 

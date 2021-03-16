@@ -4,10 +4,10 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ schmidsi/generic-erc721-subgraph",
-    "create-local": "graph create --node http://localhost:8020/ schmidsi/generic-erc721-subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/ schmidsi/generic-erc721-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 schmidsi/generic-erc721-subgraph",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ xecutors/nft-playground",
+    "create-local": "graph create --node http://localhost:8020/ xecutors/nft-playground",
+    "remove-local": "graph remove --node http://localhost:8020/ xecutors/nft-playground",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 xecutors/nft-playground",
     "postinstall": "npm run codegen"
   },
   "dependencies": {
