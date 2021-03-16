@@ -29,6 +29,7 @@ const Index = () => {
 
       const provider = new ethers.providers.Web3Provider(ethereum);
       const { chainId } = await provider.getNetwork();
+      setChainId(chainId);
 
       setProvider(provider);
 
@@ -88,9 +89,16 @@ const Index = () => {
       addresses[chainId].LissajousToken,
       signer,
     );
-    await contract.mint(accounts[0], 1, {
-      value: BigNumber.from('10').pow('17'),
-    });
+
+    try {
+      await contract.mint(accounts[0], 1, {
+        value: BigNumber.from('10').pow('17'),
+      });
+    } catch (e) {
+      console.error(e);
+      // alert(e.message.match(/"message":"execution reverted:(.*)"$/gm));
+      alert(e.message);
+    }
   };
 
   return (
