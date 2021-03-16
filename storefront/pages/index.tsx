@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ethers } from 'ethers';
 
 import { BigNumber } from '@ethersproject/bignumber';
@@ -104,7 +105,13 @@ const Index = () => {
   return (
     <div>
       <header>
-        {accounts[0] || <button onClick={connect}>Connect</button>}{' '}
+        {accounts[0] ? (
+          <Link href={`/address/${accounts[0]}`}>
+            <a>{accounts[0]}</a>
+          </Link>
+        ) : (
+          <button onClick={connect}>Connect</button>
+        )}{' '}
       </header>
       <h1>LissajousToken</h1>
       <h2>{totalSupply} already minted</h2>
