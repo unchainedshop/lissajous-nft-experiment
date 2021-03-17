@@ -1,14 +1,12 @@
-import { useRouter } from 'next/router';
 import { simulateLissajousArgs } from '@private/contracts';
 import { useAppContext } from '../components/AppContextWrapper';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import LissajousSvg from '../components/LissajousSvg';
 import Link from 'next/link';
+import { BigNumber } from 'ethers';
 
 const Gallery = () => {
-  const router = useRouter();
-  const { readContract } = useAppContext();
-  const [tokens, setTokens] = useState([]);
+  const { readContract, tokens, recordToken } = useAppContext();
 
   useEffect(() => {
     if (readContract) {
@@ -17,25 +15,20 @@ const Gallery = () => {
 
         const promises = Array(totalSupply.toNumber())
           .fill(0)
-          .map(async (_, tokenId) => {
-            const block = await readContract.tokenMintBlock(tokenId);
-            const value = await readContract.tokenMintValue(tokenId);
+          .map(async (_, id) => {
+            const block = await readContract.tokenMintBlock(id);
+            const price = await readContract.tokenMintValue(id);
+            const owner = await readContract.ownerOf(id);
 
-            return {
-              tokenId,
+            recordToken({
               block: block.toNumber(),
-              value,
-            };
+              price,
+              owner,
+              id: BigNumber.from(id),
+            });
           });
 
-        const configs = await Promise.all(promises);
-
-        setTokens(
-          configs.map(({ tokenId, block, value }) => ({
-            tokenId,
-            args: simulateLissajousArgs(block, value),
-          })),
-        );
+        await Promise.all(promises);
       })();
     }
   }, [readContract]);
@@ -46,9 +39,11 @@ const Gallery = () => {
         <h1>Gallery</h1>
         {tokens.map((token, i) => (
           <div className="figure" key={i}>
-            <Link href={`/token/${token.tokenId}`}>
+            <Link href={`/token/${token.id}`}>
               <a>
-                <LissajousSvg {...token.args} />
+                <LissajousSvg
+                  {...simulateLissajousArgs(token.block, token.price)}
+                />
               </a>
             </Link>
           </div>

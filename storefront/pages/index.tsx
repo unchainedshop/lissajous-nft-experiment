@@ -10,19 +10,19 @@ import { useRouter } from 'next/router';
 
 let renderTimestamp: Date;
 
-const cleanPrice = (priceInput: string) => {
-  if (!priceInput) return '0';
+const cleanEthInput = (input: string) => {
+  if (!input) return '0';
 
-  if (priceInput.includes('.')) {
-    const [ints, decimals] = priceInput.split('.');
+  if (input.includes('.')) {
+    const [ints, decimals] = input.split('.');
     return `${ints}.${decimals.slice(0, 18)}`;
   } else {
-    return priceInput;
+    return input;
   }
 };
 
-const parseEthFromPrice = (price: string) =>
-  ethers.utils.parseEther(cleanPrice(price));
+const parseEthFromInput = (price: string) =>
+  ethers.utils.parseEther(cleanEthInput(price));
 
 const Index = () => {
   const {
@@ -37,7 +37,7 @@ const Index = () => {
   const router = useRouter();
   const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
   const scrollingEl = useRef(null);
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit, watch, setValue } = useForm();
   const { price, amount } = watch();
   const defaultPrice = ethers.utils.formatEther(minPrice.mul(1000).div(999));
 
@@ -47,11 +47,13 @@ const Index = () => {
     if (!accounts[0]) return;
 
     try {
+      const parsedPrice = parseEthFromInput(price);
+
       const tx = await writeContract.mint(accounts[0], amount, {
-        value: ethers.utils.parseEther(price).mul(amount),
+        value: parsedPrice.mul(amount),
       });
 
-      addTransaction(tx);
+      addTransaction({ amount, price: parsedPrice, tx });
 
       router.push(`/address/${accounts[0]}`);
     } catch (e) {
@@ -65,8 +67,13 @@ const Index = () => {
     if (currentBlock && !onLoadBlock) setOnLoadBlock(() => currentBlock);
   }, [currentBlock]);
 
+  useEffect(() => {
+    if (!parseEthFromInput(price).gte(minPrice)) {
+      setValue('price', ethers.utils.formatEther(minPrice.mul(1000).div(999)));
+    }
+  }, [minPrice]);
+
   useLayoutEffect(() => {
-    console.log('useLayoutEffect');
     renderTimestamp = new Date();
 
     let animationFrame;
@@ -120,7 +127,7 @@ const Index = () => {
                         {...(simulateLissajousArgs(
                           startBlock + i,
                           isMarked(currentBlock, startBlock, i, amount)
-                            ? parseEthFromPrice(price)
+                            ? parseEthFromInput(price)
                             : undefined,
                         ) as any)}
                       />
@@ -163,7 +170,7 @@ const Index = () => {
                       type="string"
                       ref={register({
                         required: true,
-                        pattern: /\d{1-3}(.\d{1-18})+/,
+                        // pattern: /\d{1-3}(.\d{1-18})+/,
                       })}
                     />
                   </label>
@@ -172,7 +179,7 @@ const Index = () => {
                 <p>
                   Total: Ξ
                   {ethers.utils.formatEther(
-                    parseEthFromPrice(price).mul(amount || '1'),
+                    parseEthFromInput(price).mul(amount || '1'),
                   )}
                 </p>
 
@@ -242,6 +249,7 @@ const Index = () => {
           padding: 0.1em 0.2em;
           color: black;
           width: 100%;
+          cursor: pointer;
         }
       `}</style>
     </div>

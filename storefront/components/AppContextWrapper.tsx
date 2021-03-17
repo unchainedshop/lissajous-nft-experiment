@@ -6,6 +6,19 @@ import {
   LissajousToken__factory,
 } from '@private/contracts';
 
+type Transaction = {
+  amount: number;
+  price: BigNumber;
+  tx?: ethers.ContractTransaction;
+};
+
+type Token = {
+  id: BigNumber;
+  owner: string;
+  price: BigNumber;
+  block: number;
+};
+
 export const AppContext = React.createContext<{
   hasSigner?: boolean;
   accounts: string[];
@@ -15,13 +28,17 @@ export const AppContext = React.createContext<{
   connect: () => Promise<void>;
   readContract?: LissajousToken;
   writeContract?: LissajousToken;
-  transactions: ethers.ContractTransaction[];
-  addTransaction: (t: ethers.ContractTransaction) => void;
+  transactions: Transaction[];
+  addTransaction: (t: Transaction) => void;
+  tokens: Token[];
+  recordToken: (t: Token) => void;
 }>({
   accounts: [],
   connect: () => null,
   transactions: [],
   addTransaction: () => null,
+  tokens: [],
+  recordToken: () => null,
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -29,11 +46,20 @@ export const useAppContext = () => useContext(AppContext);
 const ethereum = (global as any).ethereum;
 
 const unique = (arr) => arr.filter((v, i, a) => a.indexOf(v) === i);
+const uniqueToken = (tokens: Token[]) =>
+  tokens.filter(
+    ({ owner, block }, i, ts) =>
+      ts.findIndex(
+        (t) =>
+          t.owner.toLowerCase() === owner.toLowerCase() && t.block === block,
+      ) === i,
+  );
 
 export const AppContextWrapper = ({ children }) => {
-  const [transactions, setTransactions] = useState<
-    ethers.ContractTransaction[]
-  >([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([
+    // { amount: 5, price: ethers.utils.parseEther('2') },
+  ]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const [provider, setProvider] = useState<ethers.providers.BaseProvider>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [chainId, setChainId] = useState(0);
@@ -46,6 +72,9 @@ export const AppContextWrapper = ({ children }) => {
     ethers.utils.parseEther('0.01'),
   );
   const [lastBlockTimestamps, setLastBlockTimestamps] = useState([]);
+
+  const recordToken = (token: Token) =>
+    setTokens((tokens) => uniqueToken([token, ...tokens]));
 
   useEffect(() => {
     (async () => {
@@ -100,9 +129,11 @@ export const AppContextWrapper = ({ children }) => {
 
       setTotalSupply((await contract.totalSupply()).toNumber());
 
-      contract.on('Transfer', async (from, to, tokenId) => {
-        console.log('Transfer', { from, to, tokenId });
+      contract.on('Transfer', async (from, to, id) => {
         setTotalSupply((await contract.totalSupply()).toNumber());
+        const block = await contract.tokenMintBlock(id);
+        const price = await contract.tokenMintValue(id);
+        recordToken({ block: block.toNumber(), price, owner: to, id });
       });
 
       if (ethereum) {
@@ -146,9 +177,11 @@ export const AppContextWrapper = ({ children }) => {
 
   const addTransaction = (tx) => {
     setTransactions((current) => [tx, ...current]);
-    tx.wait().then(() => {
+    tx.tx.wait().then(() => {
       setTransactions((current) =>
-        current.filter((t) => t.nonce !== tx.nonce && tx.from !== t.from),
+        current.filter(
+          (t) => t.tx.nonce !== tx.tx.nonce && tx.tx.from !== t.tx.from,
+        ),
       );
     });
   };
@@ -166,6 +199,8 @@ export const AppContextWrapper = ({ children }) => {
         minPrice,
         transactions,
         addTransaction,
+        tokens,
+        recordToken,
       }}
     >
       {children}

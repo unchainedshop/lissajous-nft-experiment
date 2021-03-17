@@ -1,14 +1,21 @@
 import { useRouter } from 'next/router';
-import { simulateLissajousArgs } from '@private/contracts';
+import { simulateLissajousArgs, colorFromPrice } from '@private/contracts';
 import { useAppContext } from '../../components/AppContextWrapper';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import LissajousSvg from '../../components/LissajousSvg';
 import Link from 'next/link';
 
+let preventRefresh = false;
+
 const Address = () => {
   const router = useRouter();
-  const { readContract, accounts, transactions } = useAppContext();
-  const [tokens, setTokens] = useState([]);
+  const {
+    readContract,
+    accounts,
+    transactions,
+    tokens,
+    recordToken,
+  } = useAppContext();
 
   const address = router.query.address as string;
 
@@ -22,46 +29,87 @@ const Address = () => {
         const promises = Array(balance.toNumber())
           .fill(0)
           .map(async (_, i) => {
-            const tokenId = await readContract.tokenOfOwnerByIndex(address, i);
+            const id = await readContract.tokenOfOwnerByIndex(address, i);
 
-            const block = await readContract.tokenMintBlock(tokenId);
-            const value = await readContract.tokenMintValue(tokenId);
+            const block = await readContract.tokenMintBlock(id);
+            const price = await readContract.tokenMintValue(id);
 
-            return {
-              tokenId,
+            recordToken({
               block: block.toNumber(),
-              value,
-            };
+              price,
+              owner: address,
+              id,
+            });
           });
 
-        const configs = await Promise.all(promises);
-
-        setTokens(
-          configs.map(({ tokenId, block, value }) => ({
-            tokenId,
-            args: simulateLissajousArgs(block, value),
-          })),
-        );
+        await Promise.all(promises);
       })();
     }
   }, [readContract]);
 
+  useEffect(() => {
+    const onbeforeunload = (e) => {
+      e.preventDefault();
+      return 'When you leave, the pending transactions will not be visible until they are mined.';
+    };
+
+    if (transactions.length && !preventRefresh) {
+      preventRefresh = true;
+      window.addEventListener('beforeunload', onbeforeunload);
+    }
+
+    if (transactions.length === 0 && preventRefresh) {
+      preventRefresh = false;
+      window.removeEventListener('beforeunload', onbeforeunload);
+    }
+
+    return () => {
+      preventRefresh = false;
+      window.removeEventListener('beforeunload', onbeforeunload);
+    };
+  }, [transactions.length]);
+
   return (
     <div>
       <div>
-        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
-        {transactions.length > 0 && (
-          <div>{transactions.length} pending transactions</div>
+        {isOwner && transactions.length > 0 && (
+          <>
+            <h1>Pending Mints</h1>
+            <div>
+              {transactions.map(({ price, amount }) =>
+                Array(amount)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      className="figure"
+                      key={i}
+                      style={{ color: colorFromPrice(price) }}
+                    >
+                      ???
+                    </div>
+                  )),
+              )}
+            </div>
+          </>
         )}
-        {tokens.map((token, i) => (
-          <div className="figure" key={i}>
-            <Link href={`/token/${token.tokenId}`}>
-              <a>
-                <LissajousSvg {...token.args} />
-              </a>
-            </Link>
-          </div>
-        ))}
+        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
+        {tokens
+          .filter(
+            ({ owner }) =>
+              owner.toLocaleLowerCase() === address.toLocaleLowerCase(),
+          )
+          .sort((a, b) => (a.id.gte(b.id) ? -1 : 1))
+          .map((token, i) => (
+            <div className="figure" key={i}>
+              <Link href={`/token/${token.id}`}>
+                <a>
+                  <LissajousSvg
+                    {...simulateLissajousArgs(token.block, token.price)}
+                  />
+                </a>
+              </Link>
+            </div>
+          ))}
       </div>
       <style jsx>{`
         .figure {
