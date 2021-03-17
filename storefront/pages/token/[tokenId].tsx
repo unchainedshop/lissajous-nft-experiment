@@ -30,19 +30,24 @@ const Token = () => {
       <div className="d-flex align-items-center justify-content-between flex-wrap flex-column">
         <div className="figure">
           {block && price && (
-            <LissajousSvg {...simulateLissajousArgs(block, price)} />
+            <LissajousSvg {...simulateLissajousArgs(block, price)} animated />
           )}
         </div>
         <div className="details">
-          <div className="mt-2 d-flex justify-content-between flex-wrap"><span className="dimmed mr-3">Price:</span> <span>Ξ{price ? ethers.utils.formatEther(price) : '?'}</span></div>
-          <div className="mt-2 d-flex justify-content-between flex-wrap"><span className="dimmed mr-3">Block:</span> <span>{block}</span></div>
+          <div className="mt-2 d-flex justify-content-between flex-wrap">
+            <span className="dimmed mr-3">Price:</span>{' '}
+            <span>Ξ{price ? ethers.utils.formatEther(price) : '?'}</span>
+          </div>
+          <div className="mt-2 d-flex justify-content-between flex-wrap">
+            <span className="dimmed mr-3">Block:</span> <span>{block}</span>
+          </div>
           <div className="mt-2 d-flex justify-content-between flex-wrap">
             <span className="dimmed mr-3">Owner:</span>
             <Link href={`/address/${owner}`}>
               <a>{owner}</a>
             </Link>
           </div>
-      </div>
+        </div>
       </div>
       <style jsx>{`
         .details {
@@ -56,7 +61,7 @@ const Token = () => {
           width: 300px;
           margin: 10px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 768px) {
           .figure {
             height: 512px;
             width: 512px;

@@ -43,6 +43,7 @@ const Gallery = () => {
               <Link href={`/token/${token.id}`}>
                 <a>
                   <LissajousSvg
+                    gradient
                     {...simulateLissajousArgs(token.block, token.price)}
                   />
                 </a>

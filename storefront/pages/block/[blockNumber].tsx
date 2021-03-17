@@ -13,7 +13,7 @@ const BlockNumber = () => {
     <div>
       <div className="d-flex align-items-center justify-content-between flex-wrap flex-column">
         <div className="figure">
-          <LissajousSvg {...args} />
+          <LissajousSvg {...args} animated />
         </div>
       </div>
       <style jsx>{`
@@ -24,13 +24,12 @@ const BlockNumber = () => {
           width: 300px;
           margin: 10px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 768px) {
           .figure {
             height: 512px;
             width: 512px;
           }
         }
-
       `}</style>
     </div>
   );

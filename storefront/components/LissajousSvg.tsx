@@ -2,81 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import type { LissajousArgs } from '@private/contracts';
 
-// Sample the SVG path uniformly with the specified precision.
-function samples(path, precision) {
-  let n = path.getTotalLength(),
-    t = [0],
-    i = 0,
-    dt = precision;
-  while ((i += dt) < n) t.push(i);
-  t.push(n);
-  return t.map(function (t) {
-    const p = path.getPointAtLength(t),
-      a = [p.x, p.y];
-    a.t = t / n;
-    return a;
-  });
-}
-
-// Compute quads of adjacent points [p0, p1, p2, p3].
-function quads(points) {
-  return d3.range(points.length - 1).map(function (i) {
-    const a = [points[i - 1], points[i], points[i + 1], points[i + 2]];
-    a.t = (points[i].t + points[i + 1].t) / 2;
-    return a;
-  });
-}
-
-// Compute stroke outline for segment p12.
-function lineJoin(p0, p1, p2, p3, width) {
-  let u12 = perp(p1, p2),
-    r = width / 2,
-    a = [p1[0] + u12[0] * r, p1[1] + u12[1] * r],
-    b = [p2[0] + u12[0] * r, p2[1] + u12[1] * r],
-    c = [p2[0] - u12[0] * r, p2[1] - u12[1] * r],
-    d = [p1[0] - u12[0] * r, p1[1] - u12[1] * r];
-
-  if (p0) {
-    // clip ad and dc using average of u01 and u12
-    var u01 = perp(p0, p1),
-      e = [p1[0] + u01[0] + u12[0], p1[1] + u01[1] + u12[1]];
-    a = lineIntersect(p1, e, a, b);
-    d = lineIntersect(p1, e, d, c);
-  }
-
-  if (p3) {
-    // clip ab and dc using average of u12 and u23
-    var u23 = perp(p2, p3),
-      e = [p2[0] + u23[0] + u12[0], p2[1] + u23[1] + u12[1]];
-    b = lineIntersect(p2, e, a, b);
-    c = lineIntersect(p2, e, d, c);
-  }
-
-  return 'M' + a + 'L' + b + ' ' + c + ' ' + d + 'Z';
-}
-
-// Compute intersection of two infinite lines ab and cd.
-function lineIntersect(a, b, c, d) {
-  const x1 = c[0],
-    x3 = a[0],
-    x21 = d[0] - x1,
-    x43 = b[0] - x3,
-    y1 = c[1],
-    y3 = a[1],
-    y21 = d[1] - y1,
-    y43 = b[1] - y3,
-    ua = (x43 * (y1 - y3) - y43 * (x1 - x3)) / (y43 * x21 - x43 * y21);
-  return [x1 + ua * x21, y1 + ua * y21];
-}
-
-// Compute unit vector perpendicular to p01.
-function perp(p0, p1) {
-  const u01x = p0[1] - p1[1],
-    u01y = p1[0] - p0[0],
-    u01d = Math.sqrt(u01x * u01x + u01y * u01y);
-  return [u01x / u01d, u01y / u01d];
-}
-
 const LissajousSvg = ({
   frequenceX,
   frequenceY,
@@ -88,7 +13,9 @@ const LissajousSvg = ({
   startStep = 1,
   totalSteps = 16,
   animated = false,
+  gradient = false,
 }: LissajousArgs) => {
+  let animationFrame;
   const canvasRef = useRef(null);
 
   const shouldAnimate = typeof window !== 'undefined' && animated;
@@ -151,34 +78,51 @@ const LissajousSvg = ({
       .y((d: any) => d.y);
 
     const hslStart = d3.hsl(strokeColor);
-    const hslEnd = d3.hsl(hslStart.h - 120, hslStart.s, hslStart.l - 0.1);
+    const hslEnd = d3.hsl(hslStart.h - 70, hslStart.s, hslStart.l - 0.1);
 
     const interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
 
-    let animationFrame;
     let count = 0;
     const draw = () => {
       svg.selectAll('path').remove();
 
-      points.map((_, i) => {
-        const walkingI = (i + count) % absoluteTotalSteps;
-        const color = interpolateHsl(walkingI / absoluteTotalSteps);
+      // if (count % 2 !== 0) return;
 
-        return svg
+      if (gradient || animated) {
+        points.map((_, i) => {
+          const walkingI = (i + count) % absoluteTotalSteps;
+          const color = interpolateHsl(walkingI / absoluteTotalSteps);
+
+          return svg
+            .append('path')
+            .datum(points.slice(i, i + 4))
+            .attr('d', valueline as any)
+            .style('stroke', color)
+            .attr('stroke-width', lineWidth + 1)
+            .attr(
+              'transform',
+              `scale(${(boundingRect.height - 2) / canvasHeight} ${
+                (boundingRect.width - 2) / canvasWidth
+              })`,
+            );
+        });
+
+        count += 1;
+      } else {
+        svg
           .append('path')
-          .datum(points.slice(i, i + 4))
+          .datum(points)
           .attr('d', valueline as any)
-          .style('stroke', color)
+          .attr('stroke', strokeColor)
           .attr('stroke-width', lineWidth + 1)
+          .attr('fill', 'none')
           .attr(
             'transform',
-            `scale(${(boundingRect.height - 2) / canvasHeight} ${
-              (boundingRect.width - 2) / canvasWidth
+            `scale(${boundingRect.height / canvasHeight} ${
+              boundingRect.width / canvasWidth
             })`,
           );
-      });
-
-      count++;
+      }
 
       if (shouldAnimate) {
         window.requestAnimationFrame(draw);
@@ -204,7 +148,14 @@ const LissajousSvg = ({
     width,
     totalSteps,
     startStep,
+    animated,
   ]);
+
+  useEffect(() => {
+    if (!animated && animationFrame) {
+      window.cancelAnimationFrame(animationFrame);
+    }
+  }, [animated]);
 
   return (
     <div className="square">

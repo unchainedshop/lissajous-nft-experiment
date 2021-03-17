@@ -39,7 +39,9 @@ const Index = () => {
   const scrollingEl = useRef(null);
   const { register, handleSubmit, watch, setValue } = useForm();
   const { price, amount } = watch();
-  const defaultPrice = ethers.utils.formatEther(minPrice.mul(1000).div(999));
+  const defaultPrice = minPrice
+    ? ethers.utils.formatEther(minPrice.mul(1000).div(999))
+    : 0;
 
   const blockTime = 15 * 1000;
 
@@ -131,7 +133,7 @@ const Index = () => {
                               ? parseEthFromInput(price)
                               : undefined,
                           ),
-                          animated:
+                          gradient:
                             isMarked(currentBlock, startBlock, i, amount) &&
                             amount < 4,
                         }}

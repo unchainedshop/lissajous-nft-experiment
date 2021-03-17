@@ -104,6 +104,7 @@ const Address = () => {
               <Link href={`/token/${token.id}`}>
                 <a>
                   <LissajousSvg
+                    gradient
                     {...simulateLissajousArgs(token.block, token.price)}
                   />
                 </a>
