@@ -15,8 +15,6 @@ const Layout = (props) => {
     balance,
   } = useAppContext();
 
-  console.log(balance);
-
   return (
     <div className="page-layout">
       <div className="container">
