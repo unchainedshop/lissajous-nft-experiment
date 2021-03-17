@@ -10,6 +10,20 @@ import { useRouter } from 'next/router';
 
 let renderTimestamp: Date;
 
+const cleanPrice = (priceInput: string) => {
+  if (!priceInput) return '0';
+
+  if (priceInput.includes('.')) {
+    const [ints, decimals] = priceInput.split('.');
+    return `${ints}.${decimals.slice(0, 18)}`;
+  } else {
+    return priceInput;
+  }
+};
+
+const parseEthFromPrice = (price: string) =>
+  ethers.utils.parseEther(cleanPrice(price));
+
 const Index = () => {
   const {
     hasSigner,
@@ -106,7 +120,7 @@ const Index = () => {
                         {...(simulateLissajousArgs(
                           startBlock + i,
                           isMarked(currentBlock, startBlock, i, amount)
-                            ? ethers.utils.parseEther(price || '0')
+                            ? parseEthFromPrice(price)
                             : undefined,
                         ) as any)}
                       />
@@ -147,7 +161,10 @@ const Index = () => {
                       name="price"
                       defaultValue={defaultPrice}
                       type="string"
-                      ref={register({ required: true })}
+                      ref={register({
+                        required: true,
+                        pattern: /\d{1-3}(.\d{1-18})+/,
+                      })}
                     />
                   </label>
                 </p>
@@ -155,7 +172,7 @@ const Index = () => {
                 <p>
                   Total: Ξ
                   {ethers.utils.formatEther(
-                    ethers.utils.parseEther(price || '0').mul(amount || '1'),
+                    parseEthFromPrice(price).mul(amount || '1'),
                   )}
                 </p>
 
