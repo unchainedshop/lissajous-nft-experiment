@@ -87,8 +87,11 @@ const LissajousSvg = ({
   strokeColor = '#FFD700',
   startStep = 1,
   totalSteps = 16,
+  animated = false,
 }: LissajousArgs) => {
   const canvasRef = useRef(null);
+
+  const shouldAnimate = typeof window !== 'undefined' && animated;
 
   const lineWidth = parseInt(lineWidthInput as any, 10);
 
@@ -102,7 +105,7 @@ const LissajousSvg = ({
     const canvasWidth = 512;
 
     const numberOfSteps = 16;
-    const stepsUntilFull = 512;
+    const stepsUntilFull = 256;
     const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
     const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 
@@ -150,26 +153,47 @@ const LissajousSvg = ({
     const hslStart = d3.hsl(strokeColor);
     const hslEnd = d3.hsl(hslStart.h - 120, hslStart.s, hslStart.l - 0.1);
 
-    console.log(hslStart);
-
-    console.log(hslEnd.formatHex(), strokeColor);
-
     const interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
-    points.map((point, i) =>
-      svg
-        .append('path')
-        .datum(points.slice(i, i + 4))
-        .attr('d', valueline as any)
-        .style('stroke', interpolateHsl(i / absoluteTotalSteps))
-        .attr('stroke-width', lineWidth + 1)
-        .style('fill', interpolateHsl(i / absoluteTotalSteps))
-        .attr(
-          'transform',
-          `scale(${(boundingRect.height - 2) / canvasHeight} ${
-            (boundingRect.width - 2) / canvasWidth
-          })`,
-        ),
-    );
+
+    let animationFrame;
+    let count = 0;
+    const draw = () => {
+      svg.selectAll('path').remove();
+
+      points.map((_, i) => {
+        const walkingI = (i + count) % absoluteTotalSteps;
+        const color = interpolateHsl(walkingI / absoluteTotalSteps);
+
+        return svg
+          .append('path')
+          .datum(points.slice(i, i + 4))
+          .attr('d', valueline as any)
+          .style('stroke', color)
+          .attr('stroke-width', lineWidth + 1)
+          .attr(
+            'transform',
+            `scale(${(boundingRect.height - 2) / canvasHeight} ${
+              (boundingRect.width - 2) / canvasWidth
+            })`,
+          );
+      });
+
+      count++;
+
+      if (shouldAnimate) {
+        window.requestAnimationFrame(draw);
+      }
+    };
+
+    if (shouldAnimate) {
+      animationFrame = window.requestAnimationFrame(draw);
+    } else {
+      draw();
+    }
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+    };
   }, [
     frequenceX,
     frequenceY,

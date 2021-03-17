@@ -124,12 +124,17 @@ const Index = () => {
                   <Link href={`block/${startBlock + i}`}>
                     <a>
                       <LissajousSvg
-                        {...(simulateLissajousArgs(
-                          startBlock + i,
-                          isMarked(currentBlock, startBlock, i, amount)
-                            ? parseEthFromInput(price)
-                            : undefined,
-                        ) as any)}
+                        {...{
+                          ...simulateLissajousArgs(
+                            startBlock + i,
+                            isMarked(currentBlock, startBlock, i, amount)
+                              ? parseEthFromInput(price)
+                              : undefined,
+                          ),
+                          animated:
+                            isMarked(currentBlock, startBlock, i, amount) &&
+                            amount < 4,
+                        }}
                       />
                     </a>
                   </Link>

@@ -53,6 +53,7 @@ export type LissajousArgs = {
   totalSteps: number;
   startStep: number;
   strokeColor?: string;
+  animated?: boolean;
 };
 
 export const getBlockHash = (blockNumber: number) =>

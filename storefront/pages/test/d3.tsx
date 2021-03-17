@@ -61,7 +61,7 @@ const LissajousTest = (): React.ReactElement => {
           values={values}
           step={1}
           min={1}
-          max={32}
+          max={16}
         />
 
         <RangeInput
@@ -70,7 +70,7 @@ const LissajousTest = (): React.ReactElement => {
           values={values}
           step={1}
           min={1}
-          max={32}
+          max={16}
         />
 
         <RangeInput
@@ -127,30 +127,11 @@ const LissajousTest = (): React.ReactElement => {
           max={16}
         />
 
-        <Controller
-          control={control}
-          name="strokeColor"
-          render={({ onChange, value }) => (
-            <ChromePicker
-              color={value}
-              onChange={(color) => onChange(color.hex)}
-            />
-          )}
-        />
-
         <button onClick={() => reset()}>Reset</button>
       </form>
 
       <style jsx>{`
-        :global(html),
-        :global(body) {
-          background-color: white;
-          width: 100%;
-          height: 100%;
-          margin: 0;
-          padding: 0;
-          color: black;
-        }
+
 
         .holder {
           height: 512px;
@@ -170,7 +151,7 @@ const LissajousTest = (): React.ReactElement => {
 
         form {
           position: fixed;
-          top: 0;
+          top: 20;
           right: 0;
           width: 225px;
         }
