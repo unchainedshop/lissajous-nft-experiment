@@ -27,40 +27,29 @@ const Token = () => {
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between flex-wrap flex-column">
+      <div>
         <div className="figure">
           {block && price && (
             <LissajousSvg {...simulateLissajousArgs(block, price)} />
           )}
         </div>
-        <div className="details">
-          <div className="mt-2 d-flex justify-content-between flex-wrap"><span className="dimmed mr-3">Price:</span> <span>Ξ{price ? ethers.utils.formatEther(price) : '?'}</span></div>
-          <div className="mt-2 d-flex justify-content-between flex-wrap"><span className="dimmed mr-3">Block:</span> <span>{block}</span></div>
-          <div className="mt-2 d-flex justify-content-between flex-wrap">
-            <span className="dimmed mr-3">Owner:</span>
-            <Link href={`/address/${owner}`}>
-              <a>{owner}</a>
-            </Link>
-          </div>
-      </div>
+        <div>Price: Ξ{price ? ethers.utils.formatEther(price) : '?'}</div>
+        <div>Block: {block}</div>
+        <div>
+          Owner:{' '}
+          <Link href={`/address/${owner}`}>
+            <a>{owner}</a>
+          </Link>
+        </div>
       </div>
       <style jsx>{`
-        .details {
-          max-width: 480px;
-          margin: 10px 0;
-        }
         .figure {
           position: relative;
           display: inline-block;
-          height: 300px;
-          width: 300px;
+          height: 512px;
+          width: 512px;
           margin: 10px;
-        }
-        @media (min-width: 768px) {
-          .figure {
-            height: 512px;
-            width: 512px;
-          }
+          border: 1px solid darkgrey;
         }
       `}</style>
     </div>

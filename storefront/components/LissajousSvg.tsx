@@ -118,6 +118,8 @@ const LissajousSvg = ({
           left: 0;
           height: 100%;
           width: 100%;
+          // background-color: white;
+          border: 1px solid black;
         }
       `}</style>
     </div>
