@@ -72,6 +72,9 @@ const Address = () => {
   return (
     <div>
       <div>
+        <h1 className="text-center">
+          {isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}
+        </h1>
         {isOwner && transactions.length > 0 && (
           <>
             <h1>Pending Mints</h1>
@@ -92,14 +95,9 @@ const Address = () => {
             </div>
           </>
         )}
-        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
-        {tokens
-          .filter(
-            ({ owner }) =>
-              owner.toLocaleLowerCase() === address.toLocaleLowerCase(),
-          )
-          .sort((a, b) => (a.id.gte(b.id) ? -1 : 1))
-          .map((token, i) => (
+
+        <div className="d-flex align-items-center justify-content-around flex-wrap">
+          {tokens.map((token, i) => (
             <div className="figure" key={i}>
               <Link href={`/token/${token.id}`}>
                 <a>
@@ -110,6 +108,7 @@ const Address = () => {
               </Link>
             </div>
           ))}
+        </div>
       </div>
       <style jsx>{`
         .figure {
@@ -118,7 +117,6 @@ const Address = () => {
           height: 128px;
           width: 128px;
           margin: 10px;
-          border: 1px solid darkgrey;
         }
       `}</style>
     </div>
