@@ -141,11 +141,14 @@ const Index = () => {
       <div className="control">
         <div className="control-inner">
           {' '}
-          <h1>LissajousToken</h1>
           {currentBlock ? (
             <>
               {' '}
-              <h2>Next Block: {currentBlock + 1}</h2>
+              <div>
+                First of kind ethereum native generative geometric art
+                experiment
+              </div>
+              <pre>Next Block: {currentBlock + 1}</pre>
               <form onSubmit={handleSubmit(mint)}>
                 {/* register your input into the hook by invoking the "register" function */}
                 <label>
@@ -192,14 +195,13 @@ const Index = () => {
                     >
                       Mint
                     </button>
-                    <Link href="/about">
-                      <a>
-                        <i>
-                          It is not guaranteed that you actually catch the
-                          figures that are highlighted. Read more here.
-                        </i>
-                      </a>
-                    </Link>
+                    <small>
+                      It is not guaranteed that you actually catch the figures
+                      that are highlighted.
+                      <Link href="/about">
+                        <a> Read more here.</a>
+                      </Link>
+                    </small>
                   </>
                 )}
 
@@ -243,9 +245,11 @@ const Index = () => {
 
         @media (max-width: 552px) {
           .control {
-            position: absolute;
+            position: fixed;
             left: 0;
             right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
           }
           .control input {
             background-color: rgba(18, 18, 18);
