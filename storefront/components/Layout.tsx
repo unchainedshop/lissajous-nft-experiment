@@ -1,14 +1,26 @@
 import Link from 'next/link';
+
 import { useAppContext } from './AppContextWrapper';
+import formatEther from '../utils/formatEther';
+
+const shortenAddress = (address: string) =>
+  `${address.slice(0, 6)}...${address.slice(-4)}`;
 
 const Layout = (props) => {
-  const { hasSigner, accounts, connect, totalSupply } = useAppContext();
+  const {
+    hasSigner,
+    accounts,
+    connect,
+    totalSupply,
+    balance,
+  } = useAppContext();
+
+  console.log(balance);
 
   return (
     <div className="page-layout">
       <div className="container">
         <header>
-
           <nav>
             <Link href="/">
               <a>Lissajous Token</a>
@@ -22,7 +34,10 @@ const Layout = (props) => {
           <div>
             {accounts[0] && (
               <Link href={`/address/${accounts[0]}`}>
-                <a className="account">{accounts[0]}</a>
+                <a className="account">
+                  {balance && `Ξ ${formatEther(balance)}`}{' '}
+                  {shortenAddress(accounts[0])}
+                </a>
               </Link>
             )}
             {!accounts[0] && hasSigner && (
@@ -30,21 +45,18 @@ const Layout = (props) => {
             )}
             {!hasSigner && 'No MetaMask found :('}
           </div>
-
         </header>
       </div>
 
       <div className="content">{props.children}</div>
 
-      <style jsx>{`
-
-      `}</style>
+      <style jsx>{``}</style>
 
       <style jsx global>{`
         html,
         body {
           font-family: lunchtype22light;
-          background-color: rgba(18,18,18);
+          background-color: rgba(18, 18, 18);
           width: 100%;
           height: 100%;
           margin: 0;
@@ -94,7 +106,7 @@ const Layout = (props) => {
           position: relative;
           background-color: rgba(255, 255, 255, 0.4);
           font-family: inherit;
-            font-weight: bold;
+          font-weight: bold;
           text-align: center;
           border: 1px solid #000000;
           border-radius: 0;
@@ -119,7 +131,7 @@ const Layout = (props) => {
           margin-right: 1rem;
         }
         .mt-2 {
-          margin-top: .5rem;
+          margin-top: 0.5rem;
         }
         .mt-3 {
           margin-top: 1rem;
@@ -131,7 +143,7 @@ const Layout = (props) => {
           text-align: center;
         }
         .dimmed {
-          opacity: .5;
+          opacity: 0.5;
         }
         .dimmed:hover {
           opacity: 1;
@@ -140,10 +152,10 @@ const Layout = (props) => {
           display: flex;
         }
         .justify-content-between {
-          justify-content: space-between
+          justify-content: space-between;
         }
         .justify-content-around {
-          justify-content: space-around
+          justify-content: space-around;
         }
         .align-items-center {
           align-items: center;
@@ -154,7 +166,6 @@ const Layout = (props) => {
         .flex-column {
           flex-direction: column;
         }
-
       `}</style>
     </div>
   );

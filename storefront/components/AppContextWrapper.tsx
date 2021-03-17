@@ -32,6 +32,7 @@ export const AppContext = React.createContext<{
   addTransaction: (t: Transaction) => void;
   tokens: Token[];
   recordToken: (t: Token) => void;
+  balance?: BigNumber;
 }>({
   accounts: [],
   connect: () => null,
@@ -71,6 +72,7 @@ export const AppContextWrapper = ({ children }) => {
   const [minPrice, setMinPrice] = useState<BigNumber>(
     ethers.utils.parseEther('0.01'),
   );
+  const [balance, setBalance] = useState<BigNumber>();
   const [lastBlockTimestamps, setLastBlockTimestamps] = useState([]);
 
   const recordToken = (token: Token) =>
@@ -123,6 +125,12 @@ export const AppContextWrapper = ({ children }) => {
         );
         const minPrice = await contract.currentMinPrice();
         setMinPrice(minPrice);
+
+        if (accounts[0]) {
+          const userBalance = await scopedProvider.getBalance(accounts[0]);
+          console.log(accounts[0], userBalance);
+          setBalance(userBalance);
+        }
       };
       onBlock(blockNumber);
       scopedProvider.on('block', onBlock);
@@ -176,7 +184,10 @@ export const AppContextWrapper = ({ children }) => {
   };
 
   const addTransaction = (tx) => {
-    setTransactions((current) => [tx, ...current]);
+    setTransactions((current) => [
+      { ...tx, amount: parseInt(tx.amount.toString(), 10) }, // HACK to ensure amount is a number
+      ...current,
+    ]);
     tx.tx.wait().then(() => {
       setTransactions((current) =>
         current.filter(
@@ -201,6 +212,7 @@ export const AppContextWrapper = ({ children }) => {
         addTransaction,
         tokens,
         recordToken,
+        balance,
       }}
     >
       {children}

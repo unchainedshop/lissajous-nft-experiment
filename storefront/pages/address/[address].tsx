@@ -69,6 +69,8 @@ const Address = () => {
     };
   }, [transactions.length]);
 
+  console.log(transactions);
+
   return (
     <div>
       <div>
