@@ -21,6 +21,7 @@ export const AppContext = React.createContext<{
   accounts: [],
   connect: () => null,
   transactions: [],
+  addTransaction: () => null,
 });
 
 export const useAppContext = () => useContext(AppContext);
