@@ -8,6 +8,15 @@ import simulateLissajousArgs, {
   getBlockHash,
 } from '../lib/simulateLissajousArgs';
 
+const bigNumberCompoundInterest = (
+  initialValue: BigNumber,
+  interest: number,
+  iterations: number,
+): BigNumber =>
+  Array(iterations)
+    .fill(0)
+    .reduce((acc: BigNumber) => acc.mul(interest).div(1000), initialValue);
+
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for contract creation
   const END_BLOCK = 20;
@@ -15,7 +24,7 @@ describe('LissajousToken', function () {
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH
   const BASE_URI = 'https://lissajous.art/api/token/';
 
-  let token: LissajousToken;
+  let deployed: LissajousToken;
   let owner: SignerWithAddress;
   let someone: SignerWithAddress;
   let ownerAddress: string;
@@ -34,7 +43,7 @@ describe('LissajousToken', function () {
     );
 
     const tx = await contract.deployed();
-    token = (tx as any) as LissajousToken;
+    deployed = (tx as any) as LissajousToken;
     const receipt = await tx.deployTransaction.wait();
 
     console.log(
@@ -42,13 +51,13 @@ describe('LissajousToken', function () {
       ethers.utils.formatEther(receipt.gasUsed.mul(100).mul(1000000000)),
     );
 
-    expect(await token.name()).equal('Lissajous Token');
-    expect((await token.totalSupply()).toString()).equal('0');
+    expect(await deployed.name()).equal('Lissajous Token');
+    expect((await deployed.totalSupply()).toString()).equal('0');
   });
 
   it('Mint a token before starting block should fail', async () => {
     try {
-      await token.mint(ownerAddress, 1, { value: SAFE_PRICE });
+      await deployed.mint(ownerAddress, 1, { value: SAFE_PRICE });
       expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Sale not yet started');
@@ -65,7 +74,7 @@ describe('LissajousToken', function () {
 
   it('Mint a token with too little value', async () => {
     try {
-      await token.mint(ownerAddress, 1);
+      await deployed.mint(ownerAddress, 1);
       expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Min price not met');
@@ -73,13 +82,13 @@ describe('LissajousToken', function () {
   });
 
   it('Mint a token after starting block works with correct value', async () => {
-    await token.mint(ownerAddress, 1, { value: START_PRICE });
-    expect((await token.totalSupply()).toString()).equal('1');
+    await deployed.mint(ownerAddress, 1, { value: START_PRICE });
+    expect((await deployed.totalSupply()).toString()).equal('1');
   });
 
   it('Mint more token with the same value fails because of price increase', async () => {
     try {
-      await token.mint(ownerAddress, 16, { value: START_PRICE });
+      await deployed.mint(ownerAddress, 16, { value: START_PRICE });
       expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Min price not met');
@@ -88,7 +97,7 @@ describe('LissajousToken', function () {
 
   it('Mint more than 24 is forbidden', async () => {
     try {
-      await token.mint(ownerAddress, 17, {
+      await deployed.mint(ownerAddress, 17, {
         value: START_PRICE.mul(1001).div(1000).mul(17),
       });
 
@@ -99,26 +108,28 @@ describe('LissajousToken', function () {
   });
 
   it('Mint more token with the correct value', async () => {
-    const tx = await token.mint(ownerAddress, 16, {
+    const tx = await deployed.mint(ownerAddress, 16, {
       value: START_PRICE.mul(1001).div(1000).mul(16),
     });
     const receipt = await tx.wait();
     console.log(receipt.gasUsed.toString());
-    expect((await token.totalSupply()).toString()).equal('17');
+    expect((await deployed.totalSupply()).toString()).equal('17');
   });
 
   it('Price is up after minting several tokens', async () => {
-    const currentMinPrice = await token.currentMinPrice();
-    const priceIncrease = BigNumber.from(1001).div(1000);
-    expect(currentMinPrice.eq(START_PRICE.mul(priceIncrease.pow(17))));
+    const currentMinPrice = await deployed.currentMinPrice();
+
+    expect(currentMinPrice.toString()).eq(
+      bigNumberCompoundInterest(START_PRICE, 1001, 17).toString(),
+    );
   });
 
   it('Return change if over minPrice', async () => {
     const tooHighPrice = ethers.utils.parseEther('0.019');
-    const currentMinPrice = await token.currentMinPrice();
+    const currentMinPrice = await deployed.currentMinPrice();
     const balanceBefore = await owner.getBalance();
     const txResponse = await owner.sendTransaction(
-      await token.populateTransaction.mint(ownerAddress, 1, {
+      await deployed.populateTransaction.mint(ownerAddress, 1, {
         value: tooHighPrice,
       }),
     );
@@ -137,7 +148,7 @@ describe('LissajousToken', function () {
       await ethers.provider.send('evm_mine', []);
     }
     try {
-      await token.mint(ownerAddress, 1, { value: SAFE_PRICE });
+      await deployed.mint(ownerAddress, 1, { value: SAFE_PRICE });
       expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('Sale ended');
@@ -146,9 +157,9 @@ describe('LissajousToken', function () {
 
   it('Owner can withdraw ether', async () => {
     const balanceBefore = await owner.getBalance();
-    const contractBalance = await ethers.provider.getBalance(token.address);
+    const contractBalance = await ethers.provider.getBalance(deployed.address);
     const txResponse = await owner.sendTransaction(
-      await token.populateTransaction.withdraw(),
+      await deployed.populateTransaction.withdraw(),
     );
     const txReceipt = await txResponse.wait();
     const gasCost = txReceipt.gasUsed.mul(txResponse.gasPrice);
@@ -161,7 +172,9 @@ describe('LissajousToken', function () {
 
   it('Only Owner can withdraw ether', async () => {
     try {
-      await someone.sendTransaction(await token.populateTransaction.withdraw());
+      await someone.sendTransaction(
+        await deployed.populateTransaction.withdraw(),
+      );
       expect(false).equal(true);
     } catch (e) {
       expect(e.message).to.include('from address mismatch');
@@ -169,23 +182,23 @@ describe('LissajousToken', function () {
   });
 
   it('Get token MetaData', async () => {
-    const uri = await token.tokenURI(0);
+    const uri = await deployed.tokenURI(0);
     expect(uri).equal(`${BASE_URI}${0}`);
 
-    const mintValue = await token.tokenMintValue(0);
+    const mintValue = await deployed.tokenMintValue(0);
     expect(mintValue.eq(START_PRICE));
 
-    const mintBlock = await token.tokenMintBlock(0);
+    const mintBlock = await deployed.tokenMintBlock(0);
     expect(mintBlock.eq(4));
 
-    const tokenColor = await token.tokenColor(0);
-    expect(tokenColor).equal('0xaa0000');
+    const tokenColor = await deployed.tokenColor(0);
+    expect(tokenColor).equal('0x800002');
 
-    const aspectRatio = await token.aspectRatio(0);
+    const aspectRatio = await deployed.aspectRatio(0);
     expect(aspectRatio.height).equal(12);
     expect(aspectRatio.width).equal(16);
 
-    const lissajousArguments = await token.lissajousArguments(0);
+    const lissajousArguments = await deployed.lissajousArguments(0);
     expect(lissajousArguments.frequenceX).equal(12);
     expect(lissajousArguments.frequenceY).equal(4);
     expect(lissajousArguments.phaseShift).equal(4);
@@ -195,15 +208,15 @@ describe('LissajousToken', function () {
 
   it('Check simulated lissajous', async () => {
     const tokenId = 3;
-    const uri = await token.tokenURI(tokenId);
+    const uri = await deployed.tokenURI(tokenId);
     expect(uri).equal(`${BASE_URI}${tokenId}`);
 
-    const mintValue = await token.tokenMintValue(tokenId);
-    const mintBlock = await token.tokenMintBlock(tokenId);
-    const tokenColor = await token.tokenColor(tokenId);
-    const aspectRatio = await token.aspectRatio(tokenId);
-    const lissajousArguments = await token.lissajousArguments(tokenId);
-    const tokenMintBlockHash = await token.tokenMintBlockHash(tokenId);
+    const mintValue = await deployed.tokenMintValue(tokenId);
+    const mintBlock = await deployed.tokenMintBlock(tokenId);
+    const tokenColor = await deployed.tokenColor(tokenId);
+    const aspectRatio = await deployed.aspectRatio(tokenId);
+    const lissajousArguments = await deployed.lissajousArguments(tokenId);
+    const tokenMintBlockHash = await deployed.tokenMintBlockHash(tokenId);
 
     expect(tokenMintBlockHash).equal(getBlockHash(mintBlock.toNumber()));
 

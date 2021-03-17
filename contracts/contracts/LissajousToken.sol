@@ -19,40 +19,68 @@ contract LissajousToken is Context, Ownable, ERC721 {
 
     uint256 public constant _priceIncreasePromille = 1001;
 
-    uint256[15] public priceSteps = [
+    uint256[29] public priceSteps = [
         100 ether,
         10 ether,
+        9 ether,
+        8 ether,
+        7 ether,
+        6 ether,
         5 ether,
+        4 ether,
         3 ether,
+        2 ether,
         1 ether,
+        0.9 ether,
         0.8 ether,
+        0.7 ether,
         0.6 ether,
+        0.5 ether,
         0.4 ether,
+        0.3 ether,
         0.2 ether,
         0.1 ether,
+        0.09 ether,
         0.08 ether,
+        0.07 ether,
         0.06 ether,
+        0.05 ether,
         0.04 ether,
+        0.03 ether,
         0.02 ether,
         0.01 ether
     ];
 
-    bytes3[15] public sortedColorList = [
-        bytes3(0xE5E4E2), // Platinum
-        bytes3(0xffd700), // Gold
-        bytes3(0x55FF55), // light_green
-        bytes3(0xFFFF55), // yellow
-        bytes3(0xFF55FF), // light_magenta
-        bytes3(0x55FFFF), // light_cyan
-        bytes3(0xFF5555), // light_red
-        bytes3(0x5555FF), // ligth_blue
-        bytes3(0xFFFFFF), // white
-        bytes3(0x00AA00), // green
-        bytes3(0xAA5500), // brown
-        bytes3(0xAA00AA), // magenta
-        bytes3(0x00AAAA), // cyan
-        bytes3(0xAA0000), // red
-        bytes3(0xAAAAAA) // light_gray
+    bytes3[29] public sortedColorList = [
+        bytes3(0xE5E4E2),
+        bytes3(0xffd700),
+        bytes3(0xf2fa00),
+        bytes3(0xbff600),
+        bytes3(0x8df100),
+        bytes3(0x5dec00),
+        bytes3(0x2fe700),
+        bytes3(0x03e300),
+        bytes3(0x00de27),
+        bytes3(0x00d950),
+        bytes3(0x00d576),
+        bytes3(0x00d09b),
+        bytes3(0x00cbbf),
+        bytes3(0x00adc7),
+        bytes3(0x0084c2),
+        bytes3(0x005dbd),
+        bytes3(0x0037b8),
+        bytes3(0x0014b4),
+        bytes3(0x0e00af),
+        bytes3(0x2e00aa),
+        bytes3(0x4c00a6),
+        bytes3(0x6900a1),
+        bytes3(0x84009c),
+        bytes3(0x980093),
+        bytes3(0x930072),
+        bytes3(0x8e0053),
+        bytes3(0x890036),
+        bytes3(0x85001b),
+        bytes3(0x800002)
     ];
 
     struct TokenInfo {

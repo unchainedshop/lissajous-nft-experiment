@@ -2,14 +2,17 @@ import React from 'react';
 import * as d3 from 'd3';
 
 const ColorRange = () => {
-  const startColor = '#FF0000';
+  const startColorHsl = d3.hsl(359, 1, 0.25);
+  const startColor = startColorHsl.formatHex(); // '#B30001'; //
   const endColor = '#FFD700';
 
-  const interpolateHsl = d3.interpolateHslLong('#FF0001', endColor);
-  const interpolateCubehelix = d3.interpolateCubehelixLong('#FF0008', endColor);
+  const interpolateHsl = d3.interpolateHslLong(startColor, endColor);
+  const interpolateCubehelix = d3.interpolateCubehelixLong(endColor, endColor);
 
   const hslStart = d3.hsl(startColor);
   const hslEnd = d3.hsl(endColor);
+
+  console.log(startColorHsl, startColor, hslStart);
 
   // console.log({ hslStart, hslEnd });
 
@@ -34,6 +37,7 @@ const ColorRange = () => {
             return (
               <div
                 key={i}
+                className="color"
                 style={{ backgroundColor: interpolateCubehelix(fraction) }}
               >
                 {i}: {interpolateCubehelix(fraction)}{' '}
@@ -52,6 +56,7 @@ const ColorRange = () => {
             return (
               <div
                 key={i}
+                className="color"
                 style={{ backgroundColor: interpolateHsl(fraction) }}
               >
                 {i}: {interpolateHsl(fraction)}{' '}
@@ -72,7 +77,11 @@ const ColorRange = () => {
             const color = d3.hsl(h, 1, 0.5);
 
             return (
-              <div key={i} style={{ backgroundColor: color.toString() }}>
+              <div
+                key={i}
+                className="color"
+                style={{ backgroundColor: color.toString() }}
+              >
                 {i}: {color.toString()} {color.formatHex()}
               </div>
             );
@@ -82,6 +91,10 @@ const ColorRange = () => {
         .holder {
           display: flex;
           justify-content: space-between;
+        }
+        .color {
+          padding: 5px;
+          margin: 5px;
         }
       `}</style>
     </div>

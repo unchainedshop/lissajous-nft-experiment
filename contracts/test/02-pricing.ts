@@ -1,77 +1,149 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import { BigNumber } from '@ethersproject/bignumber';
 
 import { LissajousToken } from '../artifacts/typechain';
+import simulateLissajousArgs, {
+  getBlockHash,
+} from '../lib/simulateLissajousArgs';
 
-describe.skip('LissajousToken Pricing', function () {
-  const START_BLOCK = 12800000;
-  const PRICE_DECREASE_PERIOD = 8192;
-  const END_BLOCK = START_BLOCK + 64 * PRICE_DECREASE_PERIOD;
-  const MAX_SUPPLY = 524288;
-  const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
+/**
+ *
+ * const compoundInterest = (initialValue, interest, iterations) =>
+  initialValue * (1 + interest) ** iterations;
+ */
 
-  let token: LissajousToken;
+const START_BLOCK = 3; // First blocks are for contract creation
+const END_BLOCK = 10000;
+const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
+const BASE_URI = 'https://lissajous.art/api/token/';
+
+const compareSimulation = async (deployed, tokenId) => {
+  const uri = await deployed.tokenURI(tokenId);
+  expect(uri).equal(`${BASE_URI}${tokenId}`);
+
+  const mintValue = await deployed.tokenMintValue(tokenId);
+  const mintBlock = await deployed.tokenMintBlock(tokenId);
+  const tokenColor = await deployed.tokenColor(tokenId);
+  const aspectRatio = await deployed.aspectRatio(tokenId);
+  const lissajousArguments = await deployed.lissajousArguments(tokenId);
+  const tokenMintBlockHash = await deployed.tokenMintBlockHash(tokenId);
+
+  expect(tokenMintBlockHash).equal(getBlockHash(mintBlock.toNumber()));
+
+  const simulatedLissajousArgs = simulateLissajousArgs(
+    mintBlock.toNumber(),
+    mintValue,
+  );
+
+  expect(tokenColor.replace('0x', '#')).equal(
+    simulatedLissajousArgs.strokeColor,
+  );
+  expect(aspectRatio.height).equal(simulatedLissajousArgs.height);
+  expect(aspectRatio.width).equal(simulatedLissajousArgs.width);
+  expect(lissajousArguments.frequenceX).equal(
+    simulatedLissajousArgs.frequenceX,
+  );
+  expect(lissajousArguments.frequenceY).equal(
+    simulatedLissajousArgs.frequenceY,
+  );
+  expect((1 / 16) * lissajousArguments.phaseShift).equal(
+    simulatedLissajousArgs.phaseShift,
+  );
+  expect(lissajousArguments.totalSteps).equal(
+    simulatedLissajousArgs.totalSteps,
+  );
+  expect(lissajousArguments.startStep).equal(simulatedLissajousArgs.startStep);
+};
+
+describe('LissajousToken Pricing', function () {
+  let deployed: LissajousToken;
+  let owner: SignerWithAddress;
+  let someone: SignerWithAddress;
+  let ownerAddress: string;
 
   it('Deploy', async function () {
+    [owner, someone] = await ethers.getSigners();
+    ownerAddress = await owner.getAddress();
+
     const LissajousTokenContract = await ethers.getContractFactory(
       'LissajousToken',
     );
     const contract = await LissajousTokenContract.deploy(
       START_BLOCK,
       END_BLOCK,
-      MAX_SUPPLY,
       START_PRICE,
-      PRICE_DECREASE_PERIOD,
     );
 
     const tx = await contract.deployed();
-    token = (tx as any) as LissajousToken;
+    deployed = (tx as any) as LissajousToken;
     const receipt = await tx.deployTransaction.wait();
 
-    expect(await token.name()).to.equal('Lissajous Token');
-    expect((await token.totalSupply()).toString()).to.equal('0');
+    expect(await deployed.name()).to.equal('Lissajous Token');
+    expect((await deployed.totalSupply()).toString()).to.equal('0');
   });
 
-  it('First token start price', async () => {
-    expect((await token.pricingPreview(0, START_BLOCK)).eq(START_PRICE));
+  it('start price', async () => {
+    expect((await deployed.currentMinPrice()).eq(START_PRICE));
   });
 
-  it('Second token increased price', async () => {
+  it('increased price', async () => {
+    await deployed.mint(ownerAddress, 1, { value: START_PRICE });
     expect(
-      (await token.pricingPreview(1, START_BLOCK)).eq(
-        START_PRICE.mul(108).div(100),
-      ),
+      (await deployed.currentMinPrice()).eq(START_PRICE.mul(1001).div(1000)),
     );
+    await compareSimulation(deployed, 0);
   });
 
-  it('Endblock no token sold', async () => {
-    const endPrice = START_PRICE.mul(
-      BigNumber.from(98).pow((END_BLOCK - START_BLOCK) / PRICE_DECREASE_PERIOD),
-    ).div(
-      BigNumber.from(100).pow(
-        (END_BLOCK - START_BLOCK) / PRICE_DECREASE_PERIOD,
-      ),
+  it('Higher value', async () => {
+    await deployed.mint(ownerAddress, 1, {
+      value: ethers.utils.parseEther('1'),
+    });
+    expect(
+      (await deployed.currentMinPrice()).eq(START_PRICE.mul(1001).div(1000)),
     );
-
-    expect((await token.pricingPreview(0, END_BLOCK)).eq(endPrice));
+    await compareSimulation(deployed, 1);
   });
 
-  it('Endblock all tokens sold', async () => {
-    const endPriceNoTokens = START_PRICE.mul(
-      BigNumber.from(98).pow((END_BLOCK - START_BLOCK) / PRICE_DECREASE_PERIOD),
-    ).div(
-      BigNumber.from(100).pow(
-        (END_BLOCK - START_BLOCK) / PRICE_DECREASE_PERIOD,
+  it('Even Higher value', async () => {
+    await deployed.mint(ownerAddress, 1, {
+      value: ethers.utils.parseEther('2'),
+    });
+    expect(
+      (await deployed.currentMinPrice()).eq(START_PRICE.mul(1001).div(1000)),
+    );
+    await compareSimulation(deployed, 2);
+  });
+
+  it('Ridiculous higher value', async () => {
+    await deployed.mint(ownerAddress, 1, {
+      value: ethers.utils.parseEther('200'),
+    });
+    expect(
+      (await deployed.currentMinPrice()).eq(START_PRICE.mul(1001).div(1000)),
+    );
+    await compareSimulation(deployed, 3);
+  });
+
+  it('Ridiculous higher value', async () => {
+    for (let i = 0; i < 100; i++) {
+      await deployed.mint(ownerAddress, 1, {
+        value: ethers.utils.parseEther('10'),
+      });
+    }
+
+    const currentMinPrice = await deployed.currentMinPrice();
+
+    console.log(ethers.utils.formatEther(currentMinPrice));
+
+    expect(
+      (await deployed.currentMinPrice()).eq(
+        START_PRICE.mul(1001).div(1000).pow(12),
       ),
     );
-
-    const endPriceAllTokens = endPriceNoTokens
-      .mul(BigNumber.from(108).pow(101))
-      .div(BigNumber.from(100).pow(101));
-
-    console.log(ethers.utils.formatEther(endPriceAllTokens));
-
-    expect((await token.pricingPreview(101, END_BLOCK)).eq(endPriceAllTokens));
+    await compareSimulation(deployed, 5);
+    await compareSimulation(deployed, 23);
+    await compareSimulation(deployed, 103);
   });
 });
