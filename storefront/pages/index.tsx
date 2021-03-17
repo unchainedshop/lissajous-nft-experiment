@@ -12,6 +12,8 @@ let renderTimestamp: Date;
 
 const Index = () => {
   const {
+    hasSigner,
+    connect,
     accounts,
     currentBlock,
     writeContract,
@@ -28,6 +30,8 @@ const Index = () => {
   const blockTime = 15 * 1000;
 
   const mint = async () => {
+    if (!accounts[0]) return;
+
     try {
       const tx = await writeContract.mint(accounts[0], amount, {
         value: ethers.utils.parseEther(price).mul(amount),
@@ -117,47 +121,60 @@ const Index = () => {
         <div className="control-inner">
           {' '}
           <h1>LissajousToken</h1>
-          <h2>Next Block: {currentBlock + 1}</h2>
-          <form onSubmit={handleSubmit(mint)}>
-            {/* register your input into the hook by invoking the "register" function */}
-            <p>
-              <label>
-                How many?
-                <input
-                  disabled={!accounts[0]}
-                  name="amount"
-                  defaultValue="1"
-                  min={1}
-                  type="number"
-                  ref={register({ required: true })}
-                />
-              </label>
-            </p>
+          {currentBlock ? (
+            <>
+              {' '}
+              <h2>Next Block: {currentBlock + 1}</h2>
+              <form onSubmit={handleSubmit(mint)}>
+                {/* register your input into the hook by invoking the "register" function */}
+                <p>
+                  <label>
+                    How many?
+                    <input
+                      name="amount"
+                      defaultValue="1"
+                      min={1}
+                      type="number"
+                      ref={register({ required: true })}
+                    />
+                  </label>
+                </p>
 
-            <p>
-              <label>
-                Price Per Token Ξ
-                <input
-                  disabled={!accounts[0]}
-                  name="price"
-                  defaultValue={defaultPrice}
-                  type="string"
-                  ref={register({ required: true })}
-                />
-              </label>
-            </p>
+                <p>
+                  <label>
+                    Price Per Token Ξ
+                    <input
+                      name="price"
+                      defaultValue={defaultPrice}
+                      type="string"
+                      ref={register({ required: true })}
+                    />
+                  </label>
+                </p>
 
-            <p>
-              Total: Ξ
-              {ethers.utils.formatEther(
-                ethers.utils.parseEther(price || '0').mul(amount || '1'),
-              )}
-            </p>
+                <p>
+                  Total: Ξ
+                  {ethers.utils.formatEther(
+                    ethers.utils.parseEther(price || '0').mul(amount || '1'),
+                  )}
+                </p>
 
-            <button disabled={!accounts[0]} type="submit">
-              Mint
-            </button>
-          </form>
+                {!accounts[0] && hasSigner && (
+                  <button onClick={connect}>Connect</button>
+                )}
+
+                {accounts[0] && hasSigner && (
+                  <button disabled={!accounts[0]} type="submit">
+                    Mint
+                  </button>
+                )}
+
+                {!hasSigner && 'Please install Metamask'}
+              </form>
+            </>
+          ) : (
+            <h1>Not connected</h1>
+          )}
         </div>
       </div>
 

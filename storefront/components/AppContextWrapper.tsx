@@ -59,6 +59,14 @@ export const AppContextWrapper = ({ children }) => {
 
       const { chainId } = await scopedProvider.getNetwork();
       setChainId(chainId);
+
+      ethereum?.on('chainChanged', () => window.location.reload());
+
+      if (chainId !== 4) {
+        alert('Please switch to Rinkeby');
+        return;
+      }
+
       const contractAddress = addresses[chainId].LissajousToken;
       setContractAddress(addresses[chainId].LissajousToken);
 
@@ -69,10 +77,6 @@ export const AppContextWrapper = ({ children }) => {
         setChainId(chainId);
         setContractAddress(addresses[chainId].LissajousToken);
       });
-
-      if (chainId !== 4) {
-        alert('Please switch to Rinkeby');
-      }
 
       const contract = LissajousToken__factory.connect(
         contractAddress,
