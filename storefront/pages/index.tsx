@@ -184,13 +184,23 @@ const Index = () => {
                 )}
 
                 {accounts[0] && hasSigner && (
-                  <button
-                    className="w-100 button--primary"
-                    disabled={!accounts[0]}
-                    type="submit"
-                  >
-                    Mint
-                  </button>
+                  <>
+                    <button
+                      className="w-100 button--primary"
+                      disabled={!accounts[0]}
+                      type="submit"
+                    >
+                      Mint
+                    </button>
+                    <Link href="/about">
+                      <a>
+                        <i>
+                          It is not guaranteed that you actually catch the
+                          figures that are highlighted. Read more here.
+                        </i>
+                      </a>
+                    </Link>
+                  </>
                 )}
 
                 {!hasSigner && 'Please install Metamask'}
