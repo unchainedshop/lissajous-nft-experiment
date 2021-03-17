@@ -37,7 +37,7 @@ const Index = () => {
   const router = useRouter();
   const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
   const scrollingEl = useRef(null);
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit, watch, setValue } = useForm();
   const { price, amount } = watch();
   const defaultPrice = ethers.utils.formatEther(minPrice.mul(1000).div(999));
 
@@ -66,6 +66,12 @@ const Index = () => {
   useEffect(() => {
     if (currentBlock && !onLoadBlock) setOnLoadBlock(() => currentBlock);
   }, [currentBlock]);
+
+  useEffect(() => {
+    if (!parseEthFromInput(price).gte(minPrice)) {
+      setValue('price', ethers.utils.formatEther(minPrice.mul(1000).div(999)));
+    }
+  }, [minPrice]);
 
   useLayoutEffect(() => {
     renderTimestamp = new Date();
@@ -164,7 +170,7 @@ const Index = () => {
                       type="string"
                       ref={register({
                         required: true,
-                        pattern: /\d{1-3}(.\d{1-18})+/,
+                        // pattern: /\d{1-3}(.\d{1-18})+/,
                       })}
                     />
                   </label>
@@ -243,6 +249,7 @@ const Index = () => {
           padding: 0.1em 0.2em;
           color: black;
           width: 100%;
+          cursor: pointer;
         }
       `}</style>
     </div>

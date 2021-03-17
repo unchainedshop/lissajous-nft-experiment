@@ -46,10 +46,13 @@ export const useAppContext = () => useContext(AppContext);
 const ethereum = (global as any).ethereum;
 
 const unique = (arr) => arr.filter((v, i, a) => a.indexOf(v) === i);
-const uniqueToken = (tokens) =>
+const uniqueToken = (tokens: Token[]) =>
   tokens.filter(
     ({ owner, block }, i, ts) =>
-      ts.findIndex((t) => t.owner === owner && t.block === block) === i,
+      ts.findIndex(
+        (t) =>
+          t.owner.toLowerCase() === owner.toLowerCase() && t.block === block,
+      ) === i,
   );
 
 export const AppContextWrapper = ({ children }) => {
@@ -127,7 +130,6 @@ export const AppContextWrapper = ({ children }) => {
       setTotalSupply((await contract.totalSupply()).toNumber());
 
       contract.on('Transfer', async (from, to, id) => {
-        console.log('Transfer', { from, to, id });
         setTotalSupply((await contract.totalSupply()).toNumber());
         const block = await contract.tokenMintBlock(id);
         const price = await contract.tokenMintValue(id);
@@ -175,9 +177,11 @@ export const AppContextWrapper = ({ children }) => {
 
   const addTransaction = (tx) => {
     setTransactions((current) => [tx, ...current]);
-    tx.wait().then(() => {
+    tx.tx.wait().then(() => {
       setTransactions((current) =>
-        current.filter((t) => t.tx.nonce !== tx.nonce && tx.from !== t.tx.from),
+        current.filter(
+          (t) => t.tx.nonce !== tx.tx.nonce && tx.tx.from !== t.tx.from,
+        ),
       );
     });
   };

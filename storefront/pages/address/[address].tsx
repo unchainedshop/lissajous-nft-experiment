@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import LissajousSvg from '../../components/LissajousSvg';
 import Link from 'next/link';
 
+let preventRefresh = false;
+
 const Address = () => {
   const router = useRouter();
   const {
@@ -45,12 +47,33 @@ const Address = () => {
     }
   }, [readContract]);
 
+  useEffect(() => {
+    const onbeforeunload = (e) => {
+      e.preventDefault();
+      return 'When you leave, the pending transactions will not be visible until they are mined.';
+    };
+
+    if (transactions.length && !preventRefresh) {
+      preventRefresh = true;
+      window.addEventListener('beforeunload', onbeforeunload);
+    }
+
+    if (transactions.length === 0 && preventRefresh) {
+      preventRefresh = false;
+      window.removeEventListener('beforeunload', onbeforeunload);
+    }
+
+    return () => {
+      preventRefresh = false;
+      window.removeEventListener('beforeunload', onbeforeunload);
+    };
+  }, [transactions.length]);
+
   return (
     <div>
       <div>
         {isOwner && transactions.length > 0 && (
           <>
-            {console.log(transactions)}
             <h1>Pending Mints</h1>
             <div>
               {transactions.map(({ price, amount }) =>
@@ -71,7 +94,11 @@ const Address = () => {
         )}
         <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
         {tokens
-          .filter(({ owner }) => owner === address)
+          .filter(
+            ({ owner }) =>
+              owner.toLocaleLowerCase() === address.toLocaleLowerCase(),
+          )
+          .sort((a, b) => (a.id.gte(b.id) ? -1 : 1))
           .map((token, i) => (
             <div className="figure" key={i}>
               <Link href={`/token/${token.id}`}>
