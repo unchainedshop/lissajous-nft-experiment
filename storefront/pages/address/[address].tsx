@@ -1,14 +1,19 @@
 import { useRouter } from 'next/router';
 import { simulateLissajousArgs, colorFromPrice } from '@private/contracts';
 import { useAppContext } from '../../components/AppContextWrapper';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import LissajousSvg from '../../components/LissajousSvg';
 import Link from 'next/link';
 
 const Address = () => {
   const router = useRouter();
-  const { readContract, accounts, transactions } = useAppContext();
-  const [tokens, setTokens] = useState([]);
+  const {
+    readContract,
+    accounts,
+    transactions,
+    tokens,
+    recordToken,
+  } = useAppContext();
 
   const address = router.query.address as string;
 
@@ -22,26 +27,20 @@ const Address = () => {
         const promises = Array(balance.toNumber())
           .fill(0)
           .map(async (_, i) => {
-            const tokenId = await readContract.tokenOfOwnerByIndex(address, i);
+            const id = await readContract.tokenOfOwnerByIndex(address, i);
 
-            const block = await readContract.tokenMintBlock(tokenId);
-            const value = await readContract.tokenMintValue(tokenId);
+            const block = await readContract.tokenMintBlock(id);
+            const price = await readContract.tokenMintValue(id);
 
-            return {
-              tokenId,
+            recordToken({
               block: block.toNumber(),
-              value,
-            };
+              price,
+              owner: address,
+              id,
+            });
           });
 
-        const configs = await Promise.all(promises);
-
-        setTokens(
-          configs.map(({ tokenId, block, value }) => ({
-            tokenId,
-            args: simulateLissajousArgs(block, value),
-          })),
-        );
+        await Promise.all(promises);
       })();
     }
   }, [readContract]);
@@ -71,15 +70,19 @@ const Address = () => {
           </>
         )}
         <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
-        {tokens.map((token, i) => (
-          <div className="figure" key={i}>
-            <Link href={`/token/${token.tokenId}`}>
-              <a>
-                <LissajousSvg {...token.args} />
-              </a>
-            </Link>
-          </div>
-        ))}
+        {tokens
+          .filter(({ owner }) => owner === address)
+          .map((token, i) => (
+            <div className="figure" key={i}>
+              <Link href={`/token/${token.id}`}>
+                <a>
+                  <LissajousSvg
+                    {...simulateLissajousArgs(token.block, token.price)}
+                  />
+                </a>
+              </Link>
+            </div>
+          ))}
       </div>
       <style jsx>{`
         .figure {
