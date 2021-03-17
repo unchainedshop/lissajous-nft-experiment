@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { simulateLissajousArgs } from '@private/contracts';
+import { simulateLissajousArgs, colorFromPrice } from '@private/contracts';
 import { useAppContext } from '../../components/AppContextWrapper';
 import { useEffect, useState } from 'react';
 import LissajousSvg from '../../components/LissajousSvg';
@@ -49,10 +49,28 @@ const Address = () => {
   return (
     <div>
       <div>
-        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
-        {transactions.length > 0 && (
-          <div>{transactions.length} pending transactions</div>
+        {isOwner && transactions.length > 0 && (
+          <>
+            {console.log(transactions)}
+            <h1>Pending Mints</h1>
+            <div>
+              {transactions.map(({ price, amount }) =>
+                Array(amount)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      className="figure"
+                      key={i}
+                      style={{ color: colorFromPrice(price) }}
+                    >
+                      ???
+                    </div>
+                  )),
+              )}
+            </div>
+          </>
         )}
+        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
         {tokens.map((token, i) => (
           <div className="figure" key={i}>
             <Link href={`/token/${token.tokenId}`}>

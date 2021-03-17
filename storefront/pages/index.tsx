@@ -10,19 +10,19 @@ import { useRouter } from 'next/router';
 
 let renderTimestamp: Date;
 
-const cleanPrice = (priceInput: string) => {
-  if (!priceInput) return '0';
+const cleanEthInput = (input: string) => {
+  if (!input) return '0';
 
-  if (priceInput.includes('.')) {
-    const [ints, decimals] = priceInput.split('.');
+  if (input.includes('.')) {
+    const [ints, decimals] = input.split('.');
     return `${ints}.${decimals.slice(0, 18)}`;
   } else {
-    return priceInput;
+    return input;
   }
 };
 
-const parseEthFromPrice = (price: string) =>
-  ethers.utils.parseEther(cleanPrice(price));
+const parseEthFromInput = (price: string) =>
+  ethers.utils.parseEther(cleanEthInput(price));
 
 const Index = () => {
   const {
@@ -47,11 +47,13 @@ const Index = () => {
     if (!accounts[0]) return;
 
     try {
+      const parsedPrice = parseEthFromInput(price);
+
       const tx = await writeContract.mint(accounts[0], amount, {
-        value: ethers.utils.parseEther(price).mul(amount),
+        value: parsedPrice.mul(amount),
       });
 
-      addTransaction(tx);
+      addTransaction({ amount, price: parsedPrice, tx });
 
       router.push(`/address/${accounts[0]}`);
     } catch (e) {
@@ -66,7 +68,6 @@ const Index = () => {
   }, [currentBlock]);
 
   useLayoutEffect(() => {
-    console.log('useLayoutEffect');
     renderTimestamp = new Date();
 
     let animationFrame;
@@ -120,7 +121,7 @@ const Index = () => {
                         {...(simulateLissajousArgs(
                           startBlock + i,
                           isMarked(currentBlock, startBlock, i, amount)
-                            ? parseEthFromPrice(price)
+                            ? parseEthFromInput(price)
                             : undefined,
                         ) as any)}
                       />
@@ -172,7 +173,7 @@ const Index = () => {
                 <p>
                   Total: Ξ
                   {ethers.utils.formatEther(
-                    parseEthFromPrice(price).mul(amount || '1'),
+                    parseEthFromInput(price).mul(amount || '1'),
                   )}
                 </p>
 

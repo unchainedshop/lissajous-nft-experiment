@@ -58,6 +58,16 @@ export type LissajousArgs = {
 export const getBlockHash = (blockNumber: number) =>
   ethers.utils.solidityKeccak256(['uint256'], [blockNumber]);
 
+export const colorFromPrice = (
+  tokenPrice: BigNumber = BigNumber.from(0),
+): string => {
+  const [, color] = priceColorMap.find(([price]) =>
+    tokenPrice.gte(ethers.utils.parseEther(price)) ? true : false,
+  ) || [, '#555555'];
+
+  return color.toLocaleLowerCase();
+};
+
 const simulateLissajousArgs = (
   blockNumber: number,
   tokenPrice: BigNumber = BigNumber.from(0),
@@ -66,10 +76,6 @@ const simulateLissajousArgs = (
   const array = ethers.utils.arrayify(currentHash);
 
   const aspectRatio = aspectRatios[array[0] % 8];
-
-  const [, strokeColor] = priceColorMap.find(([price]) =>
-    tokenPrice.gte(ethers.utils.parseEther(price)) ? true : false,
-  ) || [, '#555555'];
 
   return {
     height: aspectRatio.h,
@@ -80,7 +86,7 @@ const simulateLissajousArgs = (
     totalSteps: (array[4] % 16) + 1,
     startStep: (array[5] % 16) + 1,
     lineWidth: 8,
-    strokeColor: (strokeColor as string).toLowerCase(),
+    strokeColor: colorFromPrice(tokenPrice),
   };
 };
 

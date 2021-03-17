@@ -6,6 +6,12 @@ import {
   LissajousToken__factory,
 } from '@private/contracts';
 
+type Transaction = {
+  amount: number;
+  price: BigNumber;
+  tx?: ethers.ContractTransaction;
+};
+
 export const AppContext = React.createContext<{
   hasSigner?: boolean;
   accounts: string[];
@@ -15,8 +21,8 @@ export const AppContext = React.createContext<{
   connect: () => Promise<void>;
   readContract?: LissajousToken;
   writeContract?: LissajousToken;
-  transactions: ethers.ContractTransaction[];
-  addTransaction: (t: ethers.ContractTransaction) => void;
+  transactions: Transaction[];
+  addTransaction: (t: Transaction) => void;
 }>({
   accounts: [],
   connect: () => null,
@@ -31,9 +37,9 @@ const ethereum = (global as any).ethereum;
 const unique = (arr) => arr.filter((v, i, a) => a.indexOf(v) === i);
 
 export const AppContextWrapper = ({ children }) => {
-  const [transactions, setTransactions] = useState<
-    ethers.ContractTransaction[]
-  >([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([
+    // { amount: 5, price: ethers.utils.parseEther('2') },
+  ]);
   const [provider, setProvider] = useState<ethers.providers.BaseProvider>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [chainId, setChainId] = useState(0);
@@ -148,7 +154,7 @@ export const AppContextWrapper = ({ children }) => {
     setTransactions((current) => [tx, ...current]);
     tx.wait().then(() => {
       setTransactions((current) =>
-        current.filter((t) => t.nonce !== tx.nonce && tx.from !== t.from),
+        current.filter((t) => t.tx.nonce !== tx.nonce && tx.from !== t.tx.from),
       );
     });
   };
