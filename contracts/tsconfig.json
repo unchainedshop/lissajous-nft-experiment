@@ -16,6 +16,7 @@
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.js", "**/*.json"],
   "files": [
+    "./test/expectBigNumberEqual.ts",
     "./hardhat.config.ts",
     "./addresses.json",
     "./test/compareSimulation.ts",

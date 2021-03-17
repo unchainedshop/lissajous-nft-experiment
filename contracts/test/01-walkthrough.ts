@@ -7,6 +7,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-wit
 
 import { bigNumberCompoundInterest } from './utils/bigNumberCompoundInterest';
 import { compareSimulation } from './utils/compareSimulation';
+import { expectBigNumberEqual } from './utils/expectBigNumberEqual';
 
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for contract creation
@@ -19,10 +20,12 @@ describe('LissajousToken', function () {
   let owner: SignerWithAddress;
   let someone: SignerWithAddress;
   let ownerAddress: string;
+  let someoneAddress: string;
 
   it('Deploy', async function () {
     [owner, someone] = await ethers.getSigners();
     ownerAddress = await owner.getAddress();
+    someoneAddress = await someone.getAddress();
 
     const LissajousTokenContract = await ethers.getContractFactory(
       'LissajousToken',
@@ -197,5 +200,26 @@ describe('LissajousToken', function () {
     expect(lissajousArguments.startStep).equal(13);
 
     await compareSimulation(deployed, 5);
+  });
+
+  it('transfer a token', async () => {
+    expectBigNumberEqual(
+      await deployed.balanceOf(someoneAddress),
+      BigNumber.from(0),
+    );
+    await deployed.transferFrom(ownerAddress, someoneAddress, 0);
+    expectBigNumberEqual(
+      await deployed.balanceOf(someoneAddress),
+      BigNumber.from(1),
+    );
+  });
+
+  it('owner cannot transfer anymore', async () => {
+    try {
+      await deployed.transferFrom(ownerAddress, someoneAddress, 0);
+      expect(false).equal(true);
+    } catch (e) {
+      expect(e.message).to.include('transfer caller is not owner nor approved');
+    }
   });
 });

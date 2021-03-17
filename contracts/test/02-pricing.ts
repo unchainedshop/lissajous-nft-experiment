@@ -6,6 +6,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { LissajousToken } from '../artifacts/typechain';
 import { compareSimulation } from './utils/compareSimulation';
 import { createFixedInterest } from './utils/bigNumberCompoundInterest';
+import { expectBigNumberEqual } from './utils/expectBigNumberEqual';
 
 /**
  *
@@ -19,9 +20,6 @@ const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
 export const BASE_URI = 'https://lissajous.art/api/token/';
 
 require('./01-walkthrough');
-
-const expectBigNumberEqual = (a: BigNumber, b: BigNumber) =>
-  expect(a.toString()).eq(b.toString());
 
 const calculatePrice = createFixedInterest(START_PRICE, 1001);
 
