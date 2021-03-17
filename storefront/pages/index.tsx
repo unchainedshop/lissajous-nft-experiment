@@ -44,7 +44,7 @@ const Index = () => {
   const blockTime = 15 * 1000;
 
   const mint = async () => {
-    if (!accounts[0]) return;
+      // if (!accounts[0]) return;
 
     try {
       const tx = await writeContract.mint(accounts[0], amount, {
@@ -141,9 +141,8 @@ const Index = () => {
               <h2>Next Block: {currentBlock + 1}</h2>
               <form onSubmit={handleSubmit(mint)}>
                 {/* register your input into the hook by invoking the "register" function */}
-                <p>
                   <label>
-                    How many?
+                    <span className="dimmed">How many?</span>
                     <input
                       name="amount"
                       defaultValue="1"
@@ -152,36 +151,32 @@ const Index = () => {
                       ref={register({ required: true })}
                     />
                   </label>
-                </p>
 
-                <p>
-                  <label>
-                    Price Per Token Ξ
+                  <label className="mt-3 mb-3 d-block">
+                    <span className="dimmed">Price per Token Ξ</span>
                     <input
                       name="price"
                       defaultValue={defaultPrice}
                       type="string"
                       ref={register({
                         required: true,
-                        pattern: /\d{1-3}(.\d{1-18})+/,
+                        // pattern: /\d{1-3}(.\d{1-18})+/,
                       })}
                     />
                   </label>
-                </p>
 
-                <p>
-                  Total: Ξ
+                  <span className="mb-3 d-block">Total: Ξ
                   {ethers.utils.formatEther(
                     parseEthFromPrice(price).mul(amount || '1'),
                   )}
-                </p>
+                  </span>
 
                 {!accounts[0] && hasSigner && (
                   <button onClick={connect}>Connect</button>
                 )}
 
                 {accounts[0] && hasSigner && (
-                  <button disabled={!accounts[0]} type="submit">
+                  <button className="w-100 button--primary" disabled={!accounts[0]} type="submit">
                     Mint
                   </button>
                 )}
@@ -224,24 +219,29 @@ const Index = () => {
           min-width: 15em;
         }
 
-        input {
-          background-color: transparent;
-          border: 1px solid white;
-          font-family: monospace;
-          font-size: 1.5em;
-          padding: 0.2em 0.2em;
-          color: white;
-          width: 100%;
+        @media (max-width: 552px) {
+         .control {
+            position: absolute;
+            left: 0;
+            right: 0;
+          }
+          .control input {
+            background-color: rgba(18,18,18);
+          }
         }
 
-        button {
-          width: 100%;
-          background-color: white;
-          border: 1px solid white;
+        input {
+          background-color: transparent;
+          border: 1px solid rgba(255,255,255,.25);
+          font-family: monospace;
           font-size: 1.5em;
-          padding: 0.1em 0.2em;
-          color: black;
-          width: 100%;
+          padding: 0.375em 0.5em 0.25em;
+          color: white;
+          margin-top: 4px;
+          width: calc(100% - 1.25em);
+        }
+        input:focus {
+          border: 1px solid white;
         }
       `}</style>
     </div>

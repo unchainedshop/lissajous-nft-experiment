@@ -43,16 +43,18 @@ const Gallery = () => {
   return (
     <div>
       <div>
-        <h1>Gallery</h1>
-        {tokens.map((token, i) => (
-          <div className="figure" key={i}>
-            <Link href={`/token/${token.tokenId}`}>
-              <a>
-                <LissajousSvg {...token.args} />
-              </a>
-            </Link>
-          </div>
-        ))}
+        <h1 className="text-center">Gallery</h1>
+        <div className="d-flex alig-items-center justify-content-around flex-wrap">
+          {tokens.map((token, i) => (
+              <div className="figure" key={i}>
+                <Link href={`/token/${token.tokenId}`}>
+                  <a>
+                    <LissajousSvg {...token.args} />
+                  </a>
+                </Link>
+              </div>
+          ))}
+        </div>
       </div>
       <style jsx>{`
         .figure {
@@ -61,7 +63,6 @@ const Gallery = () => {
           height: 128px;
           width: 128px;
           margin: 10px;
-          border: 1px solid darkgrey;
         }
       `}</style>
     </div>

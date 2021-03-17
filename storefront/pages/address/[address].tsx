@@ -49,19 +49,22 @@ const Address = () => {
   return (
     <div>
       <div>
-        <h1>{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
+        <h1 className="text-center">{isOwner ? 'Your Tokens' : `Tokens of ${router.query.address}`}</h1>
         {transactions.length > 0 && (
-          <div>{transactions.length} pending transactions</div>
+          <div className="text-center">{transactions.length} pending transactions</div>
         )}
-        {tokens.map((token, i) => (
-          <div className="figure" key={i}>
-            <Link href={`/token/${token.tokenId}`}>
-              <a>
-                <LissajousSvg {...token.args} />
-              </a>
-            </Link>
-          </div>
-        ))}
+
+        <div className="d-flex align-items-center justify-content-around flex-wrap">
+          {tokens.map((token, i) => (
+            <div className="figure" key={i}>
+              <Link href={`/token/${token.tokenId}`}>
+                <a>
+                  <LissajousSvg {...token.args} />
+                </a>
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
       <style jsx>{`
         .figure {
@@ -70,7 +73,6 @@ const Address = () => {
           height: 128px;
           width: 128px;
           margin: 10px;
-          border: 1px solid darkgrey;
         }
       `}</style>
     </div>

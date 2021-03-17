@@ -11,7 +11,7 @@ const BlockNumber = () => {
 
   return (
     <div>
-      <div>
+      <div className="d-flex align-items-center justify-content-between flex-wrap flex-column">
         <div className="figure">
           <LissajousSvg {...args} />
         </div>
@@ -20,11 +20,17 @@ const BlockNumber = () => {
         .figure {
           position: relative;
           display: inline-block;
-          height: 512px;
-          width: 512px;
+          height: 300px;
+          width: 300px;
           margin: 10px;
-          border: 1px solid darkgrey;
         }
+        @media (min-width: 768px) {
+          .figure {
+            height: 512px;
+            width: 512px;
+          }
+        }
+
       `}</style>
     </div>
   );
