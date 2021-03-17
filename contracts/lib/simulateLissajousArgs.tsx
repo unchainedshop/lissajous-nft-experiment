@@ -12,21 +12,35 @@ const aspectRatios = [
 ];
 
 const priceColorMap = [
-  [ethers.utils.parseEther('100'), '#E5E4E2'],
-  [ethers.utils.parseEther('10'), '#ffd700'],
-  [ethers.utils.parseEther('5'), '#55FF55'],
-  [ethers.utils.parseEther('3'), '#FFFF55'],
-  [ethers.utils.parseEther('1'), '#FF55FF'],
-  [ethers.utils.parseEther('0.8'), '#55FFFF'],
-  [ethers.utils.parseEther('0.6'), '#FF5555'],
-  [ethers.utils.parseEther('0.4'), '#5555FF'],
-  [ethers.utils.parseEther('0.2'), '#FFFFFF'],
-  [ethers.utils.parseEther('0.1'), '#00AA00'],
-  [ethers.utils.parseEther('0.08'), '#AA5500'],
-  [ethers.utils.parseEther('0.06'), '#AA00AA'],
-  [ethers.utils.parseEther('0.04'), '#00AAAA'],
-  [ethers.utils.parseEther('0.02'), '#AA0000'],
-  [ethers.utils.parseEther('0.01'), '#AAAAAA'],
+  ['100', '#E5E4E2'],
+  ['10', '#ffd700'],
+  ['9', '#f6ff00'],
+  ['8', '#c6ff00'],
+  ['7', '#95ff00'],
+  ['6', '#64ff00'],
+  ['5', '#34ff00'],
+  ['4', '#03ff00'],
+  ['3', '#00ff2e'],
+  ['2', '#00ff5e'],
+  ['1', '#00ff8f'],
+  ['0.9', '#00ffc0'],
+  ['0.8', '#00fff0'],
+  ['0.7', '#00ddff'],
+  ['0.6', '#00acff'],
+  ['0.5', '#007cff'],
+  ['0.4', '#004bff'],
+  ['0.3', '#001aff'],
+  ['0.2', '#1600ff'],
+  ['0.1', '#4700ff'],
+  ['0.09', '#7800ff'],
+  ['0.08', '#a800ff'],
+  ['0.07', '#d900ff'],
+  ['0.06', '#ff00f4'],
+  ['0.05', '#ff00c4'],
+  ['0.04', '#ff0093'],
+  ['0.03', '#ff0062'],
+  ['0.02', '#ff0032'],
+  ['0.01', '#ff0001'],
 ];
 
 export type LissajousArgs = {
@@ -54,7 +68,7 @@ const simulateLissajousArgs = (
   const aspectRatio = aspectRatios[array[0] % 8];
 
   const [, strokeColor] = priceColorMap.find(([price]) =>
-    tokenPrice.gte(price) ? true : false,
+    tokenPrice.gte(ethers.utils.parseEther(price)) ? true : false,
   ) || [, '#555555'];
 
   return {

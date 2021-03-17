@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { LissajousArgs } from '@private/contracts';
+import type { LissajousArgs } from '@private/contracts';
 
 const LissajousSvg = ({
   frequenceX,
