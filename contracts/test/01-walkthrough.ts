@@ -4,18 +4,9 @@ import { BigNumber } from '@ethersproject/bignumber';
 
 import { LissajousToken } from '../artifacts/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
-import simulateLissajousArgs, {
-  getBlockHash,
-} from '../lib/simulateLissajousArgs';
 
-const bigNumberCompoundInterest = (
-  initialValue: BigNumber,
-  interest: number,
-  iterations: number,
-): BigNumber =>
-  Array(iterations)
-    .fill(0)
-    .reduce((acc: BigNumber) => acc.mul(interest).div(1000), initialValue);
+import { bigNumberCompoundInterest } from './utils/bigNumberCompoundInterest';
+import { compareSimulation } from './utils/compareSimulation';
 
 describe('LissajousToken', function () {
   const START_BLOCK = 3; // First blocks are for contract creation
@@ -204,46 +195,7 @@ describe('LissajousToken', function () {
     expect(lissajousArguments.phaseShift).equal(4);
     expect(lissajousArguments.totalSteps).equal(6);
     expect(lissajousArguments.startStep).equal(13);
-  });
 
-  it('Check simulated lissajous', async () => {
-    const tokenId = 3;
-    const uri = await deployed.tokenURI(tokenId);
-    expect(uri).equal(`${BASE_URI}${tokenId}`);
-
-    const mintValue = await deployed.tokenMintValue(tokenId);
-    const mintBlock = await deployed.tokenMintBlock(tokenId);
-    const tokenColor = await deployed.tokenColor(tokenId);
-    const aspectRatio = await deployed.aspectRatio(tokenId);
-    const lissajousArguments = await deployed.lissajousArguments(tokenId);
-    const tokenMintBlockHash = await deployed.tokenMintBlockHash(tokenId);
-
-    expect(tokenMintBlockHash).equal(getBlockHash(mintBlock.toNumber()));
-
-    const simulatedLissajousArgs = simulateLissajousArgs(
-      mintBlock.toNumber(),
-      mintValue,
-    );
-
-    expect(tokenColor.replace('0x', '#')).equal(
-      simulatedLissajousArgs.strokeColor,
-    );
-    expect(aspectRatio.height).equal(simulatedLissajousArgs.height);
-    expect(aspectRatio.width).equal(simulatedLissajousArgs.width);
-    expect(lissajousArguments.frequenceX).equal(
-      simulatedLissajousArgs.frequenceX,
-    );
-    expect(lissajousArguments.frequenceY).equal(
-      simulatedLissajousArgs.frequenceY,
-    );
-    expect((1 / 16) * lissajousArguments.phaseShift).equal(
-      simulatedLissajousArgs.phaseShift,
-    );
-    expect(lissajousArguments.totalSteps).equal(
-      simulatedLissajousArgs.totalSteps,
-    );
-    expect(lissajousArguments.startStep).equal(
-      simulatedLissajousArgs.startStep,
-    );
+    await compareSimulation(deployed, 5);
   });
 });
