@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
+import QRCode from 'qrcode.react';
 
 import { useAppContext } from '../components/AppContextWrapper';
 import { useRouter } from 'next/router';
@@ -187,8 +188,11 @@ const Index = () => {
                 <br />
                 Or scan the following QR Code with your Mobile Phone:
               </p>
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A//metamask.app.link/dapp/${location?.host}/${location?.pathname}&qzone=1&margin=0&size=240x240&ecc=L`}
+
+              <QRCode
+                value={`https://metamask.app.link/dapp/${location?.host}/${location?.pathname}`}
+                includeMargin
+                size={240}
               />
             </>
           )}
