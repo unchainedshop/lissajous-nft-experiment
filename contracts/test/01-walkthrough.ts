@@ -15,6 +15,7 @@ describe('LissajousToken', function () {
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
   const SAFE_PRICE = BigNumber.from('10').pow('18'); // 1 ETH
   const BASE_URI = 'https://lissajous.art/api/token/';
+  const RAINBOW_FREQUENCY = 4096;
 
   let deployed: LissajousToken;
   let owner: SignerWithAddress;
@@ -34,7 +35,7 @@ describe('LissajousToken', function () {
       START_BLOCK,
       END_BLOCK,
       START_PRICE,
-      4096,
+      RAINBOW_FREQUENCY,
     );
 
     const tx = await contract.deployed();
@@ -200,7 +201,7 @@ describe('LissajousToken', function () {
     expect(lissajousArguments.totalSteps).equal(6);
     expect(lissajousArguments.startStep).equal(13);
 
-    await compareSimulation(deployed, 5);
+    await compareSimulation(deployed, 5, RAINBOW_FREQUENCY);
   });
 
   it('transfer a token', async () => {

@@ -11,6 +11,7 @@ import { expectBigNumberEqual } from './utils/expectBigNumberEqual';
 const START_BLOCK = 3; // First blocks are for contract creation
 const END_BLOCK = 10000;
 const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
+const RAINBOW_FREQUENCY = 4;
 
 require('./01-walkthrough');
 
@@ -33,7 +34,7 @@ describe('LissajousToken Rainbow Token', function () {
       START_BLOCK,
       END_BLOCK,
       START_PRICE,
-      4,
+      RAINBOW_FREQUENCY,
     );
 
     const tx = await contract.deployed();
@@ -98,16 +99,11 @@ describe('LissajousToken Rainbow Token', function () {
     const balanceAfter = await owner.getBalance();
     const tokenBalance = await deployed.balanceOf(ownerAddress);
     expectBigNumberEqual(tokenBalance, BigNumber.from(1));
-    const args = await deployed.lissajousArguments(0);
+    await compareSimulation(deployed, 0, RAINBOW_FREQUENCY);
 
     expect(balanceAfter.add(gasCost).add(currentMinPrice).toString()).equals(
       balanceBefore.toString(),
     );
-
-    // expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(104));
-    // await compareSimulation(deployed, 5);
-    // await compareSimulation(deployed, 23);
-    // await compareSimulation(deployed, 103);
   });
 
   it('Try to sweep the next rainbow', async () => {
@@ -121,7 +117,7 @@ describe('LissajousToken Rainbow Token', function () {
     const tokenBalance = await deployed.balanceOf(ownerAddress);
     // It should only be two because one is already another rainbow
     expectBigNumberEqual(tokenBalance, BigNumber.from(2));
-    await compareSimulation(deployed, 1);
+    await compareSimulation(deployed, 1, RAINBOW_FREQUENCY);
     // Pay for one in full
     expect(
       balanceAfter.add(gasCost).add(ethers.utils.parseEther('3')).toString(),

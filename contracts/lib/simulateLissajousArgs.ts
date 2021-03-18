@@ -52,7 +52,7 @@ export type LissajousArgs = {
   phaseShift: number;
   totalSteps: number;
   startStep: number;
-  rainbow?: boolean;
+  rainbow: boolean;
   strokeColor?: string;
   animated?: boolean;
   gradient?: boolean;
@@ -74,10 +74,10 @@ export const colorFromPrice = (
 const simulateLissajousArgs = (
   blockNumber: number,
   tokenPrice: BigNumber = BigNumber.from(0),
+  rainbowFrequency: 4096,
 ): LissajousArgs => {
   const currentHash = getBlockHash(blockNumber);
   const array = ethers.utils.arrayify(currentHash);
-
   const aspectRatio = aspectRatios[array[0] % 8];
 
   return {
@@ -90,6 +90,7 @@ const simulateLissajousArgs = (
     startStep: (array[5] % 16) + 1,
     lineWidth: 8,
     strokeColor: colorFromPrice(tokenPrice),
+    rainbow: BigNumber.from(currentHash).mod(rainbowFrequency).eq(0),
   };
 };
 

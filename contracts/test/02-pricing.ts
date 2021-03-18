@@ -17,6 +17,7 @@ import { expectBigNumberEqual } from './utils/expectBigNumberEqual';
 const START_BLOCK = 3; // First blocks are for contract creation
 const END_BLOCK = 10000;
 const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
+const RAINBOW_FREQUENCY = 12;
 
 require('./01-walkthrough');
 
@@ -39,7 +40,7 @@ describe('LissajousToken Pricing', function () {
       START_BLOCK,
       END_BLOCK,
       START_PRICE,
-      12,
+      RAINBOW_FREQUENCY,
     );
 
     const tx = await contract.deployed();
@@ -59,7 +60,7 @@ describe('LissajousToken Pricing', function () {
 
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(1));
 
-    await compareSimulation(deployed, 0);
+    await compareSimulation(deployed, 0, RAINBOW_FREQUENCY);
   });
 
   it('Higher value', async () => {
@@ -67,7 +68,7 @@ describe('LissajousToken Pricing', function () {
       value: ethers.utils.parseEther('1'),
     });
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(2));
-    await compareSimulation(deployed, 1);
+    await compareSimulation(deployed, 1, RAINBOW_FREQUENCY);
   });
 
   it('Even Higher value', async () => {
@@ -75,7 +76,7 @@ describe('LissajousToken Pricing', function () {
       value: ethers.utils.parseEther('2'),
     });
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(3));
-    await compareSimulation(deployed, 2);
+    await compareSimulation(deployed, 2, RAINBOW_FREQUENCY);
   });
 
   it('Ridiculous higher value', async () => {
@@ -83,7 +84,7 @@ describe('LissajousToken Pricing', function () {
       value: ethers.utils.parseEther('200'),
     });
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(4));
-    await compareSimulation(deployed, 3);
+    await compareSimulation(deployed, 3, RAINBOW_FREQUENCY);
   });
 
   it('Ridiculous higher value', async () => {
@@ -94,8 +95,8 @@ describe('LissajousToken Pricing', function () {
     }
 
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(104));
-    await compareSimulation(deployed, 5);
-    await compareSimulation(deployed, 23);
-    await compareSimulation(deployed, 103);
+    await compareSimulation(deployed, 5, RAINBOW_FREQUENCY);
+    await compareSimulation(deployed, 23, RAINBOW_FREQUENCY);
+    await compareSimulation(deployed, 103, RAINBOW_FREQUENCY);
   });
 });

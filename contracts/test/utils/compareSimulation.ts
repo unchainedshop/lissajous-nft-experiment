@@ -5,7 +5,11 @@ import simulateLissajousArgs, {
 
 const BASE_URI = 'https://lissajous.art/api/token/';
 
-export const compareSimulation = async (deployed, tokenId) => {
+export const compareSimulation = async (
+  deployed,
+  tokenId,
+  rainbowFrequency,
+) => {
   const uri = await deployed.tokenURI(tokenId);
   expect(uri).equal(`${BASE_URI}${tokenId}`);
 
@@ -21,6 +25,7 @@ export const compareSimulation = async (deployed, tokenId) => {
   const simulatedLissajousArgs = simulateLissajousArgs(
     mintBlock.toNumber(),
     mintValue,
+    rainbowFrequency,
   );
 
   expect(tokenColor.replace('0x', '#')).equal(
@@ -41,4 +46,5 @@ export const compareSimulation = async (deployed, tokenId) => {
     simulatedLissajousArgs.totalSteps,
   );
   expect(lissajousArguments.startStep).equal(simulatedLissajousArgs.startStep);
+  expect(lissajousArguments.rainbow).equal(simulatedLissajousArgs.rainbow);
 };
