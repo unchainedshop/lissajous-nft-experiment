@@ -74,7 +74,7 @@ export const colorFromPrice = (
 const simulateLissajousArgs = (
   blockNumber: number,
   tokenPrice: BigNumber = BigNumber.from(0),
-  rainbowFrequency: 4096,
+  rainbowFrequency: number = 4096,
 ): LissajousArgs => {
   const currentHash = getBlockHash(blockNumber);
   const array = ethers.utils.arrayify(currentHash);

@@ -5,6 +5,7 @@ async function main() {
   const START_BLOCK = 8256098 + 240;
   const END_BLOCK = 8256098 + 24 * 140;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
+  const RAINBOW_FREQUENCY = 4; // Will be 4096
 
   const LissajousTokenFactory = await global.ethers.getContractFactory(
     'LissajousToken',
@@ -14,6 +15,7 @@ async function main() {
     START_BLOCK,
     END_BLOCK,
     START_PRICE,
+    RAINBOW_FREQUENCY,
   );
 
   const addresses = fs.readFileSync(`./addresses.json`);
