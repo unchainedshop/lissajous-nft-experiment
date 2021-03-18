@@ -40,7 +40,7 @@ describe('LissajousToken Pricing', function () {
       START_BLOCK,
       END_BLOCK,
       START_PRICE,
-      4096,
+      12,
     );
 
     const tx = await contract.deployed();
@@ -92,6 +92,8 @@ describe('LissajousToken Pricing', function () {
       await deployed.mint(ownerAddress, 1, {
         value: ethers.utils.parseEther('10'),
       });
+      const isRainbow = await deployed.isBlockRainbow(i);
+      console.log(isRainbow);
     }
 
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(104));

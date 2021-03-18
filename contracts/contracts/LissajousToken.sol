@@ -125,10 +125,13 @@ contract LissajousToken is Context, Ownable, ERC721 {
         return keccak256(abi.encode(blockNumber));
     }
 
-    function isRainbow(bytes32 blockHash) internal view returns (bool) {
+    function isHashRainbow(bytes32 blockHash) public view returns (bool) {
         uint256 asInt = uint256(blockHash);
-
         return (asInt % (_rainbowFrequency)) == 0;
+    }
+
+    function isBlockRainbow(uint256 blockNumber) public view returns (bool) {
+        return isHashRainbow(hashBlock(blockNumber));
     }
 
     /**
@@ -163,7 +166,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
         }
 
         for (uint8 i = 0; i < amount; i++) {
-            bool rainbow = isRainbow(hashBlock(block.number.add(i)));
+            bool rainbow = isBlockRainbow(block.number.add(i));
             uint256 tokenIndex = totalSupply();
 
             // The rainbow token cannot be minted in a set
@@ -271,7 +274,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
         uint8 fourth = uint8(mintBlockHash[3]);
         uint8 fifth = uint8(mintBlockHash[4]);
         uint8 sixth = uint8(mintBlockHash[5]);
-        bool rainbow = isRainbow(mintBlockHash);
+        bool rainbow = isHashRainbow(mintBlockHash);
 
         return (
             (second % 16) + 1,

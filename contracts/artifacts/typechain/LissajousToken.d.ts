@@ -33,6 +33,8 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     "getApproved(uint256)": FunctionFragment;
     "hashBlock(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "isBlockRainbow(uint256)": FunctionFragment;
+    "isHashRainbow(bytes32)": FunctionFragment;
     "lissajousArguments(uint256)": FunctionFragment;
     "minPrice(uint256)": FunctionFragment;
     "mint(address,uint8)": FunctionFragment;
@@ -91,6 +93,14 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isBlockRainbow",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isHashRainbow",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "lissajousArguments",
@@ -208,6 +218,14 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "hashBlock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isBlockRainbow",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isHashRainbow",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -383,6 +401,26 @@ export class LissajousToken extends Contract {
     "isApprovedForAll(address,address)"(
       owner: string,
       operator: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    isBlockRainbow(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    "isBlockRainbow(uint256)"(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    isHashRainbow(
+      blockHash: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    "isHashRainbow(bytes32)"(
+      blockHash: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
@@ -715,6 +753,26 @@ export class LissajousToken extends Contract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  isBlockRainbow(
+    blockNumber: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "isBlockRainbow(uint256)"(
+    blockNumber: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isHashRainbow(
+    blockHash: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "isHashRainbow(bytes32)"(
+    blockHash: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   lissajousArguments(
     tokenIndex: BigNumberish,
     overrides?: CallOverrides
@@ -1032,6 +1090,26 @@ export class LissajousToken extends Contract {
     "isApprovedForAll(address,address)"(
       owner: string,
       operator: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isBlockRainbow(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "isBlockRainbow(uint256)"(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isHashRainbow(
+      blockHash: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "isHashRainbow(bytes32)"(
+      blockHash: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -1384,6 +1462,26 @@ export class LissajousToken extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isBlockRainbow(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "isBlockRainbow(uint256)"(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isHashRainbow(
+      blockHash: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "isHashRainbow(bytes32)"(
+      blockHash: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     lissajousArguments(
       tokenIndex: BigNumberish,
       overrides?: CallOverrides
@@ -1702,6 +1800,26 @@ export class LissajousToken extends Contract {
     "isApprovedForAll(address,address)"(
       owner: string,
       operator: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isBlockRainbow(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "isBlockRainbow(uint256)"(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isHashRainbow(
+      blockHash: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "isHashRainbow(bytes32)"(
+      blockHash: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
