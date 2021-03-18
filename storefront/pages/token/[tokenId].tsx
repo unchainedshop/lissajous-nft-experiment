@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import Link from 'next/link';
 
-import { simulateLissajousArgs } from '@private/contracts';
 import { useAppContext } from '../../components/AppContextWrapper';
 import LissajousSvg from '../../components/LissajousSvg';
 
@@ -13,6 +12,11 @@ const Token = () => {
   const [block, setBlock] = useState(null);
   const [price, setPrice] = useState(null);
   const [owner, setOwner] = useState(null);
+  const [color, setColor] = useState(null);
+  const [aspectRatio, setAspectRatio] = useState(null);
+  const [lissajousArguments, setLissajousArguments] = useState(null);
+
+  console.log(color);
 
   const tokenId = router.query.tokenId as string;
 
@@ -21,16 +25,32 @@ const Token = () => {
       if (!readContract) return;
       setBlock((await readContract.tokenMintBlock(tokenId)).toNumber());
       setPrice(await readContract.tokenMintValue(tokenId));
+      setColor((await readContract.tokenColor(tokenId)).replace('0x', '#'));
       setOwner(await readContract.ownerOf(tokenId));
+      setLissajousArguments(await readContract.lissajousArguments(tokenId));
+      setAspectRatio(await readContract.aspectRatio(tokenId));
     })();
   }, [tokenId, readContract]);
+
+  console.log(aspectRatio);
 
   return (
     <div>
       <div className="d-flex align-items-center justify-content-between flex-wrap flex-column">
         <div className="figure">
-          {block && price && (
-            <LissajousSvg {...simulateLissajousArgs(block, price)} animated />
+          {lissajousArguments && (
+            <LissajousSvg
+              frequenceX={lissajousArguments?.frequenceX}
+              frequenceY={lissajousArguments?.frequenceY}
+              phaseShift={lissajousArguments?.phaseShift}
+              height={aspectRatio?.height}
+              width={aspectRatio?.width}
+              strokeColor={color}
+              rainbow={lissajousArguments?.rainbow}
+              startStep={lissajousArguments?.startStep}
+              totalSteps={lissajousArguments?.totalSteps}
+              animated
+            />
           )}
         </div>
         <div className="details">

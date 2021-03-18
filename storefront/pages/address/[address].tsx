@@ -15,6 +15,7 @@ const Address = () => {
     transactions,
     tokens,
     recordToken,
+    rainbowFrequency,
   } = useAppContext();
 
   const address = router.query.address as string;
@@ -177,7 +178,11 @@ const Address = () => {
                 <a>
                   <LissajousSvg
                     gradient
-                    {...simulateLissajousArgs(token.block, token.price)}
+                    {...simulateLissajousArgs(
+                      token.block,
+                      token.price,
+                      rainbowFrequency,
+                    )}
                   />
                 </a>
               </Link>

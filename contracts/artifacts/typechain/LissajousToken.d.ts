@@ -43,6 +43,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     "ownerOf(uint256)": FunctionFragment;
     "priceStepFromValue(uint256)": FunctionFragment;
     "priceSteps(uint256)": FunctionFragment;
+    "rainbowFrequency()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
@@ -127,6 +128,10 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "priceSteps",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rainbowFrequency",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -242,6 +247,10 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "priceSteps", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "rainbowFrequency",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
@@ -511,6 +520,10 @@ export class LissajousToken extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    rainbowFrequency(overrides?: CallOverrides): Promise<[number]>;
+
+    "rainbowFrequency()"(overrides?: CallOverrides): Promise<[number]>;
 
     renounceOwnership(overrides?: Overrides): Promise<ContractTransaction>;
 
@@ -855,6 +868,10 @@ export class LissajousToken extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  rainbowFrequency(overrides?: CallOverrides): Promise<number>;
+
+  "rainbowFrequency()"(overrides?: CallOverrides): Promise<number>;
+
   renounceOwnership(overrides?: Overrides): Promise<ContractTransaction>;
 
   "renounceOwnership()"(overrides?: Overrides): Promise<ContractTransaction>;
@@ -1197,6 +1214,10 @@ export class LissajousToken extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    rainbowFrequency(overrides?: CallOverrides): Promise<number>;
+
+    "rainbowFrequency()"(overrides?: CallOverrides): Promise<number>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
@@ -1552,6 +1573,10 @@ export class LissajousToken extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    rainbowFrequency(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "rainbowFrequency()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     renounceOwnership(overrides?: Overrides): Promise<BigNumber>;
 
     "renounceOwnership()"(overrides?: Overrides): Promise<BigNumber>;
@@ -1890,6 +1915,12 @@ export class LissajousToken extends Contract {
 
     "priceSteps(uint256)"(
       arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    rainbowFrequency(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "rainbowFrequency()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -3,6 +3,7 @@ import { simulateLissajousArgs } from '@private/contracts';
 import LissajousSvg from './LissajousSvg';
 import { parseEthFromInput } from '../utils/parseEthFromInput';
 import Link from 'next/link';
+import { useAppContext } from './AppContextWrapper';
 
 let renderTimestamp: Date;
 
@@ -15,6 +16,7 @@ const isMarked = (currentBlock, startBlock, i, amount) => {
 };
 
 const AutoScrollPreview = ({ currentBlock, amount, price }) => {
+  const { rainbowFrequency } = useAppContext();
   const scrollingEl = useRef(null);
   const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
   const [startBlock, setStartBlock] = useState<number>(null);
@@ -79,6 +81,7 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
                           isMarked(currentBlock, startBlock, i, amount)
                             ? parseEthFromInput(price)
                             : undefined,
+                          rainbowFrequency,
                         ),
                         gradient:
                           isMarked(currentBlock, startBlock, i, amount) &&

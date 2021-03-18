@@ -6,7 +6,12 @@ import Link from 'next/link';
 import { BigNumber } from 'ethers';
 
 const Gallery = () => {
-  const { readContract, tokens, recordToken } = useAppContext();
+  const {
+    readContract,
+    tokens,
+    recordToken,
+    rainbowFrequency,
+  } = useAppContext();
 
   useEffect(() => {
     if (readContract) {
@@ -44,7 +49,11 @@ const Gallery = () => {
                 <a>
                   <LissajousSvg
                     gradient
-                    {...simulateLissajousArgs(token.block, token.price)}
+                    {...simulateLissajousArgs(
+                      token.block,
+                      token.price,
+                      rainbowFrequency,
+                    )}
                   />
                 </a>
               </Link>

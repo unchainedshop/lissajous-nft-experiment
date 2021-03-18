@@ -1,13 +1,19 @@
 import { useRouter } from 'next/router';
 import { simulateLissajousArgs } from '@private/contracts';
 import LissajousSvg from '../../components/LissajousSvg';
+import { useAppContext } from '../../components/AppContextWrapper';
 
 const BlockNumber = () => {
+  const { rainbowFrequency } = useAppContext();
   const router = useRouter();
 
   const blockNumber = router.query.blockNumber as string;
 
-  const args = simulateLissajousArgs(parseInt(blockNumber, 10));
+  const args = simulateLissajousArgs(
+    parseInt(blockNumber, 10),
+    null,
+    rainbowFrequency,
+  );
 
   return (
     <div>

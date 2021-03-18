@@ -45,6 +45,7 @@ export const AppContext = React.createContext<{
   recordToken: (t: Token) => void;
   balance?: BigNumber;
   remainingBlocks?: number;
+  rainbowFrequency: number;
 }>({
   accounts: [],
   connect: () => null,
@@ -52,6 +53,7 @@ export const AppContext = React.createContext<{
   addTransaction: () => null,
   tokens: [],
   recordToken: () => null,
+  rainbowFrequency: 4096,
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -89,6 +91,7 @@ export const AppContextWrapper = ({ children }) => {
   const [startBlock, setStartBlock] = useState(0);
   const [endBlock, setEndBlock] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [rainbowFrequency, setRainbowFrequency] = useState(4096);
 
   const recordToken = (token: Token) =>
     setTokens((tokens) => uniqueToken([token, ...tokens]));
@@ -154,6 +157,7 @@ export const AppContextWrapper = ({ children }) => {
       setStartBlock((await contract.startBlock()).toNumber());
       setEndBlock((await contract.endBlock()).toNumber());
       setTotalSupply((await contract.totalSupply()).toNumber());
+      setRainbowFrequency(await contract.rainbowFrequency());
 
       contract.on('Transfer', async (from, to, id) => {
         setTotalSupply((await contract.totalSupply()).toNumber());
@@ -236,6 +240,7 @@ export const AppContextWrapper = ({ children }) => {
         balance,
         startBlock,
         endBlock,
+        rainbowFrequency,
       }}
     >
       <ConnectPopup isOpen={modalOpen} connect={doConnect} />

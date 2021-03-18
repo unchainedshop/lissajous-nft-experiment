@@ -6,6 +6,7 @@ import LissajousSvg from '../../components/LissajousSvg';
 import RangeInput from '../../components/RangeInput';
 import { simulateLissajousArgs } from '@private/contracts';
 import { parseEthFromInput } from '../../utils/parseEthFromInput';
+import { useAppContext } from '../../components/AppContextWrapper';
 
 let routerUpdateTimeout;
 
@@ -25,6 +26,7 @@ const defaultValues = {
 };
 
 const LissajousTest = (): React.ReactElement => {
+  const { rainbowFrequency } = useAppContext();
   const router = useRouter();
 
   const { register, watch, setValue, reset } = useForm({
@@ -67,6 +69,7 @@ const LissajousTest = (): React.ReactElement => {
                     ...simulateLissajousArgs(
                       i,
                       i === 1 ? parseEthFromInput('0.1') : undefined,
+                      rainbowFrequency,
                     ),
                     gradient: i === 1,
                   }}
