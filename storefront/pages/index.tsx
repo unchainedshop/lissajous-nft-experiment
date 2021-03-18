@@ -14,10 +14,11 @@ const Index = () => {
     connect,
     accounts,
     currentBlock,
+    startBlock,
+    endBlock,
     writeContract,
     minPrice,
     addTransaction,
-    endBlock,
   } = useAppContext();
   const router = useRouter();
 
@@ -28,6 +29,17 @@ const Index = () => {
   const defaultPrice = minPrice
     ? ethers.utils.formatEther(minPrice.mul(1000).div(999))
     : 0;
+
+  const hasStarted = currentBlock >= startBlock && currentBlock < endBlock;
+  const hasEnded = currentBlock >= endBlock;
+
+  let isMobile = false;
+  let location: Location;
+
+  if (typeof window !== 'undefined') {
+    isMobile = !!navigator?.userAgent.toLowerCase().match(/mobile/i);
+    location = document.location;
+  }
 
   const mint = async () => {
     // if (!accounts[0]) return;
@@ -60,16 +72,32 @@ const Index = () => {
       <AutoScrollPreview {...{ currentBlock, price, amount }} />
       <div className="control">
         <div className="control-inner">
-          {' '}
-          {currentBlock ? (
+          <div>
+            First of its kind ethereum native generative geometric art
+            experiment
+          </div>
+          {!currentBlock && <h1>No connection to Ethereum Network :(</h1>}
+
+          {currentBlock && !hasStarted && (
             <>
-              {' '}
-              <div>
-                First of its kind ethereum native generative geometric art
-                experiment
-              </div>
-              <p>Next Block: {currentBlock + 1}</p>
-              <p>{endBlock - currentBlock} blocks remaining</p>
+              <h1>The experiment has not yet started</h1>
+              <p>{startBlock - currentBlock} Blocks remaining ...</p>
+            </>
+          )}
+
+          {currentBlock && hasEnded && (
+            <>
+              <h1>The experiment is over!</h1>
+            </>
+          )}
+
+          {currentBlock && hasStarted && (
+            <>
+              <p>
+                Next Block: {currentBlock + 1} <br />
+                <small>{endBlock - currentBlock} blocks remaining</small>
+              </p>
+
               <form onSubmit={handleSubmit(mint)}>
                 {/* register your input into the hook by invoking the "register" function */}
                 <label>
@@ -98,13 +126,6 @@ const Index = () => {
                   />
                 </label>
 
-                <span className="mb-3 d-block">
-                  Total: Ξ
-                  {ethers.utils.formatEther(
-                    parseEthFromInput(price).mul(amount || '1'),
-                  )}
-                </span>
-
                 {!accounts[0] && hasSigner && (
                   <button className="w-100 button--primary" onClick={connect}>
                     Connect
@@ -113,6 +134,12 @@ const Index = () => {
 
                 {accounts[0] && hasSigner && (
                   <>
+                    <span className="mb-3 d-block">
+                      Total: Ξ
+                      {ethers.utils.formatEther(
+                        parseEthFromInput(price).mul(amount || '1'),
+                      )}
+                    </span>
                     <button
                       className="w-100 button--primary"
                       disabled={!accounts[0] || !!Object.keys(errors).length}
@@ -129,12 +156,41 @@ const Index = () => {
                     </small>
                   </>
                 )}
-
-                {!hasSigner && 'Please install Metamask'}
               </form>
             </>
-          ) : (
-            <h1>Not connected</h1>
+          )}
+          {!hasSigner && isMobile && (
+            <p>
+              {/* eslint-disable-next-line react/jsx-no-target-blank */}
+              <a
+                href={`https://metamask.app.link/dapp/${location?.host}/${location?.pathname}`}
+                target="_blank"
+                rel="noopener"
+                className="button"
+              >
+                Open in MetaMask
+              </a>
+            </p>
+          )}
+          {!hasSigner && !isMobile && (
+            <>
+              <p>
+                {/* eslint-disable-next-line react/jsx-no-target-blank */}
+                <a
+                  href="https://metamask.io"
+                  target="_blank"
+                  rel="noopener"
+                  className="button"
+                >
+                  Install MetaMask
+                </a>
+                <br />
+                Or scan the following QR Code with your Mobile Phone:
+              </p>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A//metamask.app.link/dapp/${location?.host}/${location?.pathname}&qzone=1&margin=0&size=240x240&ecc=L`}
+              />
+            </>
           )}
         </div>
       </div>
@@ -148,6 +204,20 @@ const Index = () => {
           position: relative;
           padding: 10px;
           min-width: 15em;
+        }
+
+        .button {
+          border: 1px solid white;
+          width: 100%;
+          display: block;
+          padding: 0.2em 0.5em;
+          text-align: center;
+          box-sizing: border-box;
+        }
+
+        .button:hover {
+          color: black;
+          background-color: white;
         }
 
         @media (max-width: 552px) {

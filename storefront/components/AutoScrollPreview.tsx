@@ -51,8 +51,6 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
     if (currentBlock && !onLoadBlock) setOnLoadBlock(() => currentBlock);
   }, [currentBlock]);
 
-  console.log(currentBlock);
-
   return (
     <div className="holder">
       <div className="holder-inner" ref={scrollingEl}>

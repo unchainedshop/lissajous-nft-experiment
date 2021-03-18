@@ -57,7 +57,12 @@ const Layout = (props) => {
               {!accounts[0] && hasSigner && (
                 <button onClick={connect}>Connect</button>
               )}
-              {!hasSigner && 'No MetaMask found :('}
+              {!hasSigner && (
+                // eslint-disable-next-line react/jsx-no-target-blank
+                <a href="https://metamask.io" target="_blank" rel="noopener">
+                  No MetaMask found :(
+                </a>
+              )}
             </div>
           </header>
         </div>
