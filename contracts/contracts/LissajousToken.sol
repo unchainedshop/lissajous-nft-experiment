@@ -140,6 +140,14 @@ contract LissajousToken is Context, Ownable, ERC721 {
         uint256 priceStep = priceStepFromValue(pricePerToken);
         uint256 aboveMinPrice = pricePerToken.sub(currentMinPrice());
         uint256 abovePriceStep = pricePerToken.sub(priceStep);
+        uint256 changePerToken = 0;
+        uint256 change = 0;
+
+        if (aboveMinPrice < abovePriceStep) {
+            changePerToken = aboveMinPrice;
+        } else {
+            changePerToken = abovePriceStep;
+        }
 
         for (uint8 i = 0; i < amount; i++) {
             uint256 tokenIndex = totalSupply();
@@ -149,13 +157,11 @@ contract LissajousToken is Context, Ownable, ERC721 {
                 block.number.add(i),
                 minPrice(tokenIndex)
             );
+
+            change += changePerToken;
         }
 
-        if (aboveMinPrice < abovePriceStep) {
-            msg.sender.transfer(aboveMinPrice.mul(amount));
-        } else {
-            msg.sender.transfer(abovePriceStep.mul(amount));
-        }
+        msg.sender.transfer(change);
     }
 
     function tokenMintValue(uint256 tokenIndex) public view returns (uint256) {

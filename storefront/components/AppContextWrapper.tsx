@@ -202,7 +202,7 @@ export const AppContextWrapper = ({ children }) => {
     setAccounts(accounts);
   };
 
-  const connect = () => setModalOpen(true);
+  const connect = async () => setModalOpen(true);
 
   const addTransaction = (tx) => {
     setTransactions((current) => [
