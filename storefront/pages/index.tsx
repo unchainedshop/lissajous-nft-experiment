@@ -1,34 +1,12 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 
-import { simulateLissajousArgs } from '@private/contracts';
-import LissajousSvg from '../components/LissajousSvg';
 import { useAppContext } from '../components/AppContextWrapper';
 import { useRouter } from 'next/router';
-
-let renderTimestamp: Date;
-
-const cleanEthInput = (input: string) => {
-  if (!input) return '0';
-
-  if (input.includes('.')) {
-    const [ints, decimals] = input.split('.');
-
-    const intsCleaned = ints.replace(/\D/g, '') || '0';
-    const decimalsCleaned = decimals.slice(0, 18).replace(/\D/g, '');
-
-    return `${intsCleaned}.${decimalsCleaned}`;
-  } else {
-    return input.replace(/\D/g, '') || '0';
-  }
-};
-
-const parseEthFromInput = (price: string) => {
-  const cleaned = cleanEthInput(price);
-  return ethers.utils.parseEther(cleaned);
-};
+import AutoScrollPreview from '../components/AutoScrollPreview';
+import { parseEthFromInput } from '../utils/parseEthFromInput';
 
 const Index = () => {
   const {
@@ -39,10 +17,10 @@ const Index = () => {
     writeContract,
     minPrice,
     addTransaction,
+    endBlock,
   } = useAppContext();
   const router = useRouter();
-  const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
-  const scrollingEl = useRef(null);
+
   const { register, handleSubmit, watch, setValue, errors } = useForm({
     mode: 'onChange',
   });
@@ -50,8 +28,6 @@ const Index = () => {
   const defaultPrice = minPrice
     ? ethers.utils.formatEther(minPrice.mul(1000).div(999))
     : 0;
-
-  const blockTime = 15 * 1000;
 
   const mint = async () => {
     // if (!accounts[0]) return;
@@ -74,85 +50,14 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (currentBlock && !onLoadBlock) setOnLoadBlock(() => currentBlock);
-  }, [currentBlock]);
-
-  useEffect(() => {
     if (!parseEthFromInput(price).gte(minPrice)) {
       setValue('price', ethers.utils.formatEther(minPrice.mul(1000).div(999)));
     }
   }, [minPrice]);
 
-  useLayoutEffect(() => {
-    renderTimestamp = new Date();
-
-    let animationFrame;
-
-    const scrollInner = () => {
-      const innerWidth = scrollingEl.current.getBoundingClientRect().width;
-      const figuresPerRow = Math.floor(innerWidth / (128 + 10));
-      const now = new Date();
-      const timeSinceRender = now.getTime() - renderTimestamp.getTime();
-      const timeForOneRow = figuresPerRow * blockTime;
-      const rowHeight = 128 + 10;
-      const currentScroll = Math.floor(
-        -(timeSinceRender / timeForOneRow) * rowHeight,
-      );
-      scrollingEl.current.style.transform = `translateY(${currentScroll}px)`;
-      animationFrame = window.requestAnimationFrame(scrollInner);
-    };
-    animationFrame = window.requestAnimationFrame(scrollInner);
-
-    return () => {
-      window.cancelAnimationFrame(animationFrame);
-    };
-  }, []);
-
-  const startBlock = onLoadBlock - 8;
-
-  const isMarked = (currentBlock, startBlock, i, amount) => {
-    const currentFigure = startBlock + i;
-    const firstMarked = currentBlock + 1;
-    const lastMarked = currentBlock + parseInt(amount, 10);
-
-    return firstMarked <= currentFigure && currentFigure <= lastMarked;
-  };
-
   return (
     <div className="container">
-      <div className="holder">
-        <div className="holder-inner" ref={scrollingEl}>
-          {onLoadBlock &&
-            Array(128)
-              .fill(0)
-              .map((_, i) => (
-                <div
-                  className="figure"
-                  key={startBlock + i}
-                  data-current={isMarked(currentBlock, startBlock, i, amount)}
-                >
-                  <Link href={`block/${startBlock + i}`}>
-                    <a>
-                      <LissajousSvg
-                        {...{
-                          ...simulateLissajousArgs(
-                            startBlock + i,
-                            isMarked(currentBlock, startBlock, i, amount)
-                              ? parseEthFromInput(price)
-                              : undefined,
-                          ),
-                          gradient:
-                            isMarked(currentBlock, startBlock, i, amount) &&
-                            amount < 4,
-                        }}
-                      />
-                    </a>
-                  </Link>
-                </div>
-              ))}
-        </div>
-      </div>
-
+      <AutoScrollPreview {...{ currentBlock, price, amount }} />
       <div className="control">
         <div className="control-inner">
           {' '}
@@ -164,7 +69,7 @@ const Index = () => {
                 experiment
               </div>
               <p>Next Block: {currentBlock + 1}</p>
-              <p>x blocks remaining</p>
+              <p>{endBlock - currentBlock} blocks remaining</p>
               <form onSubmit={handleSubmit(mint)}>
                 {/* register your input into the hook by invoking the "register" function */}
                 <label>
@@ -235,26 +140,8 @@ const Index = () => {
       </div>
 
       <style jsx>{`
-        .figure {
-          position: relative;
-          display: inline-block;
-          height: 128px;
-          width: 128px;
-          margin: 5px;
-          box-sizing: border-box;
-        }
-
-        .figure[data-current='true'] {
-          // border: 1px solid lightgrey;
-        }
-
         .container {
           display: flex;
-        }
-
-        .holder {
-          max-height: calc(100vh - 2em);
-          overflow: hidden;
         }
 
         .control {

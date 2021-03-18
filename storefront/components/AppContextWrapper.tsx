@@ -179,8 +179,6 @@ export const AppContextWrapper = ({ children }) => {
     })();
   }, []);
 
-  console.log({ startBlock });
-
   useEffect(() => {
     if (!(provider as any)?.getSigner) return;
 
