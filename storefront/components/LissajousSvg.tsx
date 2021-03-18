@@ -27,15 +27,11 @@ const LissajousSvg = ({
 
   const interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
 
-  console.log(hslStart);
-
   const backgroundColor = d3.hsl(
     (hslStart.h + 180) % 360,
     hslStart.s,
     hslStart.l - 0.25,
   );
-
-  console.log(backgroundColor);
 
   useEffect(() => {
     const svg = d3.select(canvasRef.current);

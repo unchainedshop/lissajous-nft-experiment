@@ -54,8 +54,8 @@ const LissajousTest = (): React.ReactElement => {
         <div className="holder">
           <LissajousSvg {...values} gradient animated />
 
-          {/* <hr />
-          {Array(128)
+          <hr />
+          {Array(4)
             .fill(0)
             .map((_, i) => (
               <div className="figure" key={i} data-current={i === 1}>
@@ -69,7 +69,7 @@ const LissajousTest = (): React.ReactElement => {
                   }}
                 />
               </div>
-            ))} */}
+            ))}
         </div>
       </div>
       <form>
