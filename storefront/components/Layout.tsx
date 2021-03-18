@@ -93,9 +93,13 @@ const Layout = (props) => {
         }
 
         .content {
-          padding-top: 2.5em;
+          padding-top: 2em;
           padding-left: 1em;
           padding-right: 1em;
+        }
+
+        .link {
+          text-decoration: underline;
         }
 
         button {

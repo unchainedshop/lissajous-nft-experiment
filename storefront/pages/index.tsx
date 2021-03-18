@@ -202,11 +202,11 @@ const Index = () => {
                     >
                       Mint
                     </button>
-                    <small>
+                    <small className="mt-2 d-block">
                       It is not guaranteed that you actually catch the figures
                       that are highlighted.
                       <Link href="/about">
-                        <a> Read more here.</a>
+                        <a className="link"> Read more here.</a>
                       </Link>
                     </small>
                   </>
