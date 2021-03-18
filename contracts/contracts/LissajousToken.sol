@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 
-// import 'hardhat/console.sol';
+import 'hardhat/console.sol';
 
 // https://docs.opensea.io/docs/metadata-standards
 contract LissajousToken is Context, Ownable, ERC721 {
@@ -168,31 +168,29 @@ contract LissajousToken is Context, Ownable, ERC721 {
         for (uint8 i = 0; i < amount; i++) {
             bool rainbow = isBlockRainbow(block.number.add(i));
             uint256 tokenIndex = totalSupply();
-            uint256 pricePerToken = msg.value.div(amount);
+            uint256 minPriceBefore = minPrice(tokenIndex);
 
-            // The rainbow token cannot be minted in a set
-            if ((!rainbow || i == 0)) {
-                // The rainbow is always the minPrice
-                if (rainbow) {
-                    pricePerToken = minPrice(tokenIndex);
-                }
-
+            if (!rainbow) {
                 _safeMint(to, tokenIndex);
                 _tokenInfos[tokenIndex] = TokenInfo(
                     pricePerToken,
                     block.number.add(i),
-                    minPrice(tokenIndex)
+                    minPriceBefore
                 );
-
-                // Return the excess if buying the rainbow token
-                if (rainbow) {
-                    change = change.add(
-                        pricePerToken.sub(minPrice(tokenIndex))
-                    );
-                } else {
-                    change = change.add(changePerToken);
-                }
+                // Return the normal change
+                change = change.add(changePerToken);
+            } else if (rainbow && i == 0) {
+                // Rainbow can not be minted in a set
+                _safeMint(to, tokenIndex);
+                _tokenInfos[tokenIndex] = TokenInfo(
+                    minPriceBefore,
+                    block.number.add(i),
+                    minPriceBefore
+                );
+                // Return the excess over the minPrice
+                change = change.add(pricePerToken.sub(minPriceBefore));
             } else {
+                // If rainbow would be part of a set, return that money
                 change = change.add(pricePerToken);
             }
         }

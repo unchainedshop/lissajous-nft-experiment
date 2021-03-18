@@ -17,7 +17,6 @@ import { expectBigNumberEqual } from './utils/expectBigNumberEqual';
 const START_BLOCK = 3; // First blocks are for contract creation
 const END_BLOCK = 10000;
 const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
-export const BASE_URI = 'https://lissajous.art/api/token/';
 
 require('./01-walkthrough');
 
@@ -92,8 +91,6 @@ describe('LissajousToken Pricing', function () {
       await deployed.mint(ownerAddress, 1, {
         value: ethers.utils.parseEther('10'),
       });
-      const isRainbow = await deployed.isBlockRainbow(i);
-      console.log(isRainbow);
     }
 
     expectBigNumberEqual(await deployed.currentMinPrice(), calculatePrice(104));
