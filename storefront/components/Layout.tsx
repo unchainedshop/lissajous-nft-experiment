@@ -55,6 +55,13 @@ const Layout = (props) => {
         <Link href="/terms">
           <a>Terms</a>
         </Link>
+        <a
+          href="https://matrix.to/#/!SEGqAkImeHDZDviOHK:matrix.org?via=matrix.org"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Chat
+        </a>
         <a href="https://unchained.shop">
         <svg className="mr-3" width="3 1px" height="34px" viewBox="0 0 620 680" version="1.1" xmlns="http://www.w3.org/2000/svg" >
             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
