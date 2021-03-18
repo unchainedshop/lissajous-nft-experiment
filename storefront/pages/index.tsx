@@ -152,7 +152,7 @@ const Index = () => {
             <>
               {' '}
               <div>
-                First of kind ethereum native generative geometric art
+                First of its kind ethereum native generative geometric art
                 experiment
               </div>
               <pre>Next Block: {currentBlock + 1}</pre>
