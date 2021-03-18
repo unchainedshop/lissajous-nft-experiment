@@ -14,5 +14,6 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.js", "**/*.json"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.js", "**/*.json"],
+  "files": ["./hardhat.config.ts", "./addresses.json", "index.ts"]
 }
