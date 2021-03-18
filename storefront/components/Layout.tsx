@@ -87,7 +87,7 @@ const Layout = (props) => {
             <svg
               className="mr-3"
               width="3 1px"
-              height="34px"
+              height="24px"
               viewBox="0 0 620 680"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -111,7 +111,6 @@ const Layout = (props) => {
                 </g>
               </g>
             </svg>{' '}
-            2021 by Unchained Commerce GmbH
           </a>
         </footer>
 

@@ -141,13 +141,6 @@ const Index = () => {
                         parseEthFromInput(price).mul(amount || '1'),
                       )}
                     </span>
-                    <button
-                      className="w-100 button--primary"
-                      disabled={!accounts[0] || !!Object.keys(errors).length}
-                      type="submit"
-                    >
-                      Mint
-                    </button>
                     <small className="mt-2 d-block">
                       It is not guaranteed that you actually catch the figures
                       that are highlighted.
@@ -155,6 +148,13 @@ const Index = () => {
                         <a className="link"> Read more here.</a>
                       </Link>
                     </small>
+                    <button
+                      className="w-100 button--primary mt-2"
+                      disabled={!accounts[0] || !!Object.keys(errors).length}
+                      type="submit"
+                    >
+                      Mint
+                    </button>
                   </>
                 )}
               </form>
@@ -207,7 +207,7 @@ const Index = () => {
         .control {
           position: relative;
           padding: 10px;
-          min-width: 15em;
+          width: 240px;
         }
 
         .button {
@@ -229,8 +229,9 @@ const Index = () => {
             position: fixed;
             left: 0;
             right: 0;
-            bottom: 0;
+            bottom: 2em;
             background-color: rgba(0, 0, 0, 0.5);
+            width: calc(100% - 20px);
           }
           .control input {
             background-color: rgba(18, 18, 18);
