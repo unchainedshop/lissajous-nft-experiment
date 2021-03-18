@@ -190,7 +190,7 @@ const Index = () => {
                 </span>
 
                 {!accounts[0] && hasSigner && (
-                  <button onClick={connect}>Connect</button>
+                  <button className="w-100 button--primary" onClick={connect}>Connect</button>
                 )}
 
                 {accounts[0] && hasSigner && (
