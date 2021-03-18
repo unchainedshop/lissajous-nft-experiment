@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
-import { ChromePicker } from 'react-color';
 
 import LissajousSvg from '../../components/LissajousSvg';
 import RangeInput from '../../components/RangeInput';

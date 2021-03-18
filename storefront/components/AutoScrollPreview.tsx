@@ -54,7 +54,6 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
     if (onLoadBlock) {
       const innerWidth = scrollingEl.current.getBoundingClientRect().width;
       const figuresPerRow = Math.floor(innerWidth / (128 + 10));
-      console.log(figuresPerRow);
       setStartBlock(onLoadBlock - 2 * figuresPerRow);
     }
   }, [onLoadBlock]);
