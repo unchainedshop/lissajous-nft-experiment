@@ -15,5 +15,5 @@
     "jsx": "preserve"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.js", "**/*.json"],
-  "files": ["./hardhat.config.ts", "./addresses.json", "index.ts"]
+  "files": ["./hardhat.config.ts", "./addresses.json"]
 }
