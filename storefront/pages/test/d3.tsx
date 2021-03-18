@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import LissajousSvg from '../../components/LissajousSvg';
 import RangeInput from '../../components/RangeInput';
+import { simulateLissajousArgs } from '@private/contracts';
+import { parseEthFromInput } from '../../utils/parseEthFromInput';
 
 let routerUpdateTimeout;
 
@@ -12,7 +14,7 @@ const defaultValues = {
   frequenceY: 2,
   phaseShift: 0.5,
   strokeColor: '#FFD700',
-  lineWidth: 10,
+  lineWidth: 8,
   height: 16,
   width: 16,
   totalSteps: 16,
@@ -22,7 +24,7 @@ const defaultValues = {
 const LissajousTest = (): React.ReactElement => {
   const router = useRouter();
 
-  const { register, watch, setValue, control, reset } = useForm({
+  const { register, watch, setValue, reset } = useForm({
     defaultValues,
   });
 
@@ -50,7 +52,24 @@ const LissajousTest = (): React.ReactElement => {
     <>
       <div className="container">
         <div className="holder">
-          <LissajousSvg {...values} />
+          <LissajousSvg {...values} gradient animated />
+
+          {/* <hr />
+          {Array(128)
+            .fill(0)
+            .map((_, i) => (
+              <div className="figure" key={i} data-current={i === 1}>
+                <LissajousSvg
+                  {...{
+                    ...simulateLissajousArgs(
+                      i,
+                      i === 1 ? parseEthFromInput('0.1') : undefined,
+                    ),
+                    gradient: i === 1,
+                  }}
+                />
+              </div>
+            ))} */}
         </div>
       </div>
       <form>
@@ -135,6 +154,15 @@ const LissajousTest = (): React.ReactElement => {
         .holder {
           height: 512px;
           width: 512px;
+        }
+
+        .figure {
+          position: relative;
+          display: inline-block;
+          height: 128px;
+          width: 128px;
+          margin: 5px;
+          box-sizing: border-box;
         }
 
         .container {

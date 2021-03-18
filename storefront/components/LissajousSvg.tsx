@@ -22,6 +22,21 @@ const LissajousSvg = ({
 
   const lineWidth = parseInt(lineWidthInput as any, 10);
 
+  const hslStart = d3.hsl(strokeColor);
+  const hslEnd = d3.hsl(hslStart.h - 70, hslStart.s, hslStart.l - 0.1);
+
+  const interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
+
+  console.log(hslStart);
+
+  const backgroundColor = d3.hsl(
+    (hslStart.h + 180) % 360,
+    hslStart.s,
+    hslStart.l - 0.25,
+  );
+
+  console.log(backgroundColor);
+
   useEffect(() => {
     const svg = d3.select(canvasRef.current);
     svg.selectAll('path').remove();
@@ -36,16 +51,16 @@ const LissajousSvg = ({
     const absoluteStartStep = (stepsUntilFull / numberOfSteps) * startStep;
     const absoluteTotalSteps = (stepsUntilFull / numberOfSteps) * totalSteps;
 
-    const figureHeight = canvasHeight - lineWidth - 4;
-    const figureWidht = canvasWidth - lineWidth - 4;
+    const figureHeight = canvasHeight - lineWidth - 32;
+    const figureWidht = canvasWidth - lineWidth - 32;
 
     const amplitudeX = width / 16 / 2;
     const amplitudeY = height / 16 / 2;
 
     const translateX =
-      lineWidth / 2 + (figureWidht - (figureWidht / 16) * width) / 2 + 1;
+      lineWidth / 2 + (figureWidht - (figureWidht / 16) * width) / 2 + 16;
     const translateY =
-      lineWidth / 2 + (figureHeight - (figureHeight / 16) * height) / 2 + 1;
+      lineWidth / 2 + (figureHeight - (figureHeight / 16) * height) / 2 + 16;
 
     const speed = 0.03;
 
@@ -76,11 +91,6 @@ const LissajousSvg = ({
         return d.x;
       })
       .y((d: any) => d.y);
-
-    const hslStart = d3.hsl(strokeColor);
-    const hslEnd = d3.hsl(hslStart.h - 70, hslStart.s, hslStart.l - 0.1);
-
-    const interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
 
     let count = 0;
     const draw = () => {
@@ -180,6 +190,7 @@ const LissajousSvg = ({
           left: 0;
           height: 100%;
           width: 100%;
+          background-color: ${backgroundColor.formatHex()};
         }
       `}</style>
     </div>
