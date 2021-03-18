@@ -48,7 +48,33 @@ const Layout = (props) => {
 
       <div className="content">{props.children}</div>
 
-      <style jsx>{``}</style>
+      <footer>
+        <Link href="/about">
+          <a>About</a>
+        </Link>
+        <Link href="/terms">
+          <a>Terms</a>
+        </Link>
+        <a href="https://unchained.shop">
+          [LOGO] 2021 by Unchained Commerce GmbH
+        </a>
+      </footer>
+
+      <style jsx>{`
+        footer {
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          margin: 0;
+          margin-bottom: 5px;
+          font-size: 0.9em;
+        }
+
+        footer a {
+          font-family: lunchtype22light;
+          margin-right: 1em;
+        }
+      `}</style>
 
       <style jsx global>{`
         html,
