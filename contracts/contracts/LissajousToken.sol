@@ -16,6 +16,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
     uint256 private _startBlock;
     uint256 private _endBlock;
     uint256 private _startPrice;
+    uint32 private _rainbowFrequency;
 
     uint256 public constant _priceIncreasePromille = 1001;
 
@@ -94,7 +95,8 @@ contract LissajousToken is Context, Ownable, ERC721 {
     constructor(
         uint256 startBlock_,
         uint256 endBlock_, // Maybe 64 * 8192 (=~80 days)
-        uint256 startPrice_ // 0.01 ether
+        uint256 startPrice_, // 0.01 ether
+        uint32 rainbowFrequency_ // 4'096
     ) ERC721('Lissajous Token', 'LISSA') {
         uint256 id;
         assembly {
@@ -106,6 +108,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
         _startBlock = startBlock_;
         _endBlock = endBlock_;
         _startPrice = startPrice_;
+        _rainbowFrequency = rainbowFrequency_;
     }
 
     function minPrice(uint256 tokenIndex) public view returns (uint256) {
@@ -116,6 +119,16 @@ contract LissajousToken is Context, Ownable, ERC721 {
 
     function currentMinPrice() public view returns (uint256) {
         return minPrice(totalSupply());
+    }
+
+    function hashBlock(uint256 blockNumber) public view returns (bytes32) {
+        return keccak256(abi.encode(blockNumber));
+    }
+
+    function isRainbow(bytes32 blockHash) internal view returns (bool) {
+        uint256 asInt = uint256(blockHash);
+
+        return (asInt % (_rainbowFrequency)) == 0;
     }
 
     /**
@@ -150,15 +163,21 @@ contract LissajousToken is Context, Ownable, ERC721 {
         }
 
         for (uint8 i = 0; i < amount; i++) {
+            bool rainbow = isRainbow(hashBlock(block.number.add(i)));
             uint256 tokenIndex = totalSupply();
-            _safeMint(to, tokenIndex);
-            _tokenInfos[tokenIndex] = TokenInfo(
-                msg.value.div(amount),
-                block.number.add(i),
-                minPrice(tokenIndex)
-            );
 
-            change += changePerToken;
+            // The rainbow token cannot be minted in a set
+            if ((!rainbow || i == 0)) {
+                _safeMint(to, tokenIndex);
+                _tokenInfos[tokenIndex] = TokenInfo(
+                    msg.value.div(amount),
+                    block.number.add(i),
+                    minPrice(tokenIndex)
+                );
+                change += changePerToken;
+            } else {
+                change += msg.value.div(amount);
+            }
         }
 
         msg.sender.transfer(change);
@@ -241,7 +260,8 @@ contract LissajousToken is Context, Ownable, ERC721 {
             uint8 frequenceY,
             uint8 phaseShift,
             uint8 totalSteps,
-            uint8 startStep
+            uint8 startStep,
+            bool rainbow
         )
     {
         bytes32 mintBlockHash = tokenMintBlockHash(tokenIndex);
@@ -251,13 +271,15 @@ contract LissajousToken is Context, Ownable, ERC721 {
         uint8 fourth = uint8(mintBlockHash[3]);
         uint8 fifth = uint8(mintBlockHash[4]);
         uint8 sixth = uint8(mintBlockHash[5]);
+        bool rainbow = isRainbow(mintBlockHash);
 
         return (
             (second % 16) + 1,
             (third % 16) + 1,
             fourth % 16,
             (fifth % 16) + 1,
-            (sixth % 16) + 1
+            (sixth % 16) + 1,
+            rainbow
         );
     }
 

@@ -40,6 +40,7 @@ describe('LissajousToken Pricing', function () {
       START_BLOCK,
       END_BLOCK,
       START_PRICE,
+      4096,
     );
 
     const tx = await contract.deployed();

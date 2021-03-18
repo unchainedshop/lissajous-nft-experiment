@@ -31,6 +31,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     "currentMinPrice()": FunctionFragment;
     "endBlock()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
+    "hashBlock(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "lissajousArguments(uint256)": FunctionFragment;
     "minPrice(uint256)": FunctionFragment;
@@ -81,6 +82,10 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "endBlock", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hashBlock",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -200,6 +205,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     functionFragment: "getApproved",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "hashBlock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
@@ -358,6 +364,16 @@ export class LissajousToken extends Contract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    hashBlock(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    "hashBlock(uint256)"(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -374,12 +390,13 @@ export class LissajousToken extends Contract {
       tokenIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, number, number, number, number] & {
+      [number, number, number, number, number, boolean] & {
         frequenceX: number;
         frequenceY: number;
         phaseShift: number;
         totalSteps: number;
         startStep: number;
+        rainbow: boolean;
       }
     >;
 
@@ -387,12 +404,13 @@ export class LissajousToken extends Contract {
       tokenIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, number, number, number, number] & {
+      [number, number, number, number, number, boolean] & {
         frequenceX: number;
         frequenceY: number;
         phaseShift: number;
         totalSteps: number;
         startStep: number;
+        rainbow: boolean;
       }
     >;
 
@@ -675,6 +693,16 @@ export class LissajousToken extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  hashBlock(
+    blockNumber: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  "hashBlock(uint256)"(
+    blockNumber: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   isApprovedForAll(
     owner: string,
     operator: string,
@@ -691,12 +719,13 @@ export class LissajousToken extends Contract {
     tokenIndex: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [number, number, number, number, number] & {
+    [number, number, number, number, number, boolean] & {
       frequenceX: number;
       frequenceY: number;
       phaseShift: number;
       totalSteps: number;
       startStep: number;
+      rainbow: boolean;
     }
   >;
 
@@ -704,12 +733,13 @@ export class LissajousToken extends Contract {
     tokenIndex: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [number, number, number, number, number] & {
+    [number, number, number, number, number, boolean] & {
       frequenceX: number;
       frequenceY: number;
       phaseShift: number;
       totalSteps: number;
       startStep: number;
+      rainbow: boolean;
     }
   >;
 
@@ -983,6 +1013,16 @@ export class LissajousToken extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    hashBlock(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "hashBlock(uint256)"(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -999,12 +1039,13 @@ export class LissajousToken extends Contract {
       tokenIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, number, number, number, number] & {
+      [number, number, number, number, number, boolean] & {
         frequenceX: number;
         frequenceY: number;
         phaseShift: number;
         totalSteps: number;
         startStep: number;
+        rainbow: boolean;
       }
     >;
 
@@ -1012,12 +1053,13 @@ export class LissajousToken extends Contract {
       tokenIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, number, number, number, number] & {
+      [number, number, number, number, number, boolean] & {
         frequenceX: number;
         frequenceY: number;
         phaseShift: number;
         totalSteps: number;
         startStep: number;
+        rainbow: boolean;
       }
     >;
 
@@ -1317,6 +1359,16 @@ export class LissajousToken extends Contract {
 
     "getApproved(uint256)"(
       tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    hashBlock(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "hashBlock(uint256)"(
+      blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1628,6 +1680,16 @@ export class LissajousToken extends Contract {
 
     "getApproved(uint256)"(
       tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    hashBlock(
+      blockNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "hashBlock(uint256)"(
+      blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
