@@ -16,8 +16,6 @@ const Token = () => {
   const [aspectRatio, setAspectRatio] = useState(null);
   const [lissajousArguments, setLissajousArguments] = useState(null);
 
-  console.log(color);
-
   const tokenId = router.query.tokenId as string;
 
   useEffect(() => {
@@ -31,8 +29,6 @@ const Token = () => {
       setAspectRatio(await readContract.aspectRatio(tokenId));
     })();
   }, [tokenId, readContract]);
-
-  console.log(aspectRatio);
 
   return (
     <div>
