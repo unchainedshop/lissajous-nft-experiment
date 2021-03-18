@@ -17,10 +17,9 @@ const isMarked = (currentBlock, startBlock, i, amount) => {
 const AutoScrollPreview = ({ currentBlock, amount, price }) => {
   const scrollingEl = useRef(null);
   const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
+  const [startBlock, setStartBlock] = useState<number>(null);
 
   const blockTime = 15 * 1000;
-
-  const startBlock = onLoadBlock - 8;
 
   useLayoutEffect(() => {
     renderTimestamp = new Date();
@@ -47,14 +46,25 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
     };
   }, []);
 
+  console.log(startBlock);
+
   useEffect(() => {
     if (currentBlock && !onLoadBlock) setOnLoadBlock(() => currentBlock);
   }, [currentBlock]);
 
+  useLayoutEffect(() => {
+    if (onLoadBlock) {
+      const innerWidth = scrollingEl.current.getBoundingClientRect().width;
+      const figuresPerRow = Math.floor(innerWidth / (128 + 10));
+      console.log(figuresPerRow);
+      setStartBlock(onLoadBlock - 2 * figuresPerRow);
+    }
+  }, [onLoadBlock]);
+
   return (
     <div className="holder">
       <div className="holder-inner" ref={scrollingEl}>
-        {onLoadBlock &&
+        {startBlock &&
           Array(128)
             .fill(0)
             .map((_, i) => (
@@ -98,14 +108,14 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
         }
 
         .holder {
+          width: 100%;
           max-height: calc(100vh - 2em);
           overflow: hidden;
         }
 
-        .holder {
-          max-height: calc(100vh - 2em);
-          overflow: hidden;
-        }
+        .holder-inner {
+          min-width: 100%;
+
       `}</style>
     </div>
   );
