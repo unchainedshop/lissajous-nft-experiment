@@ -4,7 +4,6 @@ import Layout from '../components/Layout';
 import { AppContextWrapper } from '../components/AppContextWrapper';
 
 import '../public/static/font/stylesheet.css';
-// import withApollo from '../modules/apollo/utils/withApollo';
 
 const UnchainedApp = ({ Component, pageProps }) => {
   return (
