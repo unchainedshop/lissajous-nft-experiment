@@ -1,1 +1,117 @@
-# Hello, *world*!
+# Lissajous.art NFT
+
+**First of its kind Ethereum-native generative geometric art experiment**
+
+## How does it work?
+
+This project creates a geometric Lissajous figure according to the current
+Ethereum block and the price per NFT. The NFT is only created when someone mints
+it. I.e. sending an actual transaction to the Ethereum network ans pay for it.
+Otherwise it is lost forever.
+
+The block number is hashed and the result is used to determine the parameters of
+the draw function. This has three important effects:
+
+1. We know in advance which block will produce which figure
+2. Due to the randomising nature of the hash-function the figures are scattered
+3. It is not easy to know in which block the transaction will be actually
+   included
+
+The other parameter is the price one is willing to pay. This determines the
+color of the NFT. So you can show off how much you paid for your NFT.
+
+```
+keccak256(blockNumber)       pricePerToken
+=> 0x10114ad143...           0.1
+
+drawFigure(keccak256(blockNumber), pricePerToken)
+```
+
+The sale is limited to a period of time. After the end-block it will not be
+possible to mint more Lissajous NFTs.
+
+## How much does it cost?
+
+The price starts at 0.01 ETH per NFT and increases 0.1% with every mint.
+Although if you mint multiple NFTs, all will have the price of the lowest.
+
+The UI sets your mint-price 1% above the actual current minimum price per token
+to avoid reverted transactions due to other transactions mined between your
+submission of the transaction and the actual inclusion. But you will receive the
+excess amount according to your price step.
+
+### Price steps
+
+The colors change according to the price in steps:
+
+- From Ξ0.01 to Ξ0.1 in steps of Ξ0.01
+- From Ξ0.1 to Ξ1 in steps of Ξ0.1
+- From Ξ1 to Ξ10 in steps of Ξ1
+
+And then there is one price for Elon ;).
+
+## How do I know in which block my transaction is included?
+
+In short: You don't. You can try to set higher gas prices to incentivice miners
+to include your transaction faster. But if you really want to catch one
+particular figure, you should increase the amount.
+
+Example:
+
+The current block is 10 and you see a figure that you desperately want in
+block 15. You can now mint 5 NFTs. So you will probably get: 11, 12, 13, 14,
+**15**.
+
+## Are these NFTs unique
+
+Every NFT has a unique ID, although it is possible that they look alike. This is
+due to the nature of the Lissajous figure where different parameters can lead to
+the same figure. Furthermore, it is possible that two people mint a NFT in the
+same block. Or that someone minted 2 NFTs in the block before.
+
+That said, you still have the possibility to influence the look of your NFT by
+setting the price and therefor the color. Not everybody can afford to mint a 10
+ETH NFT ;)
+
+## What can I do with it?
+
+First of all you should have fun playing around at the intersection of art,
+geometry, cryptography and finance. But you could also try to build collections.
+There are some simple figures that are worth collecting. Or you can collect a
+build up of one figure: One of the parameters is how complete the figure is
+drawn.
+
+## How do I know that you are not going to rugg-pull me?
+
+The underlying smart-contract is deployed for-ever on the Ethereum blockchain.
+It also generates the figure parameters out of the NFT ID. Nobody can take you
+this away. The algorithm to generate the Lissajous-Figure is general knowledge.
+So you can build it by yourself. But we will also create an open source webpage
+that can create the figures out of the parameters exactly how we do it here.
+
+## Why is it not open source?
+
+The smart-contract is open source and you can read it here TODO!. The UI is not
+yet open source because we want to protect you and us from copy-cats and
+scammers. After the last block, we will open source the whole project for the
+world.
+
+## Who is behind this?
+
+This is a project from [Unchained Commerce GmbH](https://unchained.shop/) a
+small open source development company in Zurich, Switzerland. We are on a
+mission to unchain e-commerce companies world-wide from big centralised
+corporations. To do this, we have created our own
+[open source headless e-commerce engine](https://github.com/unchainedshop/unchained).
+
+## But transactions on Ethereum are wasting a lot of energy?
+
+Yes, we know. All new technologies have their problems in the beginning.
+Ethereum is on the right way with ETH2.0. But we will invest 10% of the earning
+into renewable energy projects. If you know any of them, maybe related to
+blockchain, let us know in the
+[Chat](https://matrix.to/#/!SEGqAkImeHDZDviOHK:matrix.org?via=matrix.org).
+
+## I still have questions
+
+[We have created a dedicated chat room on Matrix.](https://matrix.to/#/!SEGqAkImeHDZDviOHK:matrix.org?via=matrix.org)
