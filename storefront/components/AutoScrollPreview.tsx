@@ -83,6 +83,7 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
                             : undefined,
                           rainbowFrequency,
                         ),
+                        rainbow: false,
                         gradient:
                           isMarked(currentBlock, startBlock, i, amount) &&
                           amount < 4,

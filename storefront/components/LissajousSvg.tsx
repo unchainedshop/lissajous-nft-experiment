@@ -6,7 +6,7 @@ const LissajousSvg = ({
   frequenceX,
   frequenceY,
   phaseShift,
-  lineWidth: lineWidthInput = '8',
+  lineWidth: lineWidthInput = 8,
   height,
   width,
   strokeColor = '#FFD700',
@@ -22,21 +22,6 @@ const LissajousSvg = ({
   const shouldAnimate = typeof window !== 'undefined' && animated;
 
   const lineWidth = parseInt(lineWidthInput as any, 10);
-
-  console.log({
-    frequenceX,
-    frequenceY,
-    strokeColor,
-    phaseShift,
-    lineWidth,
-    height,
-    width,
-    totalSteps,
-    startStep,
-    animated,
-    gradient,
-    rainbow,
-  });
 
   let interpolateHsl;
   let backgroundColor;
