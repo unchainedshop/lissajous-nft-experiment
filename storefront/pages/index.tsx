@@ -15,14 +15,20 @@ const cleanEthInput = (input: string) => {
 
   if (input.includes('.')) {
     const [ints, decimals] = input.split('.');
-    return `${ints}.${decimals.slice(0, 18)}`;
+
+    const intsCleaned = ints.replace(/\D/g, '') || '0';
+    const decimalsCleaned = decimals.slice(0, 18).replace(/\D/g, '');
+
+    return `${intsCleaned}.${decimalsCleaned}`;
   } else {
-    return input;
+    return input.replace(/\D/g, '') || '0';
   }
 };
 
-const parseEthFromInput = (price: string) =>
-  ethers.utils.parseEther(cleanEthInput(price));
+const parseEthFromInput = (price: string) => {
+  const cleaned = cleanEthInput(price);
+  return ethers.utils.parseEther(cleaned);
+};
 
 const Index = () => {
   const {
@@ -37,7 +43,9 @@ const Index = () => {
   const router = useRouter();
   const [onLoadBlock, setOnLoadBlock] = useState<number>(null);
   const scrollingEl = useRef(null);
-  const { register, handleSubmit, watch, setValue } = useForm();
+  const { register, handleSubmit, watch, setValue, errors } = useForm({
+    mode: 'onChange',
+  });
   const { price, amount } = watch();
   const defaultPrice = minPrice
     ? ethers.utils.formatEther(minPrice.mul(1000).div(999))
@@ -166,6 +174,7 @@ const Index = () => {
                     min={1}
                     type="number"
                     ref={register({ required: true })}
+                    data-errors={!!errors.amount}
                   />
                 </label>
 
@@ -177,8 +186,9 @@ const Index = () => {
                     type="string"
                     ref={register({
                       required: true,
-                      // pattern: /\d{1-3}(.\d{1-18})+/,
+                      pattern: /\d{1,3}(.\d{1,18})?/g,
                     })}
+                    data-errors={!!errors.price}
                   />
                 </label>
 
@@ -197,7 +207,7 @@ const Index = () => {
                   <>
                     <button
                       className="w-100 button--primary"
-                      disabled={!accounts[0]}
+                      disabled={!accounts[0] || !!Object.keys(errors).length}
                       type="submit"
                     >
                       Mint
@@ -275,6 +285,9 @@ const Index = () => {
         }
         input:focus {
           border: 1px solid white;
+        }
+        input[data-errors='true'] {
+          border: 1px solid red;
         }
       `}</style>
     </div>
