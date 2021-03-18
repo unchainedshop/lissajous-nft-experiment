@@ -36,7 +36,7 @@ const Gallery = () => {
   return (
     <div>
       <div>
-        <h1 className="text-center">Gallery</h1>
+        <h1 className="text-center zoomIn animated">Gallery</h1>
         <div className="d-flex alig-items-center justify-content-around flex-wrap">
           {tokens.map((token, i) => (
             <div className="figure" key={i}>

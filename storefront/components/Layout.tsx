@@ -200,6 +200,26 @@ const Layout = (props) => {
         .flex-column {
           flex-direction: column;
         }
+
+        .animated {
+          animation-duration: .5s;
+          animation-fill-mode: both;
+        }
+        @keyframes zoomIn {
+          from {
+            opacity: 0;
+            transform: scale3d(0.3, 0.3, 0.3);
+          }
+
+          50% {
+            opacity: 1;
+          }
+        }
+        .zoomIn {
+          animation-name: zoomIn;
+        }
+
+
       `}</style>
     </div>
   );
