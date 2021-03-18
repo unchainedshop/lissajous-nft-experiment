@@ -5,6 +5,7 @@ import {
   LissajousToken,
   LissajousToken__factory,
 } from '@private/contracts';
+import ConnectPopup from './ConnectPopup';
 
 type Transaction = {
   amount: number;
@@ -87,6 +88,7 @@ export const AppContextWrapper = ({ children }) => {
   const [lastBlockTimestamps, setLastBlockTimestamps] = useState([]);
   const [startBlock, setStartBlock] = useState(0);
   const [endBlock, setEndBlock] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const recordToken = (token: Token) =>
     setTokens((tokens) => uniqueToken([token, ...tokens]));
@@ -191,13 +193,16 @@ export const AppContextWrapper = ({ children }) => {
     })();
   }, [accounts]);
 
-  const connect = async () => {
+  const doConnect = async () => {
+    setModalOpen(false);
     await ethereum.request({ method: 'eth_requestAccounts' });
     const accounts = await ethereum.request({
       method: 'eth_accounts',
     });
     setAccounts(accounts);
   };
+
+  const connect = () => setModalOpen(true);
 
   const addTransaction = (tx) => {
     setTransactions((current) => [
@@ -233,6 +238,7 @@ export const AppContextWrapper = ({ children }) => {
         endBlock,
       }}
     >
+      <ConnectPopup isOpen={modalOpen} connect={doConnect} />
       {children}
     </AppContext.Provider>
   );

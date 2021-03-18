@@ -46,8 +46,6 @@ const AutoScrollPreview = ({ currentBlock, amount, price }) => {
     };
   }, []);
 
-  console.log(startBlock);
-
   useEffect(() => {
     if (currentBlock && !onLoadBlock) setOnLoadBlock(() => currentBlock);
   }, [currentBlock]);
