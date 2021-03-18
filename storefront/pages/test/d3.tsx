@@ -19,6 +19,9 @@ const defaultValues = {
   width: 16,
   totalSteps: 16,
   startStep: 0,
+  rainbow: false,
+  animated: false,
+  gradient: false,
 };
 
 const LissajousTest = (): React.ReactElement => {
@@ -30,29 +33,29 @@ const LissajousTest = (): React.ReactElement => {
 
   const values = watch();
 
-  useEffect(() => {
-    Object.entries(router.query).map(([key, value]) => {
-      if (values[key] !== value && values[key] !== undefined) {
-        setValue(key as any, value);
-      }
-    });
-  }, [router.query]);
+  // useEffect(() => {
+  //   Object.entries(router.query).map(([key, value]) => {
+  //     if (values[key] !== value && values[key] !== undefined) {
+  //       setValue(key as any, value);
+  //     }
+  //   });
+  // }, [router.query]);
 
-  useEffect(() => {
-    clearTimeout(routerUpdateTimeout);
-    routerUpdateTimeout = window.setTimeout(() => {
-      router.replace({
-        pathname: router.pathname,
-        query: values,
-      });
-    }, 100);
-  }, Object.values(values));
+  // useEffect(() => {
+  //   clearTimeout(routerUpdateTimeout);
+  //   routerUpdateTimeout = window.setTimeout(() => {
+  //     router.replace({
+  //       pathname: router.pathname,
+  //       query: values,
+  //     });
+  //   }, 100);
+  // }, Object.values(values));
 
   return (
     <>
       <div className="container">
         <div className="holder">
-          <LissajousSvg {...values} gradient animated />
+          <LissajousSvg {...values} />
 
           <hr />
           {Array(4)
@@ -145,7 +148,30 @@ const LissajousTest = (): React.ReactElement => {
           max={16}
         />
 
-        <button onClick={() => reset()}>Reset</button>
+        <div>
+          <label>
+            <input type="checkbox" ref={register} name="rainbow" />
+            Rainbow
+          </label>
+        </div>
+
+        <div>
+          <label>
+            <input type="checkbox" ref={register} name="animated" />
+            Animated
+          </label>
+        </div>
+
+        <div>
+          <label>
+            <input type="checkbox" ref={register} name="gradient" />
+            Gradient
+          </label>
+        </div>
+
+        <button className="button" onClick={() => reset()}>
+          Reset
+        </button>
       </form>
 
       <style jsx>{`

@@ -10,6 +10,7 @@ const LissajousSvg = ({
   height,
   width,
   strokeColor = '#FFD700',
+  rainbow = false,
   startStep = 1,
   totalSteps = 16,
   animated = false,
@@ -22,16 +23,23 @@ const LissajousSvg = ({
 
   const lineWidth = parseInt(lineWidthInput as any, 10);
 
-  const hslStart = d3.hsl(strokeColor);
-  const hslEnd = d3.hsl(hslStart.h - 70, hslStart.s, hslStart.l - 0.1);
+  let interpolateHsl;
+  let backgroundColor;
 
-  const interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
+  if (rainbow) {
+    interpolateHsl = d3.interpolateTurbo;
+    backgroundColor = d3.hsl('black');
+  } else {
+    const hslStart = d3.hsl(strokeColor);
+    const hslEnd = d3.hsl(hslStart.h - 70, hslStart.s, hslStart.l - 0.1);
 
-  const backgroundColor = d3.hsl(
-    (hslStart.h + 180) % 360,
-    hslStart.s,
-    hslStart.l - 0.25,
-  );
+    interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
+    backgroundColor = d3.hsl(
+      (hslStart.h + 180) % 360,
+      hslStart.s,
+      hslStart.l - 0.25,
+    );
+  }
 
   useEffect(() => {
     const svg = d3.select(canvasRef.current);
@@ -94,7 +102,7 @@ const LissajousSvg = ({
 
       // if (count % 2 !== 0) return;
 
-      if (gradient || animated) {
+      if (gradient || animated || rainbow) {
         points.map((_, i) => {
           const walkingI = (i + count) % absoluteTotalSteps;
           const color = interpolateHsl(walkingI / absoluteTotalSteps);
@@ -142,6 +150,7 @@ const LissajousSvg = ({
     }
 
     return () => {
+      svg.selectAll('path').remove();
       window.cancelAnimationFrame(animationFrame);
     };
   }, [
@@ -155,6 +164,8 @@ const LissajousSvg = ({
     totalSteps,
     startStep,
     animated,
+    gradient,
+    rainbow,
   ]);
 
   useEffect(() => {

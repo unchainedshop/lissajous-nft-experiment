@@ -86,7 +86,6 @@ const Layout = (props) => {
           <a href="https://unchained.shop">
             <svg
               className="mr-3"
-              width="3 1px"
               height="24px"
               viewBox="0 0 620 680"
               version="1.1"

@@ -52,6 +52,7 @@ export type LissajousArgs = {
   phaseShift: number;
   totalSteps: number;
   startStep: number;
+  rainbow?: boolean;
   strokeColor?: string;
   animated?: boolean;
   gradient?: boolean;
