@@ -66,6 +66,7 @@ const Plot = () => {
         totalSteps,
         strokeColor,
         startStep,
+        rainbow: false,
       };
     });
 
