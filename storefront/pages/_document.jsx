@@ -29,6 +29,10 @@ class UnchainedDocument extends Document {
   `,
           }}
         />
+        <title>
+          Lissajous.art NFT - One of the first of its kind Ethereum native
+          generative geometric art experiment
+        </title>
         <Head>
           <link
             rel="apple-touch-icon"
@@ -48,6 +52,10 @@ class UnchainedDocument extends Document {
             href="/static/img/icon.png"
           />
           <link rel="shortcut icon" href="/static/img/icon.png" />
+          <meta
+            name="viewport"
+            content="initial-scale=1.0, width=device-width"
+          />
         </Head>
         <body>
           <Main />
