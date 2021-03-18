@@ -163,7 +163,8 @@ const Index = () => {
                 First of its kind ethereum native generative geometric art
                 experiment
               </div>
-              <pre>Next Block: {currentBlock + 1}</pre>
+              <p>Next Block: {currentBlock + 1}</p>
+              <p>x blocks remaining</p>
               <form onSubmit={handleSubmit(mint)}>
                 {/* register your input into the hook by invoking the "register" function */}
                 <label>
@@ -200,7 +201,9 @@ const Index = () => {
                 </span>
 
                 {!accounts[0] && hasSigner && (
-                  <button className="w-100 button--primary" onClick={connect}>Connect</button>
+                  <button className="w-100 button--primary" onClick={connect}>
+                    Connect
+                  </button>
                 )}
 
                 {accounts[0] && hasSigner && (

@@ -19,11 +19,21 @@ type Token = {
   block: number;
 };
 
+const chainIdMap = {
+  1: 'mainnet',
+  3: 'ropsten',
+  4: 'rinkeby',
+  42: 'kovan',
+  5: 'goerli',
+};
+
 export const AppContext = React.createContext<{
   hasSigner?: boolean;
   accounts: string[];
   totalSupply?: number;
   currentBlock?: number;
+  startBlock?: number;
+  endBlock?: number;
   minPrice?: BigNumber;
   connect: () => Promise<void>;
   readContract?: LissajousToken;
@@ -33,6 +43,7 @@ export const AppContext = React.createContext<{
   tokens: Token[];
   recordToken: (t: Token) => void;
   balance?: BigNumber;
+  remainingBlocks?: number;
 }>({
   accounts: [],
   connect: () => null,
@@ -74,6 +85,8 @@ export const AppContextWrapper = ({ children }) => {
   );
   const [balance, setBalance] = useState<BigNumber>();
   const [lastBlockTimestamps, setLastBlockTimestamps] = useState([]);
+  const [startBlock, setStartBlock] = useState(0);
+  const [endBlock, setEndBlock] = useState(0);
 
   const recordToken = (token: Token) =>
     setTokens((tokens) => uniqueToken([token, ...tokens]));
@@ -94,7 +107,9 @@ export const AppContextWrapper = ({ children }) => {
       ethereum?.on('chainChanged', () => window.location.reload());
 
       if (chainId !== 4) {
-        alert('Please switch to Rinkeby');
+        alert(
+          `You are on ${chainIdMap[chainId]}. Please switch to Rinkeby or you won't be able to mint here`,
+        );
         return;
       }
 
@@ -128,13 +143,14 @@ export const AppContextWrapper = ({ children }) => {
 
         if (accounts[0]) {
           const userBalance = await scopedProvider.getBalance(accounts[0]);
-          console.log(accounts[0], userBalance);
           setBalance(userBalance);
         }
       };
       onBlock(blockNumber);
       scopedProvider.on('block', onBlock);
 
+      setStartBlock((await contract.startBlock()).toNumber());
+      setEndBlock((await contract.endBlock()).toNumber());
       setTotalSupply((await contract.totalSupply()).toNumber());
 
       contract.on('Transfer', async (from, to, id) => {
@@ -162,6 +178,8 @@ export const AppContextWrapper = ({ children }) => {
       // };
     })();
   }, []);
+
+  console.log({ startBlock });
 
   useEffect(() => {
     if (!(provider as any)?.getSigner) return;
@@ -213,6 +231,8 @@ export const AppContextWrapper = ({ children }) => {
         tokens,
         recordToken,
         balance,
+        startBlock,
+        endBlock,
       }}
     >
       {children}

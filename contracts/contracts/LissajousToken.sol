@@ -255,6 +255,14 @@ contract LissajousToken is Context, Ownable, ERC721 {
         );
     }
 
+    function startBlock() public view returns (uint256) {
+        return _startBlock;
+    }
+
+    function endBlock() public view returns (uint256) {
+        return _endBlock;
+    }
+
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
         msg.sender.transfer(balance);

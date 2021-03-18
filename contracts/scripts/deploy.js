@@ -2,8 +2,8 @@ import fs from 'fs';
 import { BigNumber } from '@ethersproject/bignumber';
 
 async function main() {
-  const START_BLOCK = 8244370;
-  const END_BLOCK = 8344370;
+  const START_BLOCK = 8256098 + 240;
+  const END_BLOCK = 8256098 + 24 * 140;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
 
   const LissajousTokenFactory = await global.ethers.getContractFactory(

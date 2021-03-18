@@ -29,6 +29,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
     "currentMinPrice()": FunctionFragment;
+    "endBlock()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "lissajousArguments(uint256)": FunctionFragment;
@@ -43,6 +44,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "sortedColorList(uint256)": FunctionFragment;
+    "startBlock()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
@@ -76,6 +78,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     functionFragment: "currentMinPrice",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "endBlock", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -125,6 +128,10 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "sortedColorList",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "startBlock",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -188,6 +195,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     functionFragment: "currentMinPrice",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "endBlock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -226,6 +234,7 @@ interface LissajousTokenInterface extends ethers.utils.Interface {
     functionFragment: "sortedColorList",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "startBlock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -334,6 +343,10 @@ export class LissajousToken extends Contract {
     currentMinPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "currentMinPrice()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    endBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "endBlock()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -483,6 +496,10 @@ export class LissajousToken extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    startBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "startBlock()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -644,6 +661,10 @@ export class LissajousToken extends Contract {
 
   "currentMinPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+  endBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "endBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
+
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
@@ -786,6 +807,10 @@ export class LissajousToken extends Contract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  startBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "startBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   supportsInterface(
     interfaceId: BytesLike,
@@ -944,6 +969,10 @@ export class LissajousToken extends Contract {
 
     "currentMinPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    endBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "endBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1089,6 +1118,10 @@ export class LissajousToken extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    startBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "startBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -1273,6 +1306,10 @@ export class LissajousToken extends Contract {
 
     "currentMinPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    endBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "endBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1405,6 +1442,10 @@ export class LissajousToken extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    startBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "startBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -1576,6 +1617,10 @@ export class LissajousToken extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    endBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "endBlock()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1708,6 +1753,10 @@ export class LissajousToken extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    startBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "startBlock()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     supportsInterface(
       interfaceId: BytesLike,
