@@ -168,18 +168,32 @@ contract LissajousToken is Context, Ownable, ERC721 {
         for (uint8 i = 0; i < amount; i++) {
             bool rainbow = isBlockRainbow(block.number.add(i));
             uint256 tokenIndex = totalSupply();
+            uint256 pricePerToken = msg.value.div(amount);
 
             // The rainbow token cannot be minted in a set
             if ((!rainbow || i == 0)) {
+                // The rainbow is always the minPrice
+                if (rainbow) {
+                    pricePerToken = minPrice(tokenIndex);
+                }
+
                 _safeMint(to, tokenIndex);
                 _tokenInfos[tokenIndex] = TokenInfo(
-                    msg.value.div(amount),
+                    pricePerToken,
                     block.number.add(i),
                     minPrice(tokenIndex)
                 );
-                change += changePerToken;
+
+                // Return the excess if buying the rainbow token
+                if (rainbow) {
+                    change = change.add(
+                        pricePerToken.sub(minPrice(tokenIndex))
+                    );
+                } else {
+                    change = change.add(changePerToken);
+                }
             } else {
-                change += msg.value.div(amount);
+                change = change.add(pricePerToken);
             }
         }
 
