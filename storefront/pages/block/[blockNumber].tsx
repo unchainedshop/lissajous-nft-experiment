@@ -11,7 +11,7 @@ const BlockNumber = () => {
 
   const args = simulateLissajousArgs(
     parseInt(blockNumber, 10),
-    null,
+    undefined,
     rainbowFrequency,
   );
 
