@@ -56,6 +56,23 @@ class UnchainedDocument extends Document {
             name="viewport"
             content="initial-scale=1.0, width=device-width"
           />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content="@lissajous_art" />
+          <meta name="twitter:creator" content="@lissajous_art" />
+          <meta
+            name="twitter:title"
+            content="Ethereum Native
+            Generative Geometric Art Experiment"
+          />
+          <meta
+            name="twitter:description"
+            content="Become an active part of this First of its kind Ethereum Native
+            Generative Geometric Art Experiment!"
+          />
+          <meta
+            name="twitter:image"
+            content="https://lissajous.io/static/img/banner.png"
+          ></meta>
         </Head>
         <body>
           <Main />
