@@ -53,7 +53,7 @@ export const AppContext = React.createContext<{
   addTransaction: () => null,
   tokens: [],
   recordToken: () => null,
-  rainbowFrequency: 4096,
+  rainbowFrequency: 16384,
 });
 
 export const useAppContext = () => useContext(AppContext);

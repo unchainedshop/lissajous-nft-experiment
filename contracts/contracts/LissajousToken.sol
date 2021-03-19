@@ -151,6 +151,7 @@ contract LissajousToken is Context, Ownable, ERC721 {
         uint256 txMinPrice = currentMinPrice().mul(amount);
 
         require(msg.value >= txMinPrice, 'Min price not met');
+        require(msg.value <= 1000 ether, 'Way too much ETH!');
 
         uint256 pricePerToken = msg.value.div(amount);
         uint256 priceStep = priceStepFromValue(pricePerToken);
