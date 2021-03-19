@@ -77,6 +77,13 @@ const Layout = (props) => {
             <a>Terms</a>
           </Link>
           <a
+            href="https://etherscan.io/address/0x0Ac9f2dde31eEee4fFb3f2DE5578FaE7C97B5755#code"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Contract
+          </a>
+          <a
             href="https://matrix.to/#/!SEGqAkImeHDZDviOHK:matrix.org?via=matrix.org"
             target="_blank"
             rel="noreferrer"
