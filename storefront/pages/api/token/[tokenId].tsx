@@ -23,13 +23,14 @@ const metaData = async (req, res) => {
   const [lissajousArguments, price, color, aspectRatio] = await Promise.all([
     contract.lissajousArguments(tokenId),
     contract.tokenMintValue(tokenId),
-    contract.tokenColor(tokenId).then(result => result.replace('0x', '#'))
-  ])
+    contract.tokenColor(tokenId).then((result) => result.replace('0x', '#')),
+    contract.aspectRatio(tokenId),
+  ]);
 
-  const  = await ;
-  const price = await ;
-  const color = (await );
-  const aspectRatio = await contract.aspectRatio(tokenId);
+  // const  = await ;
+  // const price = await ;
+  // const color = (await );
+  // const aspectRatio = await contract.aspectRatio(tokenId);
 
   return res.status(200).json({
     description: `Lissajous Figure NFT #${tokenId}`,
