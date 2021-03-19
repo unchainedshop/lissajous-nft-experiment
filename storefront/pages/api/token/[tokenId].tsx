@@ -39,7 +39,7 @@ const metaData = async (req, res) => {
   const metaData = {
     description: `Lissajous Figure NFT #${tokenId}`,
     external_url: `https://lissajous.art/token/${tokenId}`,
-    // image: `https://lissajous.art/api/token-images/${tokenId}.svg`,
+    // image: `https://lissajous.art/api/images/${tokenId}.svg`,
     name: `Lissajous Figure NFT #${tokenId}`,
     attributes: [
       {
