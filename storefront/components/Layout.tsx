@@ -90,6 +90,13 @@ const Layout = (props) => {
           >
             Chat
           </a>
+          <a
+            href="https://twitter.com/lissajous_art"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Twitter
+          </a>
           <a href="https://unchained.shop">
             <svg
               className="mr-3"
