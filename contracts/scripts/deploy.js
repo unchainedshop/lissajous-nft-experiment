@@ -16,7 +16,7 @@ async function main() {
     END_BLOCK,
     START_PRICE,
     RAINBOW_FREQUENCY,
-    { gasPrice: 120 },
+    { gasPrice: BigNumber.from(120).mul(1000000000) },
   );
 
   const addresses = fs.readFileSync(`./addresses.json`);
