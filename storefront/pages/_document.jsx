@@ -66,7 +66,7 @@ class UnchainedDocument extends Document {
           />
           <meta
             name="twitter:description"
-            content="Become an active part of this First of its kind Ethereum Native
+            content="Become an active part of a Ethereum Native
             Generative Geometric Art Experiment!"
           />
           <meta

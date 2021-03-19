@@ -38,7 +38,7 @@ const Token = () => {
             <LissajousSvg
               frequenceX={lissajousArguments?.frequenceX}
               frequenceY={lissajousArguments?.frequenceY}
-              phaseShift={lissajousArguments?.phaseShift}
+              phaseShift={(1 / 16) * lissajousArguments?.phaseShift}
               height={aspectRatio?.height}
               width={aspectRatio?.width}
               strokeColor={color}
