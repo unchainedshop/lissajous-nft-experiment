@@ -74,8 +74,8 @@ const Index = () => {
       <div className="control">
         <div className="control-inner">
           <div>
-            First of its kind ethereum native generative geometric art
-            experiment
+            Become an active part of this First of its kind Ethereum Native
+            Generative Geometric Art Experiment!
           </div>
           {!currentBlock && <h1>No connection to Ethereum Network :(</h1>}
 
