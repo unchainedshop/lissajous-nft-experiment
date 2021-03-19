@@ -54,12 +54,51 @@ Examples:
 - The minimum price is set on Ξ0.015. You mint a token for Ξ0.02 because you
   want the nicer color: You will not receive any change.
 
+Or in pseudo code:
+
+```
+minPrice = 0.01 * (0.001) ** mintedTokens
+```
+
 ### Price categories
 
 The colors change according to price categories below:
 
-From Ξ0.01 to Ξ0.1 in steps of Ξ0.01 From Ξ0.1 to Ξ1 in steps of Ξ0.1 From Ξ1 to
-Ξ10 in steps of Ξ1 And then there is one price for Elon ;)
+| Price | Color Code |
+| :---- | :--------: |
+| Ξ100  |  #E5E4E2   |
+| Ξ10   |  #ffd700   |
+| Ξ9    |  #f2fa00   |
+| Ξ8    |  #bff600   |
+| Ξ7    |  #8df100   |
+| Ξ6    |  #5dec00   |
+| Ξ5    |  #2fe700   |
+| Ξ4    |  #03e300   |
+| Ξ3    |  #00de27   |
+| Ξ2    |  #00d950   |
+| Ξ1    |  #00d576   |
+| Ξ0.9  |  #00d09b   |
+| Ξ0.8  |  #00cbbf   |
+| Ξ0.7  |  #00adc7   |
+| Ξ0.6  |  #0084c2   |
+| Ξ0.5  |  #005dbd   |
+| Ξ0.4  |  #0037b8   |
+| Ξ0.3  |  #0014b4   |
+| Ξ0.2  |  #0e00af   |
+| Ξ0.1  |  #2e00aa   |
+| Ξ0.09 |  #4c00a6   |
+| Ξ0.08 |  #6900a1   |
+| Ξ0.07 |  #84009c   |
+| Ξ0.06 |  #980093   |
+| Ξ0.05 |  #930072   |
+| Ξ0.04 |  #8e0053   |
+| Ξ0.03 |  #890036   |
+| Ξ0.02 |  #85001b   |
+| Ξ0.01 |  #800002   |
+
+So if the current minimum price is at Ξ0.2 and you are minting a token at Ξ0.31,
+the change is only Ξ0.01, because it is the difference between your price and
+the lower boundary of the current price category
 
 ## How do I know in which block my transaction is included?
 
