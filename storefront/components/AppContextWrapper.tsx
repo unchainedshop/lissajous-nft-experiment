@@ -100,8 +100,8 @@ export const AppContextWrapper = ({ children }) => {
     (async () => {
       const scopedProvider = ethereum
         ? new ethers.providers.Web3Provider(ethereum)
-        : ethers.getDefaultProvider('rinkeby', {
-            alchemy: 'IAShCvvktlU_ZEHJOvhLYXngadTDjBdX',
+        : ethers.getDefaultProvider('mainnet', {
+            alchemy: 'U3ZksHolqD4YuDZrJuEn0PLpzMO2lCqC',
           });
 
       setProvider(scopedProvider);
@@ -111,9 +111,9 @@ export const AppContextWrapper = ({ children }) => {
 
       ethereum?.on('chainChanged', () => window.location.reload());
 
-      if (chainId !== 4) {
+      if (chainId !== 1) {
         alert(
-          `You are on ${chainIdMap[chainId]}. Please switch to Rinkeby or you won't be able to mint here`,
+          `You are on ${chainIdMap[chainId]}. Please switch to Mainnet or you won't be able to mint here`,
         );
         return;
       }
