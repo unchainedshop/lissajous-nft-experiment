@@ -47,6 +47,13 @@ to other transactions being mined between the initiation of your transaction and
 the actual confirmation. You will receive the excess amount upon minting
 according to your price category.
 
+Examples:
+
+- The minimum price is set on Ξ0.015. You mint a token for Ξ0.01515 because the
+  front-end sets the price 1% higher. The contract will return 0.00015 change.
+- The minimum price is set on Ξ0.015. You mint a token for Ξ0.02 because you
+  want the nicer color: You will not receive any change.
+
 ### Price categories
 
 The colors change according to price categories below:
