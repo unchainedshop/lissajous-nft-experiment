@@ -65,6 +65,10 @@ export default {
       url: process.env.RPC_ENDPOINT_RINKEBY || '',
       accounts: [process.env.PRIVATE_KEY_RINKEBY].filter(Boolean),
     },
+    mainnet: {
+      url: process.env.RPC_ENDPOINT_MAINNET || '',
+      accounts: [process.env.PRIVATE_KEY_MAINNET].filter(Boolean),
+    },
   },
   paths: {
     react: './generated/hardhat',

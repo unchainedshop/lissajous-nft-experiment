@@ -2,10 +2,10 @@ import fs from 'fs';
 import { BigNumber } from '@ethersproject/bignumber';
 
 async function main() {
-  const START_BLOCK = 8256098 + 240;
-  const END_BLOCK = 8256098 + 24 * 140;
+  const START_BLOCK = 12070120; // Ziel: 17:00. Jetzt (06:37): 12067600, avg Blocktime: 14. 4 Block pro minute => 240 pro stunde. 2520
+  const END_BLOCK = START_BLOCK + 524288;
   const START_PRICE = BigNumber.from('10').pow('16'); // 0.01 ETH
-  const RAINBOW_FREQUENCY = 4; // Will be 4096
+  const RAINBOW_FREQUENCY = 16384; // Will be 4096
 
   const LissajousTokenFactory = await global.ethers.getContractFactory(
     'LissajousToken',
@@ -16,6 +16,7 @@ async function main() {
     END_BLOCK,
     START_PRICE,
     RAINBOW_FREQUENCY,
+    { gasPrice: 120 },
   );
 
   const addresses = fs.readFileSync(`./addresses.json`);

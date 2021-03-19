@@ -33,7 +33,8 @@
     "hardhat": "hardhat --network localhost",
     "deploy:local": "hardhat run --network localhost scripts/deploy.js",
     "deploy:goerli": "hardhat run --network goerli scripts/deploy.js",
-    "deploy:rinkeby": "hardhat run --network rinkeby scripts/deploy.js"
+    "deploy:rinkeby": "hardhat run --network rinkeby scripts/deploy.js",
+    "deploy:mainnet": "hardhat run --network mainnet scripts/deploy.js"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.0.14",
