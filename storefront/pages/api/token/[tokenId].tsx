@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 
 import {
   addresses,
@@ -6,8 +6,14 @@ import {
   LissajousToken__factory,
 } from '@private/contracts';
 
+const cache = {};
+
 const metaData = async (req, res) => {
   const { tokenId } = req.query;
+
+  if (cache[tokenId]) {
+    return res.status(200).json(cache[tokenId]);
+  }
 
   const provider = ethers.getDefaultProvider('mainnet', {
     alchemy: 'U3ZksHolqD4YuDZrJuEn0PLpzMO2lCqC',
@@ -20,19 +26,17 @@ const metaData = async (req, res) => {
     provider,
   );
 
-  const [lissajousArguments, price, color, aspectRatio] = await Promise.all([
+  const [lissajousArguments, color, aspectRatio] = await Promise.all([
     contract.lissajousArguments(tokenId),
-    contract.tokenMintValue(tokenId),
     contract.tokenColor(tokenId).then((result) => result.replace('0x', '#')),
     contract.aspectRatio(tokenId),
   ]);
 
-  // const  = await ;
-  // const price = await ;
-  // const color = (await );
-  // const aspectRatio = await contract.aspectRatio(tokenId);
+  if (!lissajousArguments) {
+    return res.status(404).json({ error: 'Not found' });
+  }
 
-  return res.status(200).json({
+  const metaData = {
     description: `Lissajous Figure NFT #${tokenId}`,
     external_url: `https://lissajous.art/token/${tokenId}`,
     // image: `https://lissajous.art/api/token-images/${tokenId}.svg`,
@@ -71,7 +75,11 @@ const metaData = async (req, res) => {
         value: lissajousArguments.rainbow,
       },
     ],
-  });
+  };
+
+  cache[tokenId] = metaData;
+
+  return res.status(200).json(metaData);
 };
 
 export default metaData;
