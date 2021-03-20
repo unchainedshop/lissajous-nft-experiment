@@ -1,54 +1,47 @@
 import { ethers } from 'ethers';
-
 import {
   addresses,
   LissajousToken,
   LissajousToken__factory,
 } from '@private/contracts';
 
-const cache = {};
+import getDataFromContract from '../../../api/getDataFromContract';
+import generateSvg from '../../../api/generateSvg';
 
 const metaData = async (req, res) => {
-  const { tokenId } = req.query;
+  const { path } = req.query;
 
-  if (cache[tokenId]) {
-    return res.status(200).json(cache[tokenId]);
-  }
+  const [tokenId, suffix] = path.split('.');
 
-  const provider = ethers.getDefaultProvider('mainnet', {
-    alchemy: 'U3ZksHolqD4YuDZrJuEn0PLpzMO2lCqC',
-  });
-
-  const contractAddress = addresses[1].LissajousToken;
-
-  const contract: LissajousToken = LissajousToken__factory.connect(
-    contractAddress,
-    provider,
-  );
-
-  const [lissajousArguments, color, aspectRatio] = await Promise.all([
-    contract.lissajousArguments(tokenId),
-    contract.tokenColor(tokenId).then((result) => result.replace('0x', '#')),
-    contract.aspectRatio(tokenId),
-  ]);
+  const lissajousArguments = await getDataFromContract(tokenId);
 
   if (!lissajousArguments) {
     return res.status(404).json({ error: 'Not found' });
   }
 
+  if (suffix === 'svg') {
+    const svg = generateSvg(lissajousArguments);
+
+    res.setHeader('Content-Type', 'image/svg+xml');
+
+    return res.status(200).send(svg);
+  }
+
   const metaData = {
-    description: `Lissajous Figure NFT #${tokenId}`,
+    description: lissajousArguments.rainbow
+      ? `This is a super rare Lissajous Figure Rainbow NFT. It is part of an Ethereum Native Generative Geometric Art Experiment. Only a few randomly selected blocks can produce Rainbow Tokens.`
+      : `This Lissajous Figure NFT is part of an Ethereum Native Generative Geometric Art Experiment. The block it was minted determines the figure and the price determines the color.`,
     external_url: `https://lissajous.art/token/${tokenId}`,
-    // image: `https://lissajous.art/api/images/${tokenId}.svg`,
+    image: `https://lissajous.art/api/token/${tokenId}.svg`,
     name: `Lissajous Figure NFT #${tokenId}`,
     attributes: [
       {
         trait_type: 'Color',
-        value: color,
+        value: lissajousArguments.strokeColor,
       },
       {
         trait_type: 'Aspect Ratio',
-        value: `${aspectRatio.width}/${aspectRatio.height}`,
+        value: `${lissajousArguments.width}/${lissajousArguments.height}`,
       },
       {
         trait_type: 'Frequence X',
@@ -76,8 +69,6 @@ const metaData = async (req, res) => {
       },
     ],
   };
-
-  cache[tokenId] = metaData;
 
   return res.status(200).json(metaData);
 };
