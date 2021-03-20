@@ -1,5 +1,3 @@
-import svg2png from 'svg2png';
-
 import getDataFromContract from '../../../utils/api/getDataFromContract';
 import generateSvg from '../../../utils/api/generateSvg';
 
@@ -20,16 +18,6 @@ const metaData = async (req, res) => {
     res.setHeader('Content-Type', 'image/svg+xml');
 
     return res.status(200).send(svg);
-  }
-
-  if (suffix === 'png') {
-    const svg = generateSvg(lissajousArguments);
-
-    const png = await svg2png(svg, { width: 512, height: 512 });
-
-    res.setHeader('Content-Type', 'image/png');
-
-    return res.status(200).send(png);
   }
 
   const metaData = {
