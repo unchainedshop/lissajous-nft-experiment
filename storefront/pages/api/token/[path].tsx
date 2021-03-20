@@ -1,13 +1,7 @@
-import { ethers } from 'ethers';
 import svg2png from 'svg2png';
-import {
-  addresses,
-  LissajousToken,
-  LissajousToken__factory,
-} from '@private/contracts';
 
-import getDataFromContract from '../../../api/getDataFromContract';
-import generateSvg from '../../../api/generateSvg';
+import getDataFromContract from '../../../utils/api/getDataFromContract';
+import generateSvg from '../../../utils/api/generateSvg';
 
 const metaData = async (req, res) => {
   const { path } = req.query;
