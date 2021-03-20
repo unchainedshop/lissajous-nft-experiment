@@ -47,7 +47,7 @@ const Token = () => {
         />
         <meta
           name="twitter:image"
-          content={`https://lissajous.art/api/token/${tokenId}.svg`}
+          content={`https://res.cloudinary.com/unchained-commerce-gmbh/image/fetch/w_512,f_png/https://lissajous.art/api/token/${tokenId}.svg`}
         ></meta>
       </Head>
       <div className="d-flex align-items-center justify-content-between flex-wrap flex-column">
