@@ -164,7 +164,7 @@ const Index = () => {
             <p>
               {/* eslint-disable-next-line react/jsx-no-target-blank */}
               <a
-                href={`https://metamask.app.link/dapp/${location?.host}/${location?.pathname}`}
+                href={`https://metamask.app.link/dapp/lissajous.art`}
                 target="_blank"
                 rel="noopener"
                 className="button"
@@ -178,7 +178,7 @@ const Index = () => {
               <p>
                 {/* eslint-disable-next-line react/jsx-no-target-blank */}
                 <a
-                  href="https://metamask.io"
+                  href="https://metamask.app.link/dapp/lissajous.art"
                   target="_blank"
                   rel="noopener"
                   className="button"
@@ -190,7 +190,7 @@ const Index = () => {
               </p>
 
               <QRCode
-                value={`https://metamask.app.link/dapp/${location?.host}/${location?.pathname}`}
+                value={`https://metamask.app.link/dapp/lissajous.art`}
                 includeMargin
                 size={240}
               />
