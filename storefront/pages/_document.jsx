@@ -30,8 +30,8 @@ class UnchainedDocument extends Document {
           }}
         />
         <title>
-          Lissajous.art NFT - One of the first of its kind Ethereum native
-          generative geometric art experiment
+          Lissajous.art NFT - Ethereum Native Generative Geometric Art
+          Experiment
         </title>
         <Head>
           <link
