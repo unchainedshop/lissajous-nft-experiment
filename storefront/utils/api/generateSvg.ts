@@ -12,11 +12,11 @@ const generateSvg = (lissajousArguments: LissajousArgs): string => {
   const lineWidth = 10;
 
   let interpolateHsl;
-  let backgroundColor;
+  const backgroundColor = d3.hsl('black');
 
   if (lissajousArguments.rainbow) {
     interpolateHsl = d3.interpolateTurbo;
-    backgroundColor = d3.hsl('black');
+    // backgroundColor = d3.hsl('black');
   } else {
     const hslStart = d3.hsl(lissajousArguments.strokeColor);
 
@@ -26,11 +26,11 @@ const generateSvg = (lissajousArguments: LissajousArgs): string => {
       hslEnd,
       lissajousArguments.strokeColor,
     );
-    backgroundColor = d3.hsl(
-      (hslStart.h + 180) % 360,
-      hslStart.s,
-      hslStart.l - 0.25,
-    );
+    // backgroundColor = d3.hsl(
+    //   (hslStart.h + 180) % 360,
+    //   hslStart.s,
+    //   hslStart.l - 0.25,
+    // );
   }
 
   const canvasHeight = 512;

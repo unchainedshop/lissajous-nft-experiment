@@ -24,21 +24,21 @@ const LissajousSvg = ({
   const lineWidth = parseInt(lineWidthInput as any, 10);
 
   let interpolateHsl;
-  let backgroundColor;
+  const backgroundColor = d3.hsl('black');
 
   if (rainbow) {
     interpolateHsl = d3.interpolateTurbo;
-    backgroundColor = d3.hsl('black');
+    // backgroundColor = d3.hsl('black');
   } else {
     const hslStart = d3.hsl(strokeColor);
     const hslEnd = d3.hsl(hslStart.h - 70, hslStart.s, hslStart.l - 0.1);
 
     interpolateHsl = d3.interpolateHslLong(hslEnd, strokeColor);
-    backgroundColor = d3.hsl(
-      (hslStart.h + 180) % 360,
-      hslStart.s,
-      hslStart.l - 0.25,
-    );
+    // backgroundColor = d3.hsl(
+    //   (hslStart.h + 180) % 360,
+    //   hslStart.s,
+    //   hslStart.l - 0.25,
+    // );
   }
 
   useEffect(() => {
