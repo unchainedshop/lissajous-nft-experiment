@@ -84,11 +84,11 @@ const Layout = (props) => {
             Contract
           </a>
           <a
-            href="https://matrix.to/#/!SEGqAkImeHDZDviOHK:matrix.org?via=matrix.org"
+            href="https://discord.gg/YQWVKy2b"
             target="_blank"
             rel="noreferrer"
           >
-            Chat
+            Discord
           </a>
           <a
             href="https://twitter.com/lissajous_art"
