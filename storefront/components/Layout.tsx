@@ -84,13 +84,6 @@ const Layout = (props) => {
             Contract
           </a>
           <a
-            href="https://discord.gg/YQWVKy2b"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Discord
-          </a>
-          <a
             href="https://twitter.com/lissajous_art"
             target="_blank"
             rel="noreferrer"
